@@ -1,4 +1,4 @@
-const offertsController = require('../controllers/categorys.controller.js');
+const categorysController = require('../controllers/categorys.controller.js');
 // const verifyJWT = require('../middleware/verifyJWT');
 // const verifyJWTOptional = require('../middleware/verifyJWTOptional.js');
 

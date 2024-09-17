@@ -2,7 +2,7 @@ const Category = require('../models/categorys.model.js');
 const asyncHandler = require('express-async-handler');
 
 // CREATE NUEVA CATEGORY
-const createCategory = asyncHandler(async (req, res) => {
+const createCategorys = asyncHandler(async (req, res) => {
     const categoryData = {
         name: req.body.name || null,
         description: req.body.description || null,
@@ -37,7 +37,7 @@ const findAllCategorys = asyncHandler(async (req, res) => {
 });
 
 // FIND ONE CATEGORYS
-const findOneCategory = asyncHandler(async (req, res) => {
+const findOneCategorys = asyncHandler(async (req, res) => {
     const category = await category.findOne({ slug: req.params.slug });
 
     if (!category) {
@@ -48,7 +48,7 @@ const findOneCategory = asyncHandler(async (req, res) => {
 });
 
 // DELETE ONE CATEGORYS
-const deleteOneCategory = asyncHandler(async (req, res) => {
+const deleteOneCategorys = asyncHandler(async (req, res) => {
     const result = await Category.deleteOne({ slug: req.params.slug });
 
     if (result.deletedCount === 0) {
@@ -59,7 +59,7 @@ const deleteOneCategory = asyncHandler(async (req, res) => {
 });
 
 // UPDATE CATEGORYS
-const updateCategory = asyncHandler(async (req, res) => {
+const updateCategorys = asyncHandler(async (req, res) => {
     const updatedCategory = await Category.findOneAndUpdate(
         { slug: req.params.slug },
         req.body,
@@ -75,9 +75,9 @@ const updateCategory = asyncHandler(async (req, res) => {
 
 // EXPORT MODULE
 module.exports = {
-    createCategory,
+    createCategorys,
     findAllCategorys,
-    findOneCategory,
-    deleteOneCategory,
-    updateCategory
+    findOneCategorys,
+    deleteOneCategorys,
+    updateCategorys
 };
