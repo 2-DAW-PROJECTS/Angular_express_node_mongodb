@@ -11,7 +11,7 @@ const offertSchema = new Schema({
     postedDate: { type: Date, default: Date.now },
     applicationDeadline: Date,
     slug: { type: String, unique: true, required: true }, // SLUG UNICO IDENTIFICATIVO
-    state: {String}
+    state: String
 });
 
 module.exports = mongoose.model('Offert', offertSchema);
