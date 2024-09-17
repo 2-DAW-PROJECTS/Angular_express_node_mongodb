@@ -30,7 +30,7 @@ const findAllCategorys = asyncHandler(async (req, res) => {
         query.title = { $regex: new RegExp(title, 'i') };
     }
 
-    const category = await Category.find(query).limit(limit).skip(offset);
+    const categorys = await Category.find(query).limit(limit).skip(offset);
     const categoryCount = await Category.countDocuments(query);
 
     return res.status(200).json({ categorys, count: categoryCount });
