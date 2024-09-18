@@ -17,4 +17,7 @@ module.exports = (app) => {
 
     // UPDATE OFFERT
     app.put('/offerts/:slug', /*verifyJWT ,*/ offertsController.updateOffert);
+
+    // FIND OFFERTS BY CATEGORY
+    app.get('/offerts/category/:slug', offertsController.GetOffertsByCategory);
 }
