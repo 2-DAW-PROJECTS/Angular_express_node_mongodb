@@ -45,6 +45,7 @@ mongoose.connect(dbConfig.url, {
 // Routes setup
 require('../routes/category.routes')(app);
 require('../routes/offerts.routes')(app);
+require('../routes/enterprises.routes')(app);
 // require('../routes/carousel.routes')(app);
 // require('../routes/user.routes')(app);
 // require('../routes/profile.routes')(app);
