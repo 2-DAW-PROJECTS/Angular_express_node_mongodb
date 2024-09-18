@@ -6,11 +6,11 @@ const createCategorys = asyncHandler(async (req, res) => {
     const categoryData = {
         name: req.body.name || null,
         description: req.body.description || null,
-        parentCategory: req.body.parentCategory || [],
         isActive: req.body.isActive || false,
         jobCount: req.body.jobCount || 0,
         image: req.body.image || null,
-        slug: req.body.slug || null
+        slug: req.body.slug || null,
+        subcategories: req.body.subcategories || []
     };
 
     const newCategory = new Category(categoryData);

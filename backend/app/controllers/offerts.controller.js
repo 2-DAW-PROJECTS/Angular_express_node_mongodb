@@ -1,23 +1,34 @@
 const Offert = require('../models/offerts.model.js');
+const Category = require('../models/categorys.model.js');
 const asyncHandler = require('express-async-handler');
+const slugify = require('slugify'); // SLUGIFY
 
 // CREATE NUEVA OFFERT
 const createOffert = asyncHandler(async (req, res) => {
-    const offertData = {
-        title: req.body.title || null,
-        company: req.body.company || null,
-        location: req.body.location || null,
-        description: req.body.description || null,
-        requirements: req.body.requirements || [],
-        salary: req.body.salary || 0,
-        postedDate: req.body.postedDate || new Date(), // Fecha de publicación atomatica
-        slug: req.body.slug || null
-    };
+    const { title, company, location, description, requirements, salary, categorySlug } = req.body;
 
-    const newOffert = new Offert(offertData);
-    await newOffert.save();
+    // Validar si la categoría existe utilizando el slug
+    const categoryObj = await Category.findOne({ slug: categorySlug }).exec();
+    if (!categoryObj) {
+        return res.status(400).json({ error: 'Categoría no encontrada' });
+    }
 
-    return res.status(201).json(newOffert);
+    // Crear nueva oferta
+    const randomToken = Math.random().toString(36).substring(2, 8); // Token aleatorio de 6 caracteres
+    const newOffert = new Offert({
+        title,
+        company,
+        location,
+        description,
+        requirements,
+        salary,
+        category: categoryObj._id,
+        slug: `${slugify(title, { lower: true })}-${randomToken}`,
+        categorySlug: categoryObj.slug // Establecer el slug de la categoría
+    });
+
+    const savedOffert = await newOffert.save();
+    res.status(201).json(savedOffert);
 });
 
 // FIND ALL OFFERTS
@@ -74,11 +85,38 @@ const updateOffert = asyncHandler(async (req, res) => {
     return res.status(200).json(updatedOffert);
 });
 
+const GetOffertsByCategory = asyncHandler(async (req, res) => {
+    let offset = parseInt(req.query.offset) || 0;
+    let limit = parseInt(req.query.limit) || 10;
+    const slug = req.params.slug; // Slug de la categoría
+
+    // Buscar la categoría por su slug
+    const category = await Category.findOne({ slug }).exec();
+
+    if (!category) {
+        return res.status(400).json({ message: "Categoría no encontrada" });
+    }
+
+    // Obtener las ofertas relacionadas con la categoría
+    const offerts = await Offert.find({ category: category._id })
+        .skip(offset)
+        .limit(limit)
+        .exec();
+
+    const offertCount = await Offert.countDocuments({ category: category._id });
+
+    return res.status(200).json({
+        offerts,
+        count: offertCount
+    });
+});
+
 // EXPORT MODULE
 module.exports = {
     createOffert,
     findAllOfferts,
     findOneOffert,
     deleteOneOffert,
-    updateOffert
+    updateOffert,
+    GetOffertsByCategory
 };
