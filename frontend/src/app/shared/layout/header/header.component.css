@@ -1,121 +1,73 @@
-/* Estilos generales del header */
-.site-header {
-  background: linear-gradient(135deg, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+.header {
+  background-color: #ffffff;
+  color: #333333;
   padding: 15px 0;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  position: relative;
-}
-
-.container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .header-content {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  justify-content: space-between; /* Asegura que el logo y el menú estén a los extremos */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-/* Logo */
+.header-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
 .logo {
-  /* height: 60px; */
-  margin-left: 30px;
-  width: 60px;
-}
-.logos {
-  height: 100px;
-  width: 100px;
-  position: relative; /* O absolute, dependiendo de la situación */
-  z-index: 10; /* Aumenta el valor para asegurarte de que esté por encima de otros elementos */
+  width: 120px;
+  height: auto;
 }
 
-
-.logo:hover {
-  transform: scale(1.05);
-}
-
-/* Navegación principal en vista de escritorio */
-.main-nav {
+.header-nav {
   display: flex;
-  flex-grow: 1; /* Permite que la navegación ocupe el espacio disponible */
-  justify-content: center; /* Centra los elementos horizontalmente */
+  gap: 30px;
 }
 
-.nav-list {
-  display: flex;
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
-.nav-item {
-  margin: 0 10px;
-}
-
-.nav-link {
-  color: #ffffff;
+.header-nav a {
+  color: #333333;
   text-decoration: none;
-  font-weight: 500;
-  padding: 5px 10px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+  font-weight: 600;
+  font-size: 16px;
+  transition: color 0.3s;
 }
 
-.nav-link:hover {
-  background-color: rgba(255,255,255,0.1);
+.header-nav a:hover {
+  color: #f39c12; /* Adjust this color to match your logo's accent color */
 }
 
-/* Botones de autenticación */
-.auth-buttons {
+.header-icons {
   display: flex;
-  gap: 10px;
-  margin-left: auto;
+  align-items: center;
+  gap: 20px;
 }
 
-/* Botones de autenticación */
-.btn {
-  padding: 8px 15px;
-  margin-right: 20px;
-  border-radius: 20px;
+.header-icons a {
+  color: #333333;
+  font-size: 18px;
+  transition: color 0.3s;
+}
+
+.header-icons a:hover {
+  color: #f39c12; /* Adjust this color to match your logo's accent color */
+}
+
+.login-button {
+  background-color: #f39c12; /* Adjust this color to match your logo's accent color */
+  color: #ffffff !important;
+  padding: 8px 16px;
+  border-radius: 4px;
   text-decoration: none;
-  font-weight: bold;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  transition: background-color 0.3s;
 }
 
-/* Botones de autenticación */
-.auth-buttons {
-  display: flex;
-  gap: 10px;
-  margin-left: auto;
-}
-
-/* Botón de login */
-.btn-login {
-  background-color: transparent;
-  color: #ffffff;
-  border: 2px solid #ffffff;
-}
-
-.btn-login:hover {
-  background-color: #ffffff;
-  color: #2989d8;
-}
-
-/* Elimina estilos para la vista móvil */
-@media (max-width: 768px) {
-  /* .main-nav {
-    display: none;
-  }
-
-  .nav-list {
-    display: none; 
-  }
-
-  .nav-container {
-    display: none; 
-  } */
+.login-button:hover {
+  background-color: #e67e22; /* Darker shade of the accent color */
 }
