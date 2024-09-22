@@ -1,0 +1,178 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: #333;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  margin-bottom: 1rem;
+}
+
+.list-group-item {
+  border: none;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  color: #34495e;
+}
+
+.list-group-item i {
+  margin-right: 0.75rem;
+  color: #3498db;
+}
+
+.card-text {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.badge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.badge-primary {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.btn-primary {
+  background-color: #e74c3c;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  border-radius: 30px;
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+.btn-primary:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.requirements-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* CARD AND LIKE */
+
+/* Nueva clase para los botones pequeños de "like" y "carrito" */
+.like, .carrito {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.like img, .carrito img {
+  width: 24px; /* Reducimos el tamaño de las imágenes */
+  height: 24px;
+}
+
+.like:hover, .carrito:hover {
+  transform: scale(1.1); /* Efecto hover para agrandar un poco los iconos */
+}
+
+.like img {
+  filter: grayscale(100%); /* Efecto gris para hacer los iconos más sutiles */
+}
+
+.like:hover img {
+  filter: grayscale(0); /* Quita el filtro al hacer hover */
+}
+
+.carrito img {
+  filter: brightness(0.8); /* Ajuste de brillo en el carrito */
+}
+
+.carrito:hover img {
+  filter: brightness(1); /* Quita el ajuste al hacer hover */
+}
+.card-img-top {
+  height: 100px; /* Fija la altura para todas las imágenes */
+  object-fit: contain; /* Mantiene la relación de aspecto sin recortar la imagen */
+  margin-right: 100%;
+  margin-bottom: -5%;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  .card-title {
+    font-size: 1.3rem;
+  }
+
+  .card-subtitle {
+    font-size: 1rem;
+  }
+
+  .list-group-item {
+    font-size: 0.9rem;
+  }
+
+  .btn-primary {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+    .like img, .carrito img {
+    width: 20px; /* Aún más pequeños en pantallas móviles */
+    height: 20px;
+  }
+}

@@ -38,6 +38,10 @@ const offertSchema = new Schema({
         ref: 'Categorys',
         required: true
     },
+    image: {
+        type: String,
+        required: true
+    },
     categorySlug: {
         type: String,
         lowercase: true,
