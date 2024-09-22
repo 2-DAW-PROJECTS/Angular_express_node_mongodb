@@ -15,7 +15,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORSURL, 
+  origin: process.env.CORSURL || 'http://localhost:4200',  // Usa variable de entorno o una URL por defecto
   optionsSuccessStatus: 200
 };
 
