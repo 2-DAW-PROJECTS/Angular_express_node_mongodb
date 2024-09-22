@@ -1,0 +1,42 @@
+.p-carousel .p-carousel-item {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.p-carousel-item .border-round {
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.p-carousel-item img {
+  object-fit: cover;
+  width: 100%;
+  height: 150px; /* Ajusta la altura de la imagen */
+}
+
+.p-carousel .p-carousel-indicators {
+  display: none; /* Oculta los indicadores si no los necesitas */
+}
+
+.card-title {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.card p {
+  margin: 10px 0;
+  color: #666;
+}
+.category-img {
+  width: 95%; /* Ajusta el ancho como desees */
+  height: auto; /* Mantiene la relación de aspecto */
+  object-fit: cover; /* Asegura que la imagen se recorte correctamente si es necesario */
+  transition: transform 0.3s ease; /* Suaviza la transición */
+}
+
+.category-img:hover {
+  transform: scale(1.05); /* Aumenta el tamaño al pasar el ratón */
+}
