@@ -1,0 +1,43 @@
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-12">
+      <h1 class="text-center mb-4">Ofertas de Trabajo</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4" *ngFor="let offert of offerts">
+      <div class="card mb-4 shadow-sm">
+        <div *ngIf="offert.image; else noImage">
+            <img [src]="offert.image" class="card-img-top" alt="{{ offert.title }} logo">
+        </div>
+          <ng-template #noImage>
+            <p>No image available</p>
+          </ng-template>
+        <div class="card-body">
+          <h5 class="card-title">{{ offert.title }}</h5>
+          <h6 class="card-subtitle mb-3 text-muted">{{ offert.company }}</h6>
+          <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item"><i class="fas fa-map-marker-alt"></i> {{ offert.location }}</li>
+            <li class="list-group-item"><i class="fas fa-euro-sign"></i> {{ offert.salary }} €</li>
+          </ul>
+          <p class="card-text">{{ offert.description }}</p>
+          <div class="mb-3">
+            <strong>Requisitos:</strong>
+            <br><br>
+            <div class="mt-2">
+              <span class="badge badge-primary mr-1" *ngFor="let requirement of offert.requirements">{{ requirement }}</span>
+            </div>
+          </div>
+          <br>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <button class="like"><img src="shop_icons/like.png" alt="Me gusta"></button>
+            <button class="carrito"><img src="shop_icons/carrito.png" alt="Agregar"></button>
+          </div>
+          <br>
+          <a href="#" class="btn btn-primary btn-block">Postular</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<br>

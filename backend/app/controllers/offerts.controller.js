@@ -5,7 +5,7 @@ const slugify = require('slugify'); // SLUGIFY
 
 // CREATE NUEVA OFFERT
 const createOffert = asyncHandler(async (req, res) => {
-    const { title, company, location, description, requirements, salary, categorySlug } = req.body;
+    const { title, company, location, description, requirements, salary, image, categorySlug } = req.body;
 
     // Validar si la categoría existe utilizando el slug
     const categoryObj = await Category.findOne({ slug: categorySlug }).exec();
@@ -24,6 +24,7 @@ const createOffert = asyncHandler(async (req, res) => {
         salary,
         category: categoryObj._id,
         slug: `${slugify(title, { lower: true })}-${randomToken}`,
+        image, 
         categorySlug: categoryObj.slug // Establecer el slug de la categoría
     });
 

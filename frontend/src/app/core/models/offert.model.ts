@@ -1,11 +1,16 @@
 export interface Offert {
-    slug: string;
-    name: string;
+    _id: string;
+    title: string;
+    company: string;
+    location: string;
     description: string;
-    price: number;
-    images: string[];
-    img: string;
-    id_cat: string;
-    favorited: boolean;
-    favoritesCount: number;
-}
+    requirements: string[];
+    salary: number;
+    slug: string;
+    category: string;
+    categorySlug: string;
+    postedDate: string;
+    image: string;
+    __v: number;
+  }
+  
