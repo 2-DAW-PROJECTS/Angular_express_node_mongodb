@@ -1,0 +1,181 @@
+/* .shop-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .product-card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 123, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 8px;
+  }
+  
+  .product-card:hover::before {
+    opacity: 1;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    color: #007bff;
+    margin: 10px 0;
+  }
+  
+  p {
+    color: #666;
+    margin: 5px 0;
+  }
+  
+  .price {
+    font-size: 1.25rem;
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+  
+  .button-container {
+    margin-top: 10px;
+  }
+   */
+
+
+
+.job-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  color: #167db7;
+  font-size: 2.5rem;
+}
+
+.job-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.job-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.job-card:hover {
+  transform: translateY(-5px);
+}
+
+.job-card h2 {
+  color: #167db7;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.job-card p {
+  margin: 5px 0;
+  color: #333;
+}
+
+.job-card .salary {
+  font-weight: bold;
+  color: #28a745;
+}
+
+.job-card .description {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.button-container button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-container button:first-child {
+  background-color: #167db7;
+  color: white;
+}
+
+.button-container button:last-child {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.button-container button:hover {
+  opacity: 0.9;
+}
