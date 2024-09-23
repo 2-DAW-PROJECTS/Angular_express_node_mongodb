@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { OffertService } from '../../core/service/offert.service';
 import { Offert } from '../../core/models/offert.model';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ViewportScroller } from '@angular/common';
+
 
 @Component({
   selector: 'app-list-offerts',
@@ -55,4 +57,18 @@ export class ListOffertsComponent implements OnInit {
       }
     });
   }
+
+  private viewportScroller = inject(ViewportScroller);
+  showScrollButton = false;
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.showScrollButton = window.pageYOffset > 300;
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  
 }
