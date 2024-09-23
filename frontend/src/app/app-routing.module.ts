@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { ShopComponent } from './shop/shop.component';
+import { ListOffertsComponent } from './shared/list-offerts/list-offerts.component';
 
 const routes: Routes = [
   {
@@ -15,8 +16,11 @@ const routes: Routes = [
   },
   {
     path: 'shop',
-    component: ShopComponent// COMPONENTE STANDALONE???
-  },
+    component: ShopComponent// COMPONENTE STANDALONE
+  },  
+  { path: 'shop/:slug', component: ListOffertsComponent }, // SALTO DEL HOME AL SHOP CON SLUG CATEGORY
+
+  
   // {
   //   path: 'shop',
   //   loadChildren: () => import('./shop/shop.module').then(m => m.ShopModule)

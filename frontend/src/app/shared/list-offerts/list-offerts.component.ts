@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { OffertService } from '../../core/service/offert.service';
 import { Offert } from '../../core/models/offert.model';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -12,11 +13,23 @@ import { CommonModule } from '@angular/common';
 })
 export class ListOffertsComponent implements OnInit {
   offerts: Offert[] = [];
+  categorySlug: string | null = null;
 
-  constructor(private offertService: OffertService) {}
+  constructor(
+    private offertService: OffertService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-    this.loadOfferts();
+    this.route.params.subscribe(params => {
+      this.categorySlug = params['slug'];  
+
+      if (this.categorySlug) {
+        this.loadOffertsByCategory(this.categorySlug);
+      } else {
+        this.loadOfferts();
+      }
+    });
   }
 
   loadOfferts() {
@@ -30,6 +43,16 @@ export class ListOffertsComponent implements OnInit {
       }
     });
   }
-  
-  
+
+  loadOffertsByCategory(slug: string) {
+    this.offertService.get_offerts_by_category(slug).subscribe({
+      next: (data) => {
+        console.log(data.offerts.length);
+        this.offerts = data.offerts;
+      },
+      error: (err) => {
+        console.error('Error fetching offers', err);
+      }
+    });
+  }
 }
