@@ -1,6 +1,5 @@
-<br>
 <div class="card mb-30 equal-card">
-  <a class="card-img-tiles" data-abc="true">
+  <a [routerLink]="['/shop', category.slug]" class="card-img-tiles" data-abc="true">
     <div class="inner">
       <div class="main-img">
         <img [src]="category.image || 'assets/img_categorys/default.png'" alt="Category Image" class="img-fluid category-img" required>

@@ -35,7 +35,7 @@ const createOffert = asyncHandler(async (req, res) => {
 // FIND ALL OFFERTS
 const findAllOfferts = asyncHandler(async (req, res) => {
     let query = {};
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 20;
     const offset = parseInt(req.query.offset) || 0;
     const title = req.query.title || '';
 
@@ -88,7 +88,7 @@ const updateOffert = asyncHandler(async (req, res) => {
 
 const GetOffertsByCategory = asyncHandler(async (req, res) => {
     let offset = parseInt(req.query.offset) || 0;
-    let limit = parseInt(req.query.limit) || 10;
+    let limit = parseInt(req.query.limit) || 20;
     const slug = req.params.slug; // Slug de la categoría
 
     // Buscar la categoría por su slug
