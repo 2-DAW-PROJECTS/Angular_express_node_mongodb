@@ -5,7 +5,7 @@ const slugify = require('slugify'); // SLUGIFY
 
 // CREATE NUEVA OFFERT
 const createOffert = asyncHandler(async (req, res) => {
-    const { title, company, location, description, requirements, salary, categorySlug } = req.body;
+    const { title, company, location, description, requirements, salary, image, images, categorySlug } = req.body;
 
     // Validar si la categoría existe utilizando el slug
     const categoryObj = await Category.findOne({ slug: categorySlug }).exec();
@@ -13,8 +13,7 @@ const createOffert = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: 'Categoría no encontrada' });
     }
 
-    // Crear nueva oferta
-    const randomToken = Math.random().toString(36).substring(2, 8); // Token aleatorio de 6 caracteres
+    const randomToken = Math.random().toString(36).substring(2, 8);
     const newOffert = new Offert({
         title,
         company,
@@ -24,7 +23,9 @@ const createOffert = asyncHandler(async (req, res) => {
         salary,
         category: categoryObj._id,
         slug: `${slugify(title, { lower: true })}-${randomToken}`,
-        categorySlug: categoryObj.slug // Establecer el slug de la categoría
+        image,
+        images,
+        categorySlug: categoryObj.slug
     });
 
     const savedOffert = await newOffert.save();
@@ -34,7 +35,7 @@ const createOffert = asyncHandler(async (req, res) => {
 // FIND ALL OFFERTS
 const findAllOfferts = asyncHandler(async (req, res) => {
     let query = {};
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 20;
     const offset = parseInt(req.query.offset) || 0;
     const title = req.query.title || '';
 
@@ -87,7 +88,7 @@ const updateOffert = asyncHandler(async (req, res) => {
 
 const GetOffertsByCategory = asyncHandler(async (req, res) => {
     let offset = parseInt(req.query.offset) || 0;
-    let limit = parseInt(req.query.limit) || 10;
+    let limit = parseInt(req.query.limit) || 20;
     const slug = req.params.slug; // Slug de la categoría
 
     // Buscar la categoría por su slug

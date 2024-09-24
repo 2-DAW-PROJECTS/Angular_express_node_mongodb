@@ -1,0 +1,19 @@
+.category-list {
+    padding: 20px;
+  }
+  
+  .category-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+  .category-item h3 {
+    margin: 0;
+  }
+  
+  .category-item img {
+    max-width: 100px;
+    height: auto;
+  }
+  

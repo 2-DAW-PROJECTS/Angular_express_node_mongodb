@@ -1,0 +1,10 @@
+<p-carousel 
+    [value]="categories" 
+    [numVisible]="3" 
+    [numScroll]="1" 
+    [circular]="true" 
+    [responsiveOptions]="responsiveOptions">
+    <ng-template let-category pTemplate="item">
+        <app-card-category [category]="category"></app-card-category>
+    </ng-template>
+</p-carousel>

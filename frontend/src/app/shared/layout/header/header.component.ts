@@ -6,9 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
-  isMobileMenuOpen = false;  // Variable para controlar la apertura del menú móvil
+  isMenuOpen = false;
 
-  toggleMobileMenu() {
-    this.isMobileMenuOpen = !this.isMobileMenuOpen;  // Cambiar el estado del menú
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 }
