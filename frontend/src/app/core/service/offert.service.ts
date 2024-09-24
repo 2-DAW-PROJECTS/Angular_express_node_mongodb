@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Offert } from '../models/offert.model';
 import { environment } from '../../../environments/environment';
 
-const URL = `${environment.api_url}/offerts`;
+const URL = `${environment.api_url}/offerts`; // Corrección en el uso de backticks
 
 @Injectable({
   providedIn: 'root'
@@ -20,5 +20,10 @@ export class OffertService {
   // Método para obtener todas las ofertas sin filtro
   all_offerts(params: any = {}): Observable<{ offerts: Offert[], count: number }> {
     return this.http.get<{ offerts: Offert[], count: number }>(URL, { params });
+  }
+
+  // Método corregido para obtener una oferta por su slug
+  get_offert(slug: string): Observable<Offert> {
+    return this.http.get<Offert>(`${URL}/${slug}`);  // Aquí aseguramos que la URL base se use correctamente
   }
 }
