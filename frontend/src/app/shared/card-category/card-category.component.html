@@ -1,0 +1,17 @@
+<!-- Card Category -->
+<div class="card mb-30 equal-card">
+  <a [routerLink]="['/shop', category.slug]" class="card-img-tiles" data-abc="true">
+    <div class="inner">
+      <div class="main-img">
+        <img [src]="category.image || 'assets/img_categorys/default.png'" alt="Category Image" class="img-fluid category-img" required>
+      </div>
+    </div>
+  </a>
+  <div class="card-body text-center">
+    <h4 class="card-title">{{ category.name }}</h4>
+    <p>{{ category.description }}</p>
+    <p><strong>Jobs Available:</strong> {{ category.jobCount }}</p>
+  </div>
+</div>
+
+
