@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Category } from '../../../app/core/models/category.model';
 
+
 @Component({
   selector: 'app-card-category',
   standalone: true,
@@ -10,8 +11,12 @@ import { Category } from '../../../app/core/models/category.model';
   templateUrl: './card-category.component.html',
   styleUrls: ['./card-category.component.css']
 })
+
 export class CardCategoryComponent {
   @Input() category: Category = {} as Category;
 
   constructor() {}
+
+  ngOnInit(): void {  
+  }
 }
