@@ -13,9 +13,9 @@ const URL = `${environment.api_url}/enterprises`;
 export class EnterpriseService {
   constructor(private http: HttpClient) {}
 
-  findAllEnterprises(params: any): Observable<{enterprises: Enterprise[]}> {
-    return this.http.get<{enterprises: Enterprise[]}>(URL, { params });
-  }
+  findAllEnterprises(params: any): Observable<{ enterprises: Enterprise[] }> {
+    return this.http.get<{ enterprises: Enterprise[] }>(URL, { params });
+  }  
 
   findOneEnterprise(slug: string): Observable<{enterprises : Enterprise}> {
     return this.http.get<{enterprises : Enterprise}>(`${URL}/${slug}`);
