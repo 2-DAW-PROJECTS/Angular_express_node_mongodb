@@ -16,36 +16,33 @@ import { Enterprise } from '../../core/models/enterprise.model';
 })//Component
 
 export class ListEnterprisesComponent implements OnInit {
-
   offset = 0;
-  limit = 4;
+  limit = 3; // Establecemos el límite de 3 empresas por llamada
   enterprises: Enterprise[] = [];
-  //
   loading = false;
   allLoaded = false;
-  //
 
-
-  constructor(private EnterpriseService: EnterpriseService) { }//constructor
-
-
-  //Iniciar
+  constructor(private enterpriseService: EnterpriseService) {}
 
   ngOnInit(): void {
     this.getEnterprises();
-  }//ngOnInit
+  }
 
-  
   getEnterprises() {
+    // Evitar nuevas solicitudes si ya se está cargando o si todas las empresas ya han sido cargadas
     if (this.loading || this.allLoaded) return;
+    
     this.loading = true;
+    
     const params = this.getRequestedParams(this.offset, this.limit);
-  
-    this.EnterpriseService.findAllEnterprises({params}).subscribe(
+    
+    this.enterpriseService.findAllEnterprises(params).subscribe(
       (data: any) => {
+        // Si no hay más empresas que cargar, marcar como "allLoaded"
         if (data.enterprises.length === 0) {
           this.allLoaded = true;
         } else {
+          // Agregar las empresas obtenidas a la lista de empresas existente
           this.enterprises = [...this.enterprises, ...data.enterprises];
           this.offset += this.limit;
         }
@@ -58,18 +55,9 @@ export class ListEnterprisesComponent implements OnInit {
     );
   }
 
+  getRequestedParams(offset: number, limit: number): any {
+    return { offset, limit };
+  }
+}
 
-  getRequestedParams(offset: number, limit: number): any{
-    let params:any  = {};
-      params[`offset`] = offset;
-      params[`limit`] = limit;
-    
-    return params;
-  }//getRequestedParams
-
-
-  // scroll(){
-  //   this.getEnterprises();
-  // }//scroll
-
-}//ListEnterprisesComponent
+//ListEnterprisesComponent

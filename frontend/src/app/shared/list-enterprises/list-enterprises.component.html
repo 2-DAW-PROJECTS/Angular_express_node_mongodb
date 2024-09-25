@@ -1,27 +1,17 @@
-<!-- <div class="enterprises"
-     infiniteScroll
-     [infiniteScrollDistance]="1"
-     [infiniteScrollThrottle]="50"
-     (scrolled)="scroll()">
-  <app-card-enterprises class="item" *ngFor="let enterprise of enterprises" [enterprise]="enterprise"></app-card-enterprises>
-</div> -->  
-
-  <section class="enterprises-section">
-    <h2 class="section-title">Featured Enterprises</h2>
-    <div class="enterprises-container"
-         infiniteScroll
-         [infiniteScrollDistance]="2"
-         [infiniteScrollThrottle]="50"
-         (scrolled)="getEnterprises()">
-      <app-card-enterprises 
-        *ngFor="let enterprise of enterprises" 
-        [enterprise]="enterprise"
-        class="enterprise-card">
-      </app-card-enterprises>
-    </div>
-    <div *ngIf="loading" class="loading-spinner">
-      <div class="spinner"></div>
-    </div>
-  </section>
-
-  
+<section class="enterprises-section">
+  <h2 class="section-title">Featured Enterprises</h2>
+  <div class="enterprises-container"
+       infiniteScroll
+       [infiniteScrollDistance]="1"
+       [infiniteScrollThrottle]="50"
+       (scrolled)="getEnterprises()">
+    <app-card-enterprises 
+      *ngFor="let enterprise of enterprises" 
+      [enterprise]="enterprise"
+      class="enterprise-card">
+    </app-card-enterprises>
+  </div>
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner"></div>
+  </div>
+</section>

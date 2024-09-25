@@ -53,8 +53,10 @@ const enterpriseSchema = new Schema({
     state : { 
         type : String,
         default : 'active'
+    },
+    image : { 
+        type : String
     }
-
 });
 
 

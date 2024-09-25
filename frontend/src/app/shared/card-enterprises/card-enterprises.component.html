@@ -1,14 +1,14 @@
 <!-- Card Enterprise -->
-<div class="card mb-30 equal-card">
+<div class="card1 mb-301 equal-card1">
   <!-- <a [routerLink]="['/shop', enterprise.slug]" class="card-img-tiles" data-abc="true" routerLinkActive="active"> -->
-    <div class="inner">
-      <div class="main-img">
-        <img [src]="enterprise.logo || 'assets/img_enterprises/default.png'" alt="Enterprise Image" class="img-fluid enterprise-img" required>
+    <div class="inner1">
+      <div class="main1-img">
+        <img [src]="enterprise.image || 'assets/img_enterprises/default.png'" alt="Enterprise Image" class="img-fluid enterprise-img" required>
       </div>
     </div>
   <!-- </a> -->
-  <div class="card-body text-center">
-    <h4 class="card-title">{{ enterprise.name }}</h4>
+  <div class="card1-body text-center">
+    <h4 class="card1-title">{{ enterprise.name }}</h4>
     <p>{{ enterprise.description }}</p>
     <p><strong>Industry & Website: </strong> {{ enterprise.industry }} | {{ enterprise.website }}</p>
   </div>

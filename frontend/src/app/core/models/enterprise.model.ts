@@ -13,4 +13,5 @@ export interface Enterprise {
     createdAt: Date;
     updatedAt: Date;
     slug: string;
+    image: string;
 }

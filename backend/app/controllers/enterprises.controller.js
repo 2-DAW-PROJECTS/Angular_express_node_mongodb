@@ -29,7 +29,8 @@ const createEnterprise = asyncHandler(async (req, res) => {
     ////////////////////////////////////////////////////
     ////////////////////////////////////////////////////
         slug: req.body.slug,
-        state: req.body.state || 'active'
+        state: req.body.state || 'active',
+        image: req.body.image || null,
     };
 
     const newEnterprise = new Enterprise(enterpriseData);
