@@ -1,95 +1,94 @@
 /*Angular Core*/
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Location } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 /*App imports*/
 import { OffertService } from '../../core/service/offert.service';
 import { Offert } from '../../core/models/offert.model';
 import { Filters } from '../../core/models/filters.model';
 
+
+
+
 /*Copmponent de la aplicacion*/
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
+
+
+
+
 export class SearchComponent implements OnInit {
 
   @Output() searchEvent: EventEmitter<Filters> = new EventEmitter();
 
-  searchValue: string | undefined = '';
-  listOfferts: Offert[] = [];
+  searchValue: string | undefined = " ";
+  offerts: Offert[] = [];
   filters: Filters = new Filters();
-  routeFilters!: string | null;
-  search: any;
-
-  constructor(
-    private OffertService: OffertService,
-    private Router: Router,
-    private ActivatedRoute: ActivatedRoute,
-    private Location: Location
-  ) {
-    this.routeFilters = this.ActivatedRoute.snapshot.paramMap.get('filters');
-  }//constructor
 
 
-  ngOnInit(): void {
-    if (this.routeFilters) {
-      //
-        console.log(" dentro del if routeFilters || ngOnInit search.component");
-      //
-      this.filters = JSON.parse(atob(this.routeFilters));
-    }
-    this.searchValue = this.filters.name || undefined;
+  constructor(private OffertService: OffertService, private router: Router) {}//constructor
+
+
+  ngOnInit(): void {}//ngOnInit
+
+  onSearch() {
+    // console.log('Search value:', this.searchValue);
+
+    const encodedSearch = btoa(this.searchValue ?? '');
+    // this.router.navigate(['/shop', encodedSearch]);
+    // console.log('Encoded search value:', encodedSearch );
+    // console.log("___________________________");
+
+    this.searchEvent.emit(encodedSearch);
+  }
+
+  
+  // onSearch(Event: Event) {
+    // console.log("onSearch | search.component.ts");
+
     //
-      console.log("searchValue || ", this.searchValue);
+    // this.filters.name = this.searchValue;
+    // this.OffertService.find_product_name(this.searchValue).subscribe({
+    //   next: (data) => {
+    //     this.offerts = data.products;
+    //     this.searchEvent.emit(this.filters);
+    //   },
+    //   error: (err) => {
+    //     console.error('Error fetching offers', err);
+    //   }
+    // });
+
     //
-  }//ngOnInit
+    //
+    //
+    //
+    // this.filters.name = this.searchValue;
+    // this.searchEvent.emit(this.filters);
+  // }//onSearch
 
 
-  public type_event(writtingValue: any): void {
-    this.routeFilters = this.ActivatedRoute.snapshot.paramMap.get('filters');
-    this.search = writtingValue;
-    this.filters.name = writtingValue;
+  // loadSerch() {
+  //   this.OffertService.find_product_name({}).subscribe({
+  //     next: (data) => {
+  //       this.Offerts = data.Offert;
+  //     },
+  //     error: (err) => {
+  //       console.error('Error fetching categories', err);
+  //     }
+  //   });
+  // }//loadSerch
 
-      setTimeout(() => {
-
-          this.searchEvent.emit(this.filters);
-          this.Location.replaceState('/shop/' + btoa(JSON.stringify(this.filters)));
-
-        if (this.search.length != 0){  
-          this.getListOfferts();
-      }
-    }, 150);
-    this.filters.name = this.search;
-    this.filters.offset = 0;
-  }//type_event
-
-
-  getListOfferts() {
-    this.OffertService.find_product_name(this.search).subscribe(
-      (data: any) => {
-        this.listOfferts = data.products;
-        console.log(this.listOfferts);
-        if(data === null ){
-          console.log('error')
-        }
-      });
-  }//getListOfferts
-
-  public search_event(data: any): void {
-    if (typeof data.search_value === 'string') {
-      this.filters.name = data.search_value;
-      this.filters.offset = 0;
-      this.Router.navigate(['/shop/' + btoa(JSON.stringify(this.filters))]);
-      //  
-        console.log(this.filters);
-      //
-    }
-  }//search_event
-
+  // onsearchEvent(event: Event) {
+  //   const selectElement = event.target as HTMLSelectElement;
+  //   const filters: Filters = { searchTerm: selectElement.value };
+  //   this.searchValue = filters;
+  //   this.searchEvent.emit(this.searchValue);
+  // }
 
 }//SearchComponent

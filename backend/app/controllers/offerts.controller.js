@@ -9,7 +9,9 @@ const createOffert = asyncHandler(async (req, res) => {
 
     // Validar si la categoría existe utilizando el slug
     const categoryObj = await Category.findOne({ slug: categorySlug }).exec();
+
     if (!categoryObj) {
+        console.log("Backend");
         return res.status(400).json({ error: 'Categoría no encontrada' });
     }
 
@@ -34,6 +36,8 @@ const createOffert = asyncHandler(async (req, res) => {
 
 // FIND ALL OFFERTS
 const findAllOfferts = asyncHandler(async (req, res) => {
+    console.log("Backend");
+
     let query = {};
     const limit = parseInt(req.query.limit) || 20;
     const offset = parseInt(req.query.offset) || 0;
@@ -49,8 +53,29 @@ const findAllOfferts = asyncHandler(async (req, res) => {
     return res.status(200).json({ offerts, count: offertCount });
 });
 
+//FiltterOfferts
+const filterOfferts = asyncHandler(async (req, res) => {
+    console.log("Backend");
+
+    const { name } = req.query;
+    let query = {};
+
+    if (name) {
+        query.title = { $regex: name, $options: 'i' };
+    }
+
+    const offerts = await Offert.find(query);
+    return res.status(200).json({ offerts, count: offerts.length });
+});
+
+
+
+
+
 // FIND ONE OFFERT
 const findOneOffert = asyncHandler(async (req, res) => {
+    console.log("Backend");
+
     const offert = await Offert.findOne({ slug: req.params.slug });
 
     if (!offert) {
@@ -73,6 +98,8 @@ const deleteOneOffert = asyncHandler(async (req, res) => {
 
 // UPDATE OFFERT
 const updateOffert = asyncHandler(async (req, res) => {
+    console.log("Backend");
+
     const updatedOffert = await Offert.findOneAndUpdate(
         { slug: req.params.slug },
         req.body,
@@ -87,6 +114,8 @@ const updateOffert = asyncHandler(async (req, res) => {
 });
 
 const GetOffertsByCategory = asyncHandler(async (req, res) => {
+    console.log("Backend");
+
     let offset = parseInt(req.query.offset) || 0;
     let limit = parseInt(req.query.limit) || 20;
     const slug = req.params.slug; // Slug de la categoría
@@ -119,5 +148,6 @@ module.exports = {
     findOneOffert,
     deleteOneOffert,
     updateOffert,
-    GetOffertsByCategory
+    GetOffertsByCategory,
+    filterOfferts
 };

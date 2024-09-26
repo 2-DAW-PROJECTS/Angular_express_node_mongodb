@@ -20,4 +20,8 @@ module.exports = (app) => {
 
     // FIND OFFERTS BY CATEGORY
     app.get('/offerts/category/:slug', offertsController.GetOffertsByCategory);
+
+    //Filter Offerts by Search
+    app.get('/offerts', offertsController.filterOfferts);
+
 }

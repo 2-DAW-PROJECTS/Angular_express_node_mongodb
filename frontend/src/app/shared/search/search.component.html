@@ -1,16 +1,7 @@
-<div class="container subheader">
-    <div class="row d-flex justify-content-center align-items-center width: 100%;">
-        <div class="col-md-8">
-            <form class="search" name="search">
-                <i class="fa fa-search"></i>
-                <input type="text" list="search" class="input" name="txt" [ngModel]="searchValue" (ngModelChange)="type_event($event)" 
-                    (change)="search_event($event)">
-                <datalist id="search">
-                  <option *ngFor="let offert of listOfferts" [value]="offert.name">{{offert.name}}</option>
-                </datalist>
-                <button class="btn btn-primary">Search</button>
-                <i class="fas fa-search"></i>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- <input [(ngModel)]="searchValue" (keyup.enter)="onSearch()">
+<button (click)="onSearch()">Search</button> -->
+
+<div class="search-container">
+    <input class="search-input" [(ngModel)]="searchValue" (keyup.enter)="onSearch()" placeholder="Search...">
+  </div>
+  
