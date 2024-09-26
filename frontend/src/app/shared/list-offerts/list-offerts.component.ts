@@ -1,4 +1,10 @@
+<<<<<<< Updated upstream
 import { Component, OnInit } from '@angular/core';
+=======
+import { Component, OnInit, HostListener, inject } from '@angular/core';
+
+
+>>>>>>> Stashed changes
 import { OffertService } from '../../core/service/offert.service';
 import { Offert } from '../../core/models/offert.model';
 import { ActivatedRoute } from '@angular/router';
