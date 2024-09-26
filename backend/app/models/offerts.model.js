@@ -46,6 +46,10 @@ const offertSchema = new Schema({
         type: String,
         lowercase: true,
         required: true
+    },
+    images: {
+        type: [String],
+        required: true
     }
 });
 

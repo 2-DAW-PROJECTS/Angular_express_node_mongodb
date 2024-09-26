@@ -1,19 +1,16 @@
-<<<<<<< Updated upstream
-import { Component, OnInit } from '@angular/core';
-=======
+
 import { Component, OnInit, HostListener, inject } from '@angular/core';
-
-
->>>>>>> Stashed changes
 import { OffertService } from '../../core/service/offert.service';
 import { Offert } from '../../core/models/offert.model';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ViewportScroller } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-list-offerts',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './list-offerts.component.html',
   styleUrls: ['./list-offerts.component.css']
 })
@@ -60,5 +57,17 @@ export class ListOffertsComponent implements OnInit {
         console.error('Error fetching offers', err);
       }
     });
+  }
+
+  private viewportScroller = inject(ViewportScroller);
+  showScrollButton = false;
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.showScrollButton = window.pageYOffset > 300;
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
