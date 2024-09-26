@@ -26,19 +26,21 @@ export class ListOffertsComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.categorySlug = params['slug'];  
-
-      if (this.categorySlug) {
-        this.loadOffertsByCategory(this.categorySlug);
-      } else {
-        this.loadOfferts();
-      }
+      this.loadOfferts(this.categorySlug);
     });
   }
 
-  loadOfferts() {
+  loadOfferts(categorySlug: string | null) {
+    if (categorySlug) {
+      this.loadOffertsByCategory(categorySlug);
+    } else {
+      this.loadAllOfferts();
+    }
+  }
+
+  loadAllOfferts() {
     this.offertService.all_offerts({}).subscribe({
       next: (data) => {
-        console.log(data.offerts.length);
         this.offerts = data.offerts;
       },
       error: (err) => {
@@ -50,13 +52,16 @@ export class ListOffertsComponent implements OnInit {
   loadOffertsByCategory(slug: string) {
     this.offertService.get_offerts_by_category(slug).subscribe({
       next: (data) => {
-        console.log(data.offerts.length);
         this.offerts = data.offerts;
       },
       error: (err) => {
         console.error('Error fetching offers', err);
       }
     });
+  }
+
+  onCategoryChange(categorySlug: string | null) {
+    this.loadOfferts(categorySlug);
   }
 
   private viewportScroller = inject(ViewportScroller);
