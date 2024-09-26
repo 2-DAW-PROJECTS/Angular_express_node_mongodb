@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Category } from '../models/category.model';
-import { environment } from '../../../environments/environment'; // Asegúrate de importar el entorno
+import { environment } from '../../../environments/environment';
 
-const URL = `${environment.api_url}/categorys`; // Usar la URL base del entorno
+const URL = `${environment.api_url}/categorys`;
 
 @Injectable({
   providedIn: 'root'

@@ -1,0 +1,25 @@
+<div class="filters-sidebar">
+  <h3>Filtros</h3>
+  <div class="filter-container">
+    <label for="categorySelect">Categoría:</label>
+    <select id="categorySelect" (change)="onCategoryChange($event)">
+      <option value="">Todas las categorías</option>
+      <option *ngFor="let category of categories" [value]="category.slug">
+        {{ category.name }}
+      </option>
+    </select>
+  </div>
+  <div class="filter-container">
+    <label for="companySelect">Empresa:</label>
+    <select id="companySelect">
+      <option value="">Todas las empresas</option>
+      <option value="empresa1">Empresa 1</option>
+      <option value="empresa2">Empresa 2</option>
+      <option value="empresa3">Empresa 3</option>
+    </select>
+  </div>
+</div>
+
+<style>
+
+</style>

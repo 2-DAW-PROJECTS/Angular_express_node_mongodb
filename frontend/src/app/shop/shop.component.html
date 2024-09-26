@@ -1,20 +1,2 @@
-<app-list-offerts></app-list-offerts>
-
-<!-- <div class="job-container">
-    <header class="header">
-        <h1>Offers List</h1>
-    </header>
-    <div class="job-list">
-        <div *ngFor="let product of products" class="job-card">
-            <h2>{{ product.name }}</h2>
-
-            <p class="salary">Salary: ${{ product.salary }}</p>
-            <p class="description">{{ product.description }}</p>
-            <div class="button-container">
-                <button>View Details</button>
-                <button>Add to Favorites</button>
-            </div>
-        </div>
-    </div>
-</div> -->
-
+<app-filters (categoryChange)="listOfferts.onCategoryChange($event)"></app-filters>
+<app-list-offerts #listOfferts></app-list-offerts>
