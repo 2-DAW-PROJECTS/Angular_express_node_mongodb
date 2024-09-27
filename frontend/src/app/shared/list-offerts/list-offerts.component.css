@@ -17,12 +17,6 @@ h1 {
   color: #333;
 }
 
-h3 {
-  font-size: 1.2rem;
-  color: #666;
-  margin-bottom: 15px;
-}
-
 .info-row {
   display: flex;
   justify-content: flex-start;

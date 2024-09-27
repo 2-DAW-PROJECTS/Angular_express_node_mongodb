@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
-
-
 import { Offert } from '../models/offert.model';
 import { environment } from '../../../environments/environment';
 
@@ -13,21 +10,7 @@ const URL = `${environment.api_url}/offerts`;
   providedIn: 'root'
 })
 export class OffertService {
-  constructor(private http: HttpClient, private route: ActivatedRoute) {}
-
-  
-  find_product_name(encodedSearch?: string): Observable<{ offerts: Offert[], count: number }> {
-    if (encodedSearch) {
-      const decodedSearch = atob(encodedSearch).trim(); //.trim() elimina el espacio en blanco que se crea entre la decodificacion y la URL
-      // console.log("decodedSearch:",decodedSearch);
-      console.log("_______________________________");
-      console.log(`${URL}?title=${decodedSearch}`);
-      // console.log(`${URL}?title=${encodedSearch}`);
-      return this.http.get<{ offerts: Offert[], count: number }>(`${URL}?title=${decodedSearch}`);
-    } else {
-      return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`);
-    }
-  }
+  constructor(private http: HttpClient) {}
 
   // Método para obtener todas las ofertas sin filtro
   all_offerts(params: any = {}): Observable<{ offerts: Offert[], count: number }> {
