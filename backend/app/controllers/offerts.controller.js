@@ -6,7 +6,7 @@ const slugify = require('slugify');
 
 // CREATE NUEVA OFFERT
 const createOffert = asyncHandler(async (req, res) => {
-    const { title, company, location, description, requirements, salary, image, images, categorySlug } = req.body;
+    const { title, company, location, description, requirements, salary, image, categorySlug } = req.body;
 
     // Validar si la categoría existe utilizando el slug
     const categoryObj = await Category.findOne({ slug: categorySlug }).exec();
@@ -14,6 +14,7 @@ const createOffert = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: 'Categoría no encontrada' });
     }
 
+<<<<<<< HEAD
     // Buscar la empresa por nombre
     const enterprise = await Enterprise.findOne({ name: company }).exec();
     if (!enterprise) {
@@ -21,6 +22,10 @@ const createOffert = asyncHandler(async (req, res) => {
     }
 
     const randomToken = Math.random().toString(36).substring(2, 8);
+=======
+    // Crear nueva oferta
+    const randomToken = Math.random().toString(36).substring(2, 8); // Token aleatorio de 6 caracteres
+>>>>>>> parent of fb8a6c6 (Merge pull request #13 from 2-DAW-PROJECTS/alfosan)
     const newOffert = new Offert({
         title,
         company: enterprise.name,  // Guardar el nombre de la empresa
@@ -31,9 +36,8 @@ const createOffert = asyncHandler(async (req, res) => {
         salary,
         category: categoryObj._id,
         slug: `${slugify(title, { lower: true })}-${randomToken}`,
-        image,
-        images,
-        categorySlug: categoryObj.slug
+        image, 
+        categorySlug: categoryObj.slug // Establecer el slug de la categoría
     });
 
     const savedOffert = await newOffert.save();

@@ -18,6 +18,7 @@ export class OffertService {
       catchError(this.handleError<{ offerts: Offert[], count: number }>('all_offerts', { offerts: [], count: 0 }))
     );
   }
+<<<<<<< HEAD
 
   // Método para obtener una oferta por su slug
   get_offert(slug: string): Observable<Offert> {
@@ -50,4 +51,6 @@ export class OffertService {
       return of(result as T);
     };
   }
+=======
+>>>>>>> parent of fb8a6c6 (Merge pull request #13 from 2-DAW-PROJECTS/alfosan)
 }

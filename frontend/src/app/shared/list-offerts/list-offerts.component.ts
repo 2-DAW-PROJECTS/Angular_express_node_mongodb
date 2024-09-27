@@ -4,12 +4,12 @@ import { Offert } from '../../core/models/offert.model';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ViewportScroller } from '@angular/common';
-import { RouterModule } from '@angular/router';
+
 
 @Component({
   selector: 'app-list-offerts',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   templateUrl: './list-offerts.component.html',
   styleUrls: ['./list-offerts.component.css']
 })
@@ -100,4 +100,6 @@ export class ListOffertsComponent implements OnInit {
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  
 }
