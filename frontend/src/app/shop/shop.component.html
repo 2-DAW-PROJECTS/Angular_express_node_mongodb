@@ -1,2 +1,6 @@
 <app-filters (categoryChange)="listOfferts.onCategoryChange($event)"></app-filters>
+<!-- <app-search (searchEvent)="searchEvent.get_list_filtered($event)"></app-search> -->
+<app-search (searchEvent)="listOfferts.onSearch($event.toString())" placeholder="Buscar..."></app-search>
+
+
 <app-list-offerts #listOfferts></app-list-offerts>
