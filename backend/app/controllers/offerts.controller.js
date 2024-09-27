@@ -51,7 +51,7 @@ const findAllOfferts = asyncHandler(async (req, res) => {
 
     if (title) {
         // query.title = { $regex: new RegExp(title, 'i') };
-        query.title = { $regex: new RegExp('^' + title, 'i') };
+        query.title = { $regex: new RegExp(title, 'i') };
         // query.title = title; // Exact match instead of regex
     }
     // console.log("Query title:", req.query.title);
