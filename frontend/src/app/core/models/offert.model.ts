@@ -9,6 +9,7 @@ export interface Offert {
   slug: string;
   category: string;
   categorySlug: string;
+  company_slug: string;
   postedDate: string;
   image: string;
   images?: string[];
