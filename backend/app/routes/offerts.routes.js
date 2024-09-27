@@ -20,8 +20,5 @@ module.exports = (app) => {
     // UPDATE OFFERT
     app.put('/offerts/:slug', offertsController.updateOffert);
 
-    // FIND OFFERTS BY FILTERS
-    app.get('/offerts', offertsController.filterOfferts);
 
 };
-

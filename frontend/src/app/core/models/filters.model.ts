@@ -23,15 +23,7 @@ export class Filters {
         this.name = name;
     }
 
-    // public length(): number {
-    //     let count: number = 0;
-    //     if (this.price_min) count++;
-    //     if (this.price_max) count++;
-    //     if (this.category) count++;
-    //     if (this.name) count++;
-    //     return count;
-    // }
-    get length(): number {
+    public length(): number {
         let count: number = 0;
         if (this.price_min) count++;
         if (this.price_max) count++;
