@@ -1,23 +1,24 @@
 const offertsController = require('../controllers/offerts.controller.js');
-// const verifyJWT = require('../middleware/verifyJWT');
-// const verifyJWTOptional = require('../middleware/verifyJWTOptional.js');
 
 module.exports = (app) => {
     // CREATE OFFERT
     app.post('/offerts', offertsController.createOffert);
 
     // FIND ALL OFFERTS
-    app.get('/offerts', /*verifyJWTOptional ,*/ offertsController.findAllOfferts);
+    app.get('/offerts', offertsController.findAllOfferts);
+
+    // FIND OFFERTS BY FILTERS
+    app.get('/offerts/filter', offertsController.filterOffert); // Cambiado a filterOffert
+    console.log('Ruta de filtro de ofertas');
 
     // FIND ONE OFFERT
-    app.get('/offerts/:slug', /*verifyJWTOptional ,*/ offertsController.findOneOffert);
+    app.get('/offerts/:slug', offertsController.findOneOffert);
 
     // DELETE ONE OFFERT
     app.delete('/offerts/:slug', offertsController.deleteOneOffert);
 
     // UPDATE OFFERT
-    app.put('/offerts/:slug', /*verifyJWT ,*/ offertsController.updateOffert);
+    app.put('/offerts/:slug', offertsController.updateOffert);
 
-    // FIND OFFERTS BY CATEGORY
-    app.get('/offerts/category/:slug', offertsController.GetOffertsByCategory);
-}
+
+};

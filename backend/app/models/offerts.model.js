@@ -11,6 +11,10 @@ const offertSchema = new Schema({
         type: String,
         required: true
     },
+    company_slug: {
+        type: String, // Campo para almacenar el slug de la empresa
+        required: true
+    },
     location: {
         type: String,
         required: true

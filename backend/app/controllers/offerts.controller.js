@@ -1,7 +1,8 @@
 const Offert = require('../models/offerts.model.js');
 const Category = require('../models/categorys.model.js');
+const Enterprise = require('../models/enterprises.model.js'); // Importar el modelo de empresa
 const asyncHandler = require('express-async-handler');
-const slugify = require('slugify'); // SLUGIFY
+const slugify = require('slugify');
 
 // CREATE NUEVA OFFERT
 const createOffert = asyncHandler(async (req, res) => {
@@ -13,10 +14,17 @@ const createOffert = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: 'Categoría no encontrada' });
     }
 
+    // Buscar la empresa por nombre
+    const enterprise = await Enterprise.findOne({ name: company }).exec();
+    if (!enterprise) {
+        return res.status(400).json({ error: 'Empresa no encontrada' });
+    }
+
     const randomToken = Math.random().toString(36).substring(2, 8);
     const newOffert = new Offert({
         title,
-        company,
+        company: enterprise.name,  // Guardar el nombre de la empresa
+        company_slug: enterprise.slug,  // Guardar el slug de la empresa
         location,
         description,
         requirements,
@@ -86,30 +94,39 @@ const updateOffert = asyncHandler(async (req, res) => {
     return res.status(200).json(updatedOffert);
 });
 
-const GetOffertsByCategory = asyncHandler(async (req, res) => {
-    let offset = parseInt(req.query.offset) || 0;
-    let limit = parseInt(req.query.limit) || 20;
-    const slug = req.params.slug; // Slug de la categoría
+// FILTRAR OFERTAS POR CATEGORÍA Y SLUG DE EMPRESA
+const filterOffert = asyncHandler(async (req, res) => {
+    console.log('Filtrando ofertas...');
+    const { categorySlug, companySlug } = req.query;
 
-    // Buscar la categoría por su slug
-    const category = await Category.findOne({ slug }).exec();
+    let query = {};
 
-    if (!category) {
-        return res.status(400).json({ message: "Categoría no encontrada" });
+    // Si se proporciona categorySlug, buscaremos la categoría
+    if (categorySlug) {
+        const category = await Category.findOne({ slug: categorySlug }).exec();
+        if (category) {
+            query.category = category._id; // Si existe la categoría, la agregamos a la consulta
+        } else {
+            return res.status(400).json({ message: 'Categoría no encontrada.' });
+        }
     }
 
-    // Obtener las ofertas relacionadas con la categoría
-    const offerts = await Offert.find({ category: category._id })
-        .skip(offset)
-        .limit(limit)
-        .exec();
+    // Si se proporciona companySlug, lo agregamos a la consulta
+    if (companySlug) {
+        query.company_slug = companySlug;
+    }
 
-    const offertCount = await Offert.countDocuments({ category: category._id });
+    try {
+        const offerts = await Offert.find(query).exec();
+        if (offerts.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron ofertas para esta categoría y/o empresa' });
+        }
 
-    return res.status(200).json({
-        offerts,
-        count: offertCount
-    });
+        return res.status(200).json(offerts);
+    } catch (error) {
+        console.error('Error al buscar las ofertas:', error);
+        return res.status(500).json({ message: 'Error al buscar las ofertas' });
+    }
 });
 
 // EXPORT MODULE
@@ -117,7 +134,7 @@ module.exports = {
     createOffert,
     findAllOfferts,
     findOneOffert,
+    filterOffert,
     deleteOneOffert,
     updateOffert,
-    GetOffertsByCategory
 };

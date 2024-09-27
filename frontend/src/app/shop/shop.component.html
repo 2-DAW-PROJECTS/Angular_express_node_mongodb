@@ -1,2 +1,4 @@
-<app-filters (categoryChange)="listOfferts.onCategoryChange($event)"></app-filters>
+<app-filters 
+  (filtersChange)="onFiltersChange($event)">
+</app-filters>
 <app-list-offerts #listOfferts></app-list-offerts>

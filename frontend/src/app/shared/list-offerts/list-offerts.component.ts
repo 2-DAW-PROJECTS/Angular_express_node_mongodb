@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
 })
 export class ListOffertsComponent implements OnInit {
   offerts: Offert[] = [];
-  categorySlug: string | null = null;
+  selectedFilters: { category?: string; company?: string } = {};
 
   constructor(
     private offertService: OffertService,
@@ -23,44 +23,67 @@ export class ListOffertsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.categorySlug = params['slug'];  
-      this.loadOfferts(this.categorySlug);
+    this.route.queryParams.subscribe(params => {
+        this.selectedFilters.category = params['categorySlug'] || undefined;
+        this.selectedFilters.company = params['companySlug'] || undefined;
+        console.log('Cargando ofertas con filtros:', this.selectedFilters);
+        this.loadOfferts();
     });
   }
 
-  loadOfferts(categorySlug: string | null) {
-    if (categorySlug) {
-      this.loadOffertsByCategory(categorySlug);
+  loadOfferts() {
+    if (this.selectedFilters.category || this.selectedFilters.company) {
+      this.loadOffertsByFilters();
     } else {
       this.loadAllOfferts();
     }
   }
 
+  loadOffertsByFilters() {
+    this.offertService.filterOfferts({
+        category: this.selectedFilters.category,
+        company: this.selectedFilters.company
+    }).subscribe({
+        next: (data) => {
+            // console.log('Datos recibidos del backend:', data); 
+            if (Array.isArray(data)) {
+                this.offerts = data;
+                console.log('Ofertas filtradas:', this.offerts);
+            } else {
+                console.warn('Se esperaban ofertas, pero no se encontraron.');
+                this.offerts = [];
+            }
+        },
+        error: (err) => {
+            console.error('Error fetching offers by filters', err);
+            this.offerts = []; 
+        }
+    });
+}
+
   loadAllOfferts() {
+    console.log('Llamando al servicio para cargar todas las ofertas...');
     this.offertService.all_offerts({}).subscribe({
       next: (data) => {
         this.offerts = data.offerts;
+        // console.log('Ofertas cargadas:', this.offerts);
       },
       error: (err) => {
-        console.error('Error fetching offers', err);
-      }
-    });
-  }
-
-  loadOffertsByCategory(slug: string) {
-    this.offertService.get_offerts_by_category(slug).subscribe({
-      next: (data) => {
-        this.offerts = data.offerts;
-      },
-      error: (err) => {
-        console.error('Error fetching offers', err);
+        console.error('Error fetching all offers', err);
       }
     });
   }
 
   onCategoryChange(categorySlug: string | null) {
-    this.loadOfferts(categorySlug);
+    console.log('Cambio de categoría a:', categorySlug);
+    this.selectedFilters.category = categorySlug || undefined; 
+    this.loadOfferts();
+  }
+
+  onCompanyChange(companySlug: string | null) {
+    console.log('Cambio de empresa a:', companySlug);
+    this.selectedFilters.company = companySlug || undefined;
+    this.loadOfferts();
   }
 
   private viewportScroller = inject(ViewportScroller);
