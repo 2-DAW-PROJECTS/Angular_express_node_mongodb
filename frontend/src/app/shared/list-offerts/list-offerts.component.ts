@@ -1,10 +1,8 @@
 import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { OffertService } from '../../core/service/offert.service';
 import { Offert } from '../../core/models/offert.model';
-import { ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { ViewportScroller } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { ViewportScroller, CommonModule } from '@angular/common';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-list-offerts',
