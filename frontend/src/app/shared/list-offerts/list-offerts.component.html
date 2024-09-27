@@ -1,55 +1,45 @@
-<div class="container">
-  <h1>Ofertas de Trabajo</h1>
-  <div class="row">
-    <div class="col-md-4 col-sm-6" *ngFor="let offert of offerts">
-      <div class="card">
-        <!-- <a class="details px-auto" [routerLink]="['/details', offert.slug]">View Details</a> -->
-        <button class="like">
-          <img src="shop_icons/like.png" class="like" alt="Me gusta">
-        </button>
-        <img *ngIf="offert.image" [src]="offert.image" class="card-img-top" alt="{{ offert.title }} logo">
-        <div class="card-body">
-          <h5 class="card-title">{{ offert.title }}</h5>
-          <h6 class="card-subtitle mb-3 text-muted">{{ offert.company }}</h6>
-            <!-- <p class="list-group-item"><i class="fas fa-map-marker-alt"></i> {{ offert.location }} | </p><p class="card-text">{{ offert.description }}</p> -->
-            <!-- <div class="d-flex justify-content-between align-items-center">
-              <p class="list-group-item mb-0"><i class="fas fa-map-marker-alt"></i> {{ offert.location }} |</p>
-              <p class="card-text mb-0">{{ offert.description }}</p>
-            </div> -->
-            <div class="info-row">
-              <div class="city-column">
-                <p>{{ offert.location }} |</p>
-              </div>
-              <div class="description-column">
-                <p>{{ offert.description }}</p>
+    <div class="container">
+      <h1>Ofertas de Trabajo</h1>
+      <h3 *ngIf="count > 0">Encontradas {{count}} oferta(s)</h3>
+      <div class="row">
+        <div class="col-md-4 col-sm-6" *ngFor="let offert of offerts">
+          <!-- {{ offert | json }} -->
+          <div class="card">
+            <button class="like">
+              <img src="shop_icons/like.png" class="like" alt="Me gusta">
+            </button>
+            <img *ngIf="offert.image" [src]="offert.image" class="card-img-top" alt="{{ offert.title }} logo">
+            <div class="card-body">
+              <h5 class="card-title">{{ offert.title }}</h5>
+              <h6 class="card-subtitle mb-3 text-muted">{{ offert.company }}</h6>
+              <div class="info-row">
+                <div class="city-column">
+                  <p>{{ offert.location }} |</p>
+                </div>
+                <div class="description-column">
+                  <p>{{ offert.description }}</p>
+                </div>
+              </div>  
+              <div class="mb-3">
+                <strong>Requisitos:</strong>
+                <div class="mt-2">
+                  <ng-container *ngFor="let requirement of offert.requirements; let i = index">
+                    <span class="badge badge-primary" *ngIf="i < 3 || offert.requirements.length <= 3">{{ requirement }}</span>
+                    <span class="badge badge-primary" *ngIf="i === 2 && offert.requirements.length > 3">Mas Requisitos...</span>
+                  </ng-container>
+                </div>
               </div>
             </div>
-                        
-          <div class="mb-3">
-            <strong>Requisitos:</strong>
-            <div class="mt-2">
-                          <ng-container *ngFor="let requirement of offert.requirements; let i = index">
-                            <span class="badge badge-primary" *ngIf="i < 3 || offert.requirements.length <= 3">{{ requirement }}</span>
-                            <span class="badge badge-primary" *ngIf="i === 2 && offert.requirements.length > 3">Mas Requisitos...</span>
-                          </ng-container>
-            </div>
+            <a class="btn btn-primary details px-auto" [routerLink]="['/details', offert.slug]">Postular</a>
           </div>
-          
         </div>
-        <a class="btn btn-primary details px-auto" [routerLink]="['/details', offert.slug]">Postular</a>
-      
       </div>
     </div>
-  </div>
-</div>
 
-<button 
-  class="scroll-to-top" 
-  [class.show]="showScrollButton" 
-  (click)="scrollToTop()">
-  ↑
-</button>
+    <div *ngIf="offerts.length === 0">
+      <h2>No se encontraron ofertas.</h2>
+      <p>Recargando Página...</p>
+      <!-- <div *ngIf="reloadPage()"></div> -->
+    </div>
 
-
-<!-- <br> -->
-
+    <button class="scroll-to-top" [class.show]="showScrollButton" (click)="scrollToTop()"> ↑ </button>

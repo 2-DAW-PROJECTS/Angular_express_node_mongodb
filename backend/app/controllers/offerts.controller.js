@@ -10,7 +10,9 @@ const createOffert = asyncHandler(async (req, res) => {
 
     // Validar si la categoría existe utilizando el slug
     const categoryObj = await Category.findOne({ slug: categorySlug }).exec();
+
     if (!categoryObj) {
+        console.log("Backend createOffert");
         return res.status(400).json({ error: 'Categoría no encontrada' });
     }
 
@@ -40,25 +42,66 @@ const createOffert = asyncHandler(async (req, res) => {
     res.status(201).json(savedOffert);
 });
 
+
+
+
+
+
+
 // FIND ALL OFFERTS
 const findAllOfferts = asyncHandler(async (req, res) => {
+    // console.log("Backend findAllOfferts");
+
     let query = {};
     const limit = parseInt(req.query.limit) || 20;
     const offset = parseInt(req.query.offset) || 0;
     const title = req.query.title || '';
 
     if (title) {
-        query.title = { $regex: new RegExp(title, 'i') };
+        // query.title = { $regex: new RegExp(title, 'i') };
+        query.title = { $regex: new RegExp('^' + title, 'i') };
+        // query.title = title; // Exact match instead of regex
     }
+    // console.log("Query title:", req.query.title);
+    console.log("Constructed query:", query);
 
     const offerts = await Offert.find(query).limit(limit).skip(offset);
     const offertCount = await Offert.countDocuments(query);
 
+    console.log("Query results:", offerts);
+
     return res.status(200).json({ offerts, count: offertCount });
 });
 
+
+
+
+
+
+
+//FiltterOfferts
+const filterOfferts = asyncHandler(async (req, res) => {
+    console.log("Backend filterOfferts");
+
+    const { name } = req.query;
+    let query = {};
+
+    if (name) {
+        query.title = { $regex: name, $options: 'i' };
+    }
+
+    const offerts = await Offert.find(query);
+    return res.status(200).json({ offerts, count: offerts.length });
+});
+
+
+
+
+
 // FIND ONE OFFERT
 const findOneOffert = asyncHandler(async (req, res) => {
+    console.log("Backend findOneOffert");
+
     const offert = await Offert.findOne({ slug: req.params.slug });
 
     if (!offert) {
@@ -81,6 +124,8 @@ const deleteOneOffert = asyncHandler(async (req, res) => {
 
 // UPDATE OFFERT
 const updateOffert = asyncHandler(async (req, res) => {
+    console.log("Backend updateOffert");
+
     const updatedOffert = await Offert.findOneAndUpdate(
         { slug: req.params.slug },
         req.body,
@@ -137,4 +182,5 @@ module.exports = {
     filterOffert,
     deleteOneOffert,
     updateOffert,
+    filterOfferts
 };

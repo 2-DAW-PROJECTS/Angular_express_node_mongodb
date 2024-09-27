@@ -1,4 +1,5 @@
 <app-filters 
   (filtersChange)="onFiltersChange($event)">
 </app-filters>
+<app-search (searchEvent)="listOfferts.onSearch($event.toString())" placeholder="Buscar..."></app-search>
 <app-list-offerts #listOfferts></app-list-offerts>
