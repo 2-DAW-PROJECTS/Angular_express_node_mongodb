@@ -43,7 +43,7 @@ export class SearchComponent implements OnInit {
     const encodedSearch = btoa(this.searchValue ?? '');
     // this.router.navigate(['/shop', encodedSearch]);
     // console.log('Encoded search value:', encodedSearch );
-    // console.log("___________________________");
+    console.log("___________________________");
 
     this.searchEvent.emit(encodedSearch);
   }
