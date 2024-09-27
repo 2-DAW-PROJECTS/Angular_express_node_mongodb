@@ -11,7 +11,7 @@ const createOffert = asyncHandler(async (req, res) => {
     const categoryObj = await Category.findOne({ slug: categorySlug }).exec();
 
     if (!categoryObj) {
-        console.log("Backend");
+        console.log("Backend createOffert");
         return res.status(400).json({ error: 'Categoría no encontrada' });
     }
 
@@ -34,9 +34,15 @@ const createOffert = asyncHandler(async (req, res) => {
     res.status(201).json(savedOffert);
 });
 
+
+
+
+
+
+
 // FIND ALL OFFERTS
 const findAllOfferts = asyncHandler(async (req, res) => {
-    console.log("Backend");
+    // console.log("Backend findAllOfferts");
 
     let query = {};
     const limit = parseInt(req.query.limit) || 20;
@@ -44,18 +50,30 @@ const findAllOfferts = asyncHandler(async (req, res) => {
     const title = req.query.title || '';
 
     if (title) {
-        query.title = { $regex: new RegExp(title, 'i') };
+        // query.title = { $regex: new RegExp(title, 'i') };
+        query.title = { $regex: new RegExp('^' + title, 'i') };
+        // query.title = title; // Exact match instead of regex
     }
+    // console.log("Query title:", req.query.title);
+    console.log("Constructed query:", query);
 
     const offerts = await Offert.find(query).limit(limit).skip(offset);
     const offertCount = await Offert.countDocuments(query);
 
+    console.log("Query results:", offerts);
+
     return res.status(200).json({ offerts, count: offertCount });
 });
 
+
+
+
+
+
+
 //FiltterOfferts
 const filterOfferts = asyncHandler(async (req, res) => {
-    console.log("Backend");
+    console.log("Backend filterOfferts");
 
     const { name } = req.query;
     let query = {};
@@ -74,7 +92,7 @@ const filterOfferts = asyncHandler(async (req, res) => {
 
 // FIND ONE OFFERT
 const findOneOffert = asyncHandler(async (req, res) => {
-    console.log("Backend");
+    console.log("Backend findOneOffert");
 
     const offert = await Offert.findOne({ slug: req.params.slug });
 
@@ -98,7 +116,7 @@ const deleteOneOffert = asyncHandler(async (req, res) => {
 
 // UPDATE OFFERT
 const updateOffert = asyncHandler(async (req, res) => {
-    console.log("Backend");
+    console.log("Backend updateOffert");
 
     const updatedOffert = await Offert.findOneAndUpdate(
         { slug: req.params.slug },
@@ -114,7 +132,7 @@ const updateOffert = asyncHandler(async (req, res) => {
 });
 
 const GetOffertsByCategory = asyncHandler(async (req, res) => {
-    console.log("Backend");
+    console.log("Backend GetOffertsByCategory");
 
     let offset = parseInt(req.query.offset) || 0;
     let limit = parseInt(req.query.limit) || 20;

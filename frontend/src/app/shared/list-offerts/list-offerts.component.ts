@@ -1,9 +1,9 @@
-
+/*IMPORTACIONES DE ANGULAR*/
 import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { ViewportScroller, CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 
-
+/*iMPORTACIONES DE LOS USUARIOS*/
 import { OffertService } from '../../core/service/offert.service';
 import { Offert } from '../../core/models/offert.model';
 import { SearchComponent } from '../search/search.component';
@@ -24,6 +24,7 @@ export class ListOffertsComponent implements OnInit {
   offerts: Offert[] = [];
   categorySlug: string | null = null;
   searchValue: string = '';
+  count: number = 0;
 
   constructor(
     private offertService: OffertService,
@@ -41,20 +42,32 @@ export class ListOffertsComponent implements OnInit {
  
 
   onSearch(searchValue: string) {
-    console.log('Search value:', searchValue);
+    // console.log('Search value:', searchValue);
     console.log("________________________");
-    // console.log(this.categorySlug);
+    console.log(this.categorySlug);
     this.categorySlug = null;
   
     this.offertService.find_product_name(searchValue).subscribe({
       next: (data) => {
-        this.offerts = data.products;
+
+        console.log(data);
+
+        this.offerts = data.offerts;
+        this.count = data.count;
       },
       error: (err) => {
         console.error('Error fetching filtered offers', err);
       }
     });
-  }
+  }//OnSearch
+
+
+  //  // Método para recargar la página
+  //   reloadPage(): void {
+  //     setTimeout(() => {
+  //       window.location.reload(); 
+  //     }, 3000);
+  //   }
   
 
   loadOfferts(categorySlug: string | null) {
@@ -74,6 +87,7 @@ export class ListOffertsComponent implements OnInit {
   loadAllOfferts() {
     this.offertService.all_offerts({}).subscribe({
       next: (data) => {
+        // console.log(data);
         this.offerts = data.offerts;
       },
       error: (err) => {
@@ -95,22 +109,22 @@ export class ListOffertsComponent implements OnInit {
 
   
 
-  // get_list_filtered (filters: Filters) {
-  //   //
-  //   console.log("Filters.name   ",filters.name);
-  //   // const encodedName = btoa(filters.name || '');
-  //   // console.log("encodedName:", encodedName);
-  //   console.log("________________________");
+  get_list_filtered (filters: Filters) {
+    //
+    console.log("Filters.name   ",filters.name);
+    // const encodedName = btoa(filters.name || '');
+    // console.log("encodedName:", encodedName);
+    console.log("________________________");
 
-  //   this.offertService.find_product_name(filters.name).subscribe({
-  //     next: (data) => {
-  //       this.offerts = data.products;
-  //     },
-  //     error: (err) => {
-  //       console.error('Error fetching filtered offers', err);
-  //     }
-  //   });
-  // }//get_list_filtered
+    this.offertService.find_product_name(filters.name).subscribe({
+      next: (data) => {
+        this.offerts = data.offerts;
+      },
+      error: (err) => {
+        console.error('Error fetching filtered offers', err);
+      }
+    });
+  }//get_list_filtered
   
 
 

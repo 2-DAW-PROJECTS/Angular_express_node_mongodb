@@ -22,26 +22,18 @@ export class OffertService {
     return this.http.get<{ offerts: Offert[], count: number }>(`${URL}/category/${slug}`);
   }
 
-  // find_product_name(encodedSearch: string): Observable<{ products: Offert[], count: number }> {
-  //       //
-  //       console.log("find_product_name | offert.service.ts");
-  //       //
-  //   const decodedSearch = atob(atob(encodedSearch));
-  //   console.log("decodedSearch:", decodedSearch);
-    
-  //   return this.http.get<{ products: Offert[], count: number }>(`${URL}?name=${decodedSearch}`);
-  // }
+
   
-  find_product_name(encodedSearch?: string): Observable<{ products: Offert[], count: number }> {
+  find_product_name(encodedSearch?: string): Observable<{ offerts: Offert[], count: number }> {
     if (encodedSearch) {
-      const decodedSearch = atob(encodedSearch);
-      console.log("decodedSearch:",decodedSearch);
+      const decodedSearch = atob(encodedSearch).trim(); //.trim() elimina el espacio en blanco que se crea entre la decodificacion y la URL
+      // console.log("decodedSearch:",decodedSearch);
       console.log("_______________________________");
       console.log(`${URL}?title=${decodedSearch}`);
-      return this.http.get<{ products: Offert[], count: number }>(`${URL}?title=${decodedSearch}`);
-      // return this.http.get<{ products: Offert[], count: number }>(`${URL}/filter?name=${decodedSearch}`);
+      // console.log(`${URL}?title=${encodedSearch}`);
+      return this.http.get<{ offerts: Offert[], count: number }>(`${URL}?title=${decodedSearch}`);
     } else {
-      return this.http.get<{ products: Offert[], count: number }>(`${URL}`);
+      return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`);
     }
   }
   

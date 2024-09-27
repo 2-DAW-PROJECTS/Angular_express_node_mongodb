@@ -48,29 +48,7 @@ export class SearchComponent implements OnInit {
     this.searchEvent.emit(encodedSearch);
   }
 
-  
-  // onSearch(Event: Event) {
-    // console.log("onSearch | search.component.ts");
 
-    //
-    // this.filters.name = this.searchValue;
-    // this.OffertService.find_product_name(this.searchValue).subscribe({
-    //   next: (data) => {
-    //     this.offerts = data.products;
-    //     this.searchEvent.emit(this.filters);
-    //   },
-    //   error: (err) => {
-    //     console.error('Error fetching offers', err);
-    //   }
-    // });
-
-    //
-    //
-    //
-    //
-    // this.filters.name = this.searchValue;
-    // this.searchEvent.emit(this.filters);
-  // }//onSearch
 
 
   // loadSerch() {
