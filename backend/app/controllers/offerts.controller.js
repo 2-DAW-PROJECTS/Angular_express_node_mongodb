@@ -48,7 +48,10 @@ const findAllOfferts = asyncHandler(async (req, res) => {
     const title = req.query.title || '';
 
     if (title) {
+
+        // query.title = { $regex: new RegExp(title, 'i') };
         query.title = { $regex: new RegExp(title, 'i') };
+        // query.title = title; // Exact match instead of regex
     }
 
     const offerts = await Offert.find(query).limit(limit).skip(offset);
