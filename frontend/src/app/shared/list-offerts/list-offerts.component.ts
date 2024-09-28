@@ -13,7 +13,7 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 })
 export class ListOffertsComponent implements OnInit {
   offerts: Offert[] = [];
-  selectedFilters: { category?: string; company?: string } = {};
+  selectedFilters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number } = {};
 
   constructor(
     private offertService: OffertService,
@@ -21,16 +21,20 @@ export class ListOffertsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Suscribir a los parámetros de la URL para capturar los filtros
     this.route.queryParams.subscribe(params => {
-        this.selectedFilters.category = params['categorySlug'] || undefined;
-        this.selectedFilters.company = params['companySlug'] || undefined;
-        console.log('Cargando ofertas con filtros:', this.selectedFilters);
-        this.loadOfferts(); // Cargar ofertas al iniciar
+      this.selectedFilters.category = params['categorySlug'] || undefined;
+      this.selectedFilters.company = params['companySlug'] || undefined;
+      this.selectedFilters.salaryMin = params['salaryMin'] ? Number(params['salaryMin']) : undefined;
+      this.selectedFilters.salaryMax = params['salaryMax'] ? Number(params['salaryMax']) : undefined;
+      
+      console.log('Cargando ofertas con filtros:', this.selectedFilters);
+      this.loadOfferts(); // Cargar ofertas al iniciar
     });
   }
 
   loadOfferts() {
-    if (this.selectedFilters.category || this.selectedFilters.company) {
+    if (this.selectedFilters.category || this.selectedFilters.company || this.selectedFilters.salaryMin || this.selectedFilters.salaryMax) {
       this.loadOffertsByFilters();
     } else {
       this.loadAllOfferts();
@@ -39,34 +43,33 @@ export class ListOffertsComponent implements OnInit {
 
   loadOffertsByFilters() {
     this.offertService.filterOfferts({
-        category: this.selectedFilters.category,
-        company: this.selectedFilters.company
+      category: this.selectedFilters.category,
+      company: this.selectedFilters.company,
+      salaryMin: this.selectedFilters.salaryMin,
+      salaryMax: this.selectedFilters.salaryMax
     }).subscribe({
-        next: (data) => {
-            console.log('Datos recibidos del backend:', data); 
-            if (Array.isArray(data)) {
-                this.offerts = data; // Asigna el array directamente
-                console.log('Ofertas filtradas:', this.offerts);
-            } else {
-                console.warn('Se esperaban ofertas, pero no se encontraron.');
-                this.offerts = []; // Asegúrate de que esté vacío
-            }
-        },
-        error: (err) => {
-            console.error('Error fetching offers by filters', err);
-            this.offerts = []; // Asegúrate de que esté vacío en caso de error
+      next: (data) => {
+        console.log('Datos recibidos del backend:', data);
+        if (Array.isArray(data)) {
+          this.offerts = data; // Asigna el array directamente
+          console.log('Ofertas filtradas:', this.offerts);
+        } else {
+          console.warn('Se esperaban ofertas, pero no se encontraron.');
+          this.offerts = []; // Asegúrate de que esté vacío
         }
+      },
+      error: (err) => {
+        console.error('Error fetching offers by filters', err);
+        this.offerts = []; // Asegúrate de que esté vacío en caso de error
+      }
     });
-}
-
-
+  }
 
   loadAllOfferts() {
     console.log('Llamando al servicio para cargar todas las ofertas...');
     this.offertService.all_offerts({}).subscribe({
       next: (data) => {
         this.offerts = data.offerts;
-        // console.log('Ofertas cargadas:', this.offerts);
       },
       error: (err) => {
         console.error('Error fetching all offers', err);

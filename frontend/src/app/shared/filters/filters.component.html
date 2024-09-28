@@ -25,6 +25,22 @@
   </select>
 </div>
 
+<!-- Filtro de Salario -->
+<div class="filter-container">
+  <label for="salaryRange">Salario Mínimo:</label>
+  <input
+    type="range"
+    id="salaryRange"
+    [(ngModel)]="salaryRangeMax"
+    (input)="onSalaryChange()"
+    min="0"
+    max="10000"
+    step="200"
+  />
+  <span>{{ salaryRangeMax }} €</span>
+</div>
+
+
 
   <!-- Mostrar filtros activos -->
   <button (click)="removeFilters()">Limpiar Filtros</button>

@@ -5,21 +5,25 @@ import { EnterpriseService } from '../../core/service/enterprise.service';
 import { Category } from '../../core/models/category.model';
 import { Enterprise } from '../../core/models/enterprise.model';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-filters',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './filters.component.html',
   styleUrls: ['./filters.component.css']
 })
 export class FiltersComponent implements OnInit {
   categories: Category[] = [];
   enterprises: Enterprise[] = [];
-  
-  selectedFilters: { category?: string; company?: string } = {};
 
-  @Output() filtersChange = new EventEmitter<{ category?: string; company?: string }>();
+  selectedFilters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number } = {};
+  
+  salaryRangeMin: number = 0;
+  salaryRangeMax: number = 10000;
+
+  @Output() filtersChange = new EventEmitter<{ category?: string; company?: string; salaryMin?: number; salaryMax?: number }>();
 
   constructor(
     private categoryService: CategoryService,
@@ -31,7 +35,7 @@ export class FiltersComponent implements OnInit {
   ngOnInit() {
     this.loadCategories();
     this.loadEnterprises();
-    this.loadCurrentFilters();
+    this.loadCurrentFiltersFromUrl();
   }
 
   loadCategories() {
@@ -47,69 +51,95 @@ export class FiltersComponent implements OnInit {
 
   loadEnterprises() {
     this.enterpriseService.findAllEnterprises({}).subscribe({
-        next: (data) => {
-            this.enterprises = data.enterprises;
-        },
-        error: (err) => {
-            console.error('Error fetching enterprises', err);
-        }
+      next: (data) => {
+        this.enterprises = data.enterprises;
+      },
+      error: (err) => {
+        console.error('Error fetching enterprises', err);
+      }
     });
-}
-
-
-  loadCurrentFilters() {
-    const filters = this.route.snapshot.paramMap.get('filters');
-    if (filters) {
-      this.selectedFilters = JSON.parse(atob(filters));
-    }
   }
+
+  loadCurrentFiltersFromUrl() {
+    this.route.queryParams.subscribe(params => {
+      const encodedFilters = params['filters'];
+  
+      if (encodedFilters) {
+        // Decodificar los filtros usando atob y parsearlos a un objeto
+        const decodedFilters = JSON.parse(atob(encodedFilters));
+  
+        this.selectedFilters.category = decodedFilters.category || undefined;
+        this.selectedFilters.company = decodedFilters.company || undefined;
+        this.selectedFilters.salaryMin = decodedFilters.salaryMin !== null ? Number(decodedFilters.salaryMin) : undefined;
+        this.selectedFilters.salaryMax = decodedFilters.salaryMax !== null ? Number(decodedFilters.salaryMax) : this.salaryRangeMax;
+  
+        // Sincronizar el slider con el valor de salarioMax
+        if (this.selectedFilters.salaryMax) {
+          this.salaryRangeMax = this.selectedFilters.salaryMax;
+        }
+      }
+    });
+  }
+  
 
   onCategoryChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const selectedValue = selectElement.value;
-    if (selectedValue) {
-      this.selectedFilters.category = selectedValue;
-    } else {
-      delete this.selectedFilters.category;
-    }
+    this.selectedFilters.category = selectedValue || undefined;
     this.applyFilters();
   }
 
   onCompanyChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const selectedValue = selectElement.value;
+    this.selectedFilters.company = selectedValue || undefined;
+    this.applyFilters();
+  }
 
-    // Asignar o eliminar el filtro de empresa
-    if (selectedValue) {
-        this.selectedFilters.company = selectedValue;
-    } else {
-        delete this.selectedFilters.company;
-    }
-
-    this.applyFilters(); // Aplicar los filtros al cambiar
-}
-
+  onSalaryChange() {
+    this.selectedFilters.salaryMax = this.salaryRangeMax;
+    this.applyFilters();
+  }
 
   applyFilters() {
-    console.log('Filtros aplicados:', this.selectedFilters);
-    const { category, company } = this.selectedFilters;
-    
+    const { category, company, salaryMin, salaryMax } = this.selectedFilters;
+  
+    // Crear un objeto con los filtros
+    const filtersToEncode = {
+      category: category || null,
+      company: company || null,
+      salaryMin: salaryMin !== undefined ? salaryMin : null,
+      salaryMax: salaryMax !== undefined ? salaryMax : null
+    };
+  
+    // Codificar los filtros en Base64 usando btoa
+    const encodedFilters = btoa(JSON.stringify(filtersToEncode));
+  
+    // Navegar con los filtros codificados en la URL
     this.router.navigate([], {
-        queryParams: {
-            categorySlug: category || null,
-            companySlug: company || null
-        },
-        replaceUrl: true
+      queryParams: {
+        filters: encodedFilters // Pasa los filtros codificados en Base64
+      },
+      replaceUrl: true
     });
-    this.filtersChange.emit(this.selectedFilters); // Emitir cambios de filtros
+  
+    // Emitir el evento de cambio de filtros
+    this.filtersChange.emit(this.selectedFilters);
   }
+  
 
   removeFilters() {
     this.selectedFilters = {};
+    this.salaryRangeMin = 0;
+    this.salaryRangeMax = 10000;
+  
+    // Navegar eliminando los filtros de la URL
     this.router.navigate([], {
       queryParams: { filters: null },
       replaceUrl: true
     });
-    this.filtersChange.emit(this.selectedFilters); // Emitir cambios de filtros
+  
+    this.filtersChange.emit(this.selectedFilters);
   }
+  
 }
