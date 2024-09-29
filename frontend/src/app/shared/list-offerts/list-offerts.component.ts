@@ -5,10 +5,12 @@ import { ViewportScroller, CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { SearchComponent } from '../search/search.component';
 
+
 @Component({
   selector: 'app-list-offerts',
   standalone: true,
   imports: [CommonModule, RouterModule, SearchComponent],
+
   templateUrl: './list-offerts.component.html',
   styleUrls: ['./list-offerts.component.css']
 })
@@ -121,4 +123,6 @@ export class ListOffertsComponent implements OnInit {
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  
 }

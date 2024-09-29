@@ -18,6 +18,7 @@ export class OffertService {
       catchError(this.handleError<{ offerts: Offert[], count: number }>('all_offerts', { offerts: [], count: 0 }))
     );
   }
+<<<<<<< HEAD
 
   // Método para buscar ofertas por nombre
   find_product_name(encodedSearch?: string): Observable<{ offerts: Offert[], count: number }> {
@@ -66,4 +67,6 @@ filterOfferts(filters: { category?: string; company?: string; salaryMin?: number
       return of(result as T);
     };
   }
+=======
+>>>>>>> parent of fb8a6c6 (Merge pull request #13 from 2-DAW-PROJECTS/alfosan)
 }
