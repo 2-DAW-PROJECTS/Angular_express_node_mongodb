@@ -61,6 +61,7 @@ const findAllOfferts = asyncHandler(async (req, res) => {
     return res.status(200).json({ offerts, count: offertCount });
 });
 
+
 // FIND ONE OFFERT
 const findOneOffert = asyncHandler(async (req, res) => {
     const offert = await Offert.findOne({ slug: req.params.slug });
@@ -100,8 +101,7 @@ const updateOffert = asyncHandler(async (req, res) => {
 
 // FILTRAR OFERTAS POR CATEGORÍA Y SLUG DE EMPRESA
 const filterOffert = asyncHandler(async (req, res) => {
-    console.log('Filtrando ofertas...');
-    const { categorySlug, companySlug } = req.query;
+    const { categorySlug, companySlug, salaryMin, salaryMax } = req.query;
 
     let query = {};
 
@@ -109,7 +109,7 @@ const filterOffert = asyncHandler(async (req, res) => {
     if (categorySlug) {
         const category = await Category.findOne({ slug: categorySlug }).exec();
         if (category) {
-            query.category = category._id; // Si existe la categoría, la agregamos a la consulta
+            query.category = category._id;
         } else {
             return res.status(400).json({ message: 'Categoría no encontrada.' });
         }
@@ -120,18 +120,28 @@ const filterOffert = asyncHandler(async (req, res) => {
         query.company_slug = companySlug;
     }
 
+    // Agregar el filtro de salario mínimo
+    if (salaryMin) {
+        query.salary = { $gte: Number(salaryMin) };
+    }
+
+    // Agregar el filtro de salario máximo (opcional)
+    if (salaryMax) {
+        query.salary = { ...query.salary, $lte: Number(salaryMax) };
+    }
+
     try {
         const offerts = await Offert.find(query).exec();
-        if (offerts.length === 0) {
-            return res.status(404).json({ message: 'No se encontraron ofertas para esta categoría y/o empresa' });
-        }
+        const offertCount = await Offert.countDocuments(query); // Contar el número de ofertas
 
-        return res.status(200).json(offerts);
+        return res.status(200).json({ offerts, count: offertCount }); // Retornar la lista de ofertas y el conteo
     } catch (error) {
         console.error('Error al buscar las ofertas:', error);
         return res.status(500).json({ message: 'Error al buscar las ofertas' });
     }
 });
+
+
 
 // EXPORT MODULE
 module.exports = {

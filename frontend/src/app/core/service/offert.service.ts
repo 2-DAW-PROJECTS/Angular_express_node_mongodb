@@ -20,6 +20,16 @@ export class OffertService {
   }
 <<<<<<< HEAD
 
+  // Método para buscar ofertas por nombre
+  find_product_name(encodedSearch?: string): Observable<{ offerts: Offert[], count: number }> {
+    if (encodedSearch) {
+      const decodedSearch = atob(encodedSearch).trim();
+      return this.http.get<{ offerts: Offert[], count: number }>(`${URL}?title=${decodedSearch}`);
+    } else {
+      return this.all_offerts(); // Carga todas las ofertas si no hay búsqueda
+    }
+  }
+  
   // Método para obtener una oferta por su slug
   get_offert(slug: string): Observable<Offert> {
     return this.http.get<Offert>(`${URL}/${slug}`).pipe(
@@ -27,27 +37,33 @@ export class OffertService {
     );
   }
   
-  // Método para filtrar ofertas con múltiples parámetros
-  filterOfferts(filters: { category?: string; company?: string }): Observable<{ offerts: Offert[], count: number }> {
-    let params = new HttpParams();
+// Método para filtrar ofertas con múltiples parámetros, ahora con salario
+filterOfferts(filters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number }): Observable<{ offerts: Offert[], count: number }> {
+  let params = new HttpParams();
 
-    if (filters.category) {
-        params = params.append('categorySlug', filters.category);
-    }
-    if (filters.company) {
-        params = params.append('companySlug', filters.company);
-    }
-
-    return this.http.get<{ offerts: Offert[], count: number }>(`${URL}/filter`, { params }).pipe(
-      catchError(this.handleError<{ offerts: Offert[], count: number }>('filterOfferts', { offerts: [], count: 0 }))
-    );
+  if (filters.category) {
+    params = params.append('categorySlug', filters.category);
   }
+  if (filters.company) {
+    params = params.append('companySlug', filters.company);
+  }
+  if (filters.salaryMin !== undefined) {
+    params = params.append('salaryMin', filters.salaryMin.toString());
+  }
+  if (filters.salaryMax !== undefined) {
+    params = params.append('salaryMax', filters.salaryMax.toString());
+  }
+
+  return this.http.get<{ offerts: Offert[], count: number }>(`${URL}/filter`, { params }).pipe(
+    catchError(this.handleError<{ offerts: Offert[], count: 0 }>('filterOfferts', { offerts: [], count: 0 }))
+  );
+}
+
 
   // Manejo de errores
   private handleError<T>(operation = 'operación', result?: T) {
     return (error: any): Observable<T> => {
-      console.error(`Error en ${operation}: ${error.message}`); // Log para desarrollo
-      // Retorna un resultado vacío como resultado de la operación
+      console.error(`Error en ${operation}: ${error.message}`);
       return of(result as T);
     };
   }
