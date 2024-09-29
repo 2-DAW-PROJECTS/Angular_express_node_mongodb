@@ -1,5 +1,6 @@
-<div class="filters-sidebar">
-  <h3>Filtros</h3>
+<!-- Filtros -->
+<div class="filters-sidebar" [class.open]="isFiltersSidebarOpen">
+  <h3>Filtros ({{ offerCount }})</h3> <!-- Aquí agregamos el contador -->
 
   <!-- Filtro de Categoría -->
   <div class="filter-container">
@@ -12,21 +13,39 @@
     </select>
   </div>
 
-<!-- Filtro de Empresa -->
-<div class="filter-container">
-  <label for="companySelect">Empresa:</label>
-  <select id="companySelect" (change)="onCompanyChange($event)">
+  <!-- Filtro de Empresa -->
+  <div class="filter-container">
+    <label for="companySelect">Empresa:</label>
+    <select id="companySelect" (change)="onCompanyChange($event)">
       <option value="">Todas las empresas</option>
       <option *ngFor="let enterprise of enterprises" 
               [value]="enterprise.slug" 
               [selected]="enterprise.slug === selectedFilters.company">
           {{ enterprise.name }}
       </option>
-  </select>
-</div>
+    </select>
+  </div>
 
+  <!-- Filtro de Salario -->
+  <div class="filter-container">
+    <label for="salaryRange">Salario Mínimo:</label>
+    <input
+      type="range"
+      id="salaryRange"
+      [(ngModel)]="salaryRangeMin"
+      (input)="onSalaryChange()"
+      min="0"
+      max="10000"
+      step="200"
+    />
+    <span>{{ salaryRangeMin }} €</span>
+  </div>
 
   <!-- Mostrar filtros activos -->
   <button (click)="removeFilters()">Limpiar Filtros</button>
-
 </div>
+
+<!-- Botón para abrir filtros -->
+<section class="filter-button-section">
+  <button class="abrirfiltros" (click)="toggleFiltersSidebar()">{{ isFiltersSidebarOpen ? 'Cerrar Filtros' : 'Abrir Filtros' }}</button>
+</section>
