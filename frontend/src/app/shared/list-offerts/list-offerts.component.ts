@@ -3,11 +3,12 @@ import { OffertService } from '../../core/service/offert.service';
 import { Offert } from '../../core/models/offert.model';
 import { ViewportScroller, CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
+import { SearchComponent } from '../search/search.component';
 
 @Component({
   selector: 'app-list-offerts',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SearchComponent],
   templateUrl: './list-offerts.component.html',
   styleUrls: ['./list-offerts.component.css']
 })
@@ -21,17 +22,23 @@ export class ListOffertsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Suscribir a los parámetros de la URL para capturar los filtros
     this.route.queryParams.subscribe(params => {
-      this.selectedFilters.category = params['categorySlug'] || undefined;
-      this.selectedFilters.company = params['companySlug'] || undefined;
-      this.selectedFilters.salaryMin = params['salaryMin'] ? Number(params['salaryMin']) : undefined;
-      this.selectedFilters.salaryMax = params['salaryMax'] ? Number(params['salaryMax']) : undefined;
-      
-      console.log('Cargando ofertas con filtros:', this.selectedFilters);
-      this.loadOfferts(); // Cargar ofertas al iniciar
+      const encodedFilters = params['filters'];
+      if (encodedFilters) {
+        const decodedFilters = JSON.parse(atob(encodedFilters));
+        this.selectedFilters.category = decodedFilters.category || undefined;
+        this.selectedFilters.company = decodedFilters.company || undefined;
+        this.selectedFilters.salaryMin = decodedFilters.salaryMin ? Number(decodedFilters.salaryMin) : undefined;
+        this.selectedFilters.salaryMax = decodedFilters.salaryMax ? Number(decodedFilters.salaryMax) : undefined;
+
+        console.log('Cargando ofertas con filtros:', this.selectedFilters);
+        this.loadOfferts();
+      } else {
+        this.loadAllOfferts();
+      }
     });
   }
+
 
   loadOfferts() {
     if (this.selectedFilters.category || this.selectedFilters.company || this.selectedFilters.salaryMin || this.selectedFilters.salaryMax) {
@@ -50,17 +57,30 @@ export class ListOffertsComponent implements OnInit {
     }).subscribe({
       next: (data) => {
         console.log('Datos recibidos del backend:', data);
-        if (Array.isArray(data)) {
-          this.offerts = data; // Asigna el array directamente
+        if (data.offerts && Array.isArray(data.offerts)) {
+          this.offerts = data.offerts;
           console.log('Ofertas filtradas:', this.offerts);
         } else {
           console.warn('Se esperaban ofertas, pero no se encontraron.');
-          this.offerts = []; // Asegúrate de que esté vacío
+          this.offerts = [];
         }
       },
       error: (err) => {
         console.error('Error fetching offers by filters', err);
-        this.offerts = []; // Asegúrate de que esté vacío en caso de error
+        this.offerts = [];
+      }
+    });
+  }
+
+  onSearch(encodedSearch: string) {
+    this.offertService.find_product_name(encodedSearch).subscribe({
+      next: (data) => {
+        this.offerts = data.offerts;
+        console.log('Ofertas encontradas:', this.offerts);
+      },
+      error: (err) => {
+        console.error('Error fetching offers by search', err);
+        this.offerts = [];
       }
     });
   }
@@ -80,13 +100,13 @@ export class ListOffertsComponent implements OnInit {
   // Método que permite cargar ofertas nuevamente
   onCategoryChange(categorySlug: string | null) {
     console.log('Cambio de categoría a:', categorySlug);
-    this.selectedFilters.category = categorySlug || undefined; // Convierte null a undefined
+    this.selectedFilters.category = categorySlug || undefined; 
     this.loadOfferts();
   }
 
   onCompanyChange(companySlug: string | null) {
     console.log('Cambio de empresa a:', companySlug);
-    this.selectedFilters.company = companySlug || undefined; // Convierte null a undefined
+    this.selectedFilters.company = companySlug || undefined;
     this.loadOfferts();
   }
 

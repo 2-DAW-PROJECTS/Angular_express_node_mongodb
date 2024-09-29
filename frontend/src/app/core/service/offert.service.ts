@@ -19,6 +19,16 @@ export class OffertService {
     );
   }
 
+  // Método para buscar ofertas por nombre
+  find_product_name(encodedSearch?: string): Observable<{ offerts: Offert[], count: number }> {
+    if (encodedSearch) {
+      const decodedSearch = atob(encodedSearch).trim();
+      return this.http.get<{ offerts: Offert[], count: number }>(`${URL}?title=${decodedSearch}`);
+    } else {
+      return this.all_offerts(); // Carga todas las ofertas si no hay búsqueda
+    }
+  }
+  
   // Método para obtener una oferta por su slug
   get_offert(slug: string): Observable<Offert> {
     return this.http.get<Offert>(`${URL}/${slug}`).pipe(
@@ -52,8 +62,7 @@ filterOfferts(filters: { category?: string; company?: string; salaryMin?: number
   // Manejo de errores
   private handleError<T>(operation = 'operación', result?: T) {
     return (error: any): Observable<T> => {
-      console.error(`Error en ${operation}: ${error.message}`); // Log para desarrollo
-      // Retorna un resultado vacío como resultado de la operación
+      console.error(`Error en ${operation}: ${error.message}`);
       return of(result as T);
     };
   }
