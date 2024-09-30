@@ -3,20 +3,44 @@ import { OffertService } from '../../core/service/offert.service';
 import { Offert } from '../../core/models/offert.model';
 import { ViewportScroller, CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
-import { SearchComponent } from '../search/search.component';
+import { PaginationComponent } from '../pagination/pagination.component';
+import { Subject, Observable } from 'rxjs';
+
+// Define the Filter interface to include all necessary properties
+interface Filter {
+  category?: string;
+  company?: string;
+  salaryMin?: number;
+  salaryMax?: number;
+  offset?: number; // Optional offset
+  limit?: number;  // Optional limit
+}
 
 
 @Component({
   selector: 'app-list-offerts',
   standalone: true,
-  imports: [CommonModule, RouterModule, SearchComponent],
 
+  imports: [CommonModule, RouterModule, PaginationComponent],
   templateUrl: './list-offerts.component.html',
   styleUrls: ['./list-offerts.component.css']
 })
 export class ListOffertsComponent implements OnInit {
   offerts: Offert[] = [];
-  selectedFilters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number } = {};
+
+  // Initialize selectedFilters with offset and limit
+  selectedFilters: Filter = { 
+    offset: 0, 
+    limit: 2 
+  }; 
+
+  currentPage: number = 1; // Current page
+  totalPages: number[] = []; // Total pages
+  limit: number = 2; // Limit to 2 offers per page
+
+  // Update the type definition to include offset and limit in filtersChangeSubject
+  private filtersChangeSubject: Subject<Filter> = new Subject();
+  filtersChange: Observable<Filter> = this.filtersChangeSubject.asObservable();
 
   constructor(
     private offertService: OffertService,
@@ -28,49 +52,97 @@ export class ListOffertsComponent implements OnInit {
       const encodedFilters = params['filters'];
       if (encodedFilters) {
         const decodedFilters = JSON.parse(atob(encodedFilters));
-        this.selectedFilters.category = decodedFilters.category || undefined;
-        this.selectedFilters.company = decodedFilters.company || undefined;
-        this.selectedFilters.salaryMin = decodedFilters.salaryMin ? Number(decodedFilters.salaryMin) : undefined;
-        this.selectedFilters.salaryMax = decodedFilters.salaryMax ? Number(decodedFilters.salaryMax) : undefined;
-
-        console.log('Cargando ofertas con filtros:', this.selectedFilters);
-        this.loadOfferts();
+        this.selectedFilters = {
+          category: decodedFilters.category || undefined,
+          company: decodedFilters.company || undefined,
+          salaryMin: decodedFilters.salaryMin ? Number(decodedFilters.salaryMin) : undefined,
+          salaryMax: decodedFilters.salaryMax ? Number(decodedFilters.salaryMax) : undefined,
+          offset: decodedFilters.offset || 0,
+          limit: decodedFilters.limit || this.limit 
+        };
+        this.currentPage = 1; // Start on page 1
+        this.loadOfferts(); // Load filtered offers on init
       } else {
-        this.loadAllOfferts();
+        this.currentPage = 1; // Start on page 1
+        this.loadAllOfferts(); // Load all offers if no filters
       }
+    });
+
+    this.filtersChange.subscribe((newFilters: Filter) => {
+      this.selectedFilters = { 
+        ...newFilters, 
+        offset: 0,  // Always initialize the offset to 0 when filters change
+        limit: this.limit // Ensure to include the limit
+      };
+      this.currentPage = 1; // Reset to page 1
+      this.loadOfferts(); // Reload offers
     });
   }
 
-
   loadOfferts() {
+    // Ensure offset has a default value
+    const offset = this.selectedFilters.offset || 0;
+  
+    // Apply the offset calculation correctly
+    this.selectedFilters.offset = (this.currentPage - 1) * this.limit;
+  
+    // Check if any filters are applied
     if (this.selectedFilters.category || this.selectedFilters.company || this.selectedFilters.salaryMin || this.selectedFilters.salaryMax) {
-      this.loadOffertsByFilters();
+      this.loadOffertsByFilters(); // Load filtered offers
     } else {
-      this.loadAllOfferts();
+      this.loadAllOfferts(); // Load all offers if no filters
     }
   }
-
+  
   loadOffertsByFilters() {
-    this.offertService.filterOfferts({
-      category: this.selectedFilters.category,
-      company: this.selectedFilters.company,
-      salaryMin: this.selectedFilters.salaryMin,
-      salaryMax: this.selectedFilters.salaryMax
-    }).subscribe({
+    this.offertService.filterOfferts(this.selectedFilters).subscribe({
       next: (data) => {
-        console.log('Datos recibidos del backend:', data);
-        if (data.offerts && Array.isArray(data.offerts)) {
-          this.offerts = data.offerts;
-          console.log('Ofertas filtradas:', this.offerts);
+        if (data && data.offerts && data.count) {
+          // Ensure offset has a default value
+          const offset = this.selectedFilters.offset ?? 0; // Use nullish coalescing to provide a default value
+          this.offerts = data.offerts.slice(offset, offset + this.limit); // Paginate locally
+          this.totalPages = Array(Math.ceil(data.count / this.limit)).fill(0).map((x, i) => i + 1); // Calculate total pages
         } else {
-          console.warn('Se esperaban ofertas, pero no se encontraron.');
-          this.offerts = [];
+          console.error('Unexpected server response:', data);
         }
       },
       error: (err) => {
-        console.error('Error fetching offers by filters', err);
+        console.error('Error fetching offers:', err);
         this.offerts = [];
+        this.totalPages = [];
       }
+    });
+}
+
+
+  loadAllOfferts() {
+    // Set the limit
+    this.selectedFilters.limit = this.limit; 
+    // Ensure offset is calculated before loading all offers
+    this.selectedFilters.offset = (this.currentPage - 1) * this.limit;
+
+    this.offertService.all_offerts({ offset: this.selectedFilters.offset, limit: this.limit }).subscribe({
+        next: (data) => {
+            this.offerts = data.offerts;
+            this.totalPages = Array(Math.ceil(data.count / this.limit)).fill(0).map((x, i) => i + 1); // Calculate total pages
+        },
+        error: (err) => {
+            console.error('Error fetching all offers', err);
+        }
+    });
+  }
+
+  onPageChange(page: number) {
+    this.currentPage = page; // Update current page
+    this.selectedFilters.offset = (this.currentPage - 1) * this.limit; // Calculate new offset
+    this.loadOfferts(); // Reload offers with applied filters
+  }
+
+  updateFilters(newFilters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number }) {
+    this.filtersChangeSubject.next({
+      ...newFilters,
+      offset: this.selectedFilters.offset || 0,  // Ensure there's always an offset
+      limit: this.selectedFilters.limit || this.limit // Ensure there's always a limit
     });
   }
 
@@ -79,37 +151,25 @@ export class ListOffertsComponent implements OnInit {
       next: (data) => {
         this.offerts = data.offerts;
         console.log('Ofertas encontradas:', this.offerts);
+        // If a search is performed, you can reset or adapt pagination
+        this.totalPages = Array(Math.ceil(data.count / this.limit)).fill(0).map((x, i) => i + 1); // Calculate total pages
       },
       error: (err) => {
         console.error('Error fetching offers by search', err);
         this.offerts = [];
+        this.totalPages = []; // Reset pages in case of error
       }
     });
   }
 
-  loadAllOfferts() {
-    console.log('Llamando al servicio para cargar todas las ofertas...');
-    this.offertService.all_offerts({}).subscribe({
-      next: (data) => {
-        this.offerts = data.offerts;
-      },
-      error: (err) => {
-        console.error('Error fetching all offers', err);
-      }
-    });
-  }
-
-  // Método que permite cargar ofertas nuevamente
   onCategoryChange(categorySlug: string | null) {
-    console.log('Cambio de categoría a:', categorySlug);
-    this.selectedFilters.category = categorySlug || undefined; 
-    this.loadOfferts();
+    this.selectedFilters.category = categorySlug || undefined;
+    this.updateFilters(this.selectedFilters);
   }
 
   onCompanyChange(companySlug: string | null) {
-    console.log('Cambio de empresa a:', companySlug);
     this.selectedFilters.company = companySlug || undefined;
-    this.loadOfferts();
+    this.updateFilters(this.selectedFilters);
   }
 
   private viewportScroller = inject(ViewportScroller);
