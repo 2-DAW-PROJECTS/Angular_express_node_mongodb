@@ -42,7 +42,12 @@
     </div>
   </div>
 </div>
-
+<!-- Componente de paginación -->
+<app-pagination 
+  [totalPages]="totalPages" 
+  [currentPage]="currentPage" 
+  (pageChange)="onPageChange($event)">
+</app-pagination>
 <button 
   class="scroll-to-top" 
   [class.show]="showScrollButton" 
