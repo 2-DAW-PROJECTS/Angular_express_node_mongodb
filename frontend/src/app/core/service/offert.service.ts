@@ -66,5 +66,4 @@ filterOfferts(filters: { category?: string; company?: string; salaryMin?: number
       return of(result as T);
     };
   }
-
 }

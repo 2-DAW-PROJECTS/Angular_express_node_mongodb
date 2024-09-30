@@ -99,7 +99,7 @@ const updateOffert = asyncHandler(async (req, res) => {
     return res.status(200).json(updatedOffert);
 });
 
-// FILTRAR OFERTAS POR CATEGORÍA Y SLUG DE EMPRESA
+// FILTRAR OFERTAS POR CATEGORÍA, SLUG DE EMPRESA Y SALARIO
 const filterOffert = asyncHandler(async (req, res) => {
     const { categorySlug, companySlug, salaryMin, salaryMax } = req.query;
 
@@ -120,26 +120,26 @@ const filterOffert = asyncHandler(async (req, res) => {
         query.company_slug = companySlug;
     }
 
-    // Agregar el filtro de salario mínimo
+    // Agregar el filtro de salario mínimo y máximo
     if (salaryMin) {
         query.salary = { $gte: Number(salaryMin) };
     }
-
-    // Agregar el filtro de salario máximo (opcional)
     if (salaryMax) {
         query.salary = { ...query.salary, $lte: Number(salaryMax) };
     }
 
     try {
+        // Devolver todas las ofertas filtradas sin paginación
         const offerts = await Offert.find(query).exec();
-        const offertCount = await Offert.countDocuments(query); // Contar el número de ofertas
-
-        return res.status(200).json({ offerts, count: offertCount }); // Retornar la lista de ofertas y el conteo
+        const offertCount = await Offert.countDocuments(query); // Contar el número total de ofertas filtradas
+    
+        return res.status(200).json({ offerts, count: offertCount });
     } catch (error) {
         console.error('Error al buscar las ofertas:', error);
         return res.status(500).json({ message: 'Error al buscar las ofertas' });
     }
 });
+
 
 
 

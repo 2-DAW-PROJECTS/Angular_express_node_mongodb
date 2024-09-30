@@ -5,13 +5,14 @@
   }
   
   .search-input {
-    width: 300px;
+    width: 450px;
     padding: 10px 15px;
     font-size: 16px;
     border: 2px solid #ddd;
     border-radius: 25px;
     outline: none;
     transition: border-color 0.3s ease;
+    z-index: 2;
   }
   
   .search-input:focus {
