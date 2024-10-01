@@ -1,7 +1,7 @@
 <!-- Filtros -->
 <div class="filters-sidebar" [class.open]="isFiltersSidebarOpen">
-  <h2>Filtros</h2> <!-- Aquí agregamos el contador -->
-  <h3>Ofertas encontradas ({{ offerCount }})</h3>
+  <h3>Filtros ({{ offerCount }})</h3> <!-- Aquí agregamos el contador -->
+
   <!-- Filtro de Categoría -->
   <div class="filter-container">
     <label for="categorySelect">Categoría:</label>
@@ -47,5 +47,5 @@
 
 <!-- Botón para abrir filtros -->
 <section class="filter-button-section">
-  <button class="abrirfiltros" (click)="toggleFiltersSidebar()">{{ isFiltersSidebarOpen ? 'Close Filters' : 'Open Filters' }}</button>
+  <button class="abrirfiltros" (click)="toggleFiltersSidebar()">{{ isFiltersSidebarOpen ? 'Cerrar Filtros' : 'Abrir Filtros' }}</button>
 </section>
