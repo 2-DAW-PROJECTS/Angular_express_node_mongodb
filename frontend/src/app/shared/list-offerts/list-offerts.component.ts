@@ -16,11 +16,9 @@ interface Filter {
   limit?: number;  // Optional limit
 }
 
-
 @Component({
   selector: 'app-list-offerts',
   standalone: true,
-
   imports: [CommonModule, RouterModule, PaginationComponent],
   templateUrl: './list-offerts.component.html',
   styleUrls: ['./list-offerts.component.css']
@@ -183,6 +181,4 @@ export class ListOffertsComponent implements OnInit {
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-
-  
 }
