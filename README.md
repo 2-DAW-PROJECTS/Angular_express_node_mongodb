@@ -1,6 +1,7 @@
-# 🚀 Proyecto JobHunt - ¡El InfoJobs que siempre quisiste!
+# 🚀 Proyecto JobHunter 
+## ¡El InfoJobs que siempre quisiste! - ¡El InfoJobs que sí funciona!
 
-¡Bienvenido a **JobHunt**! 🎯 Este es un proyecto súper emocionante para crear una plataforma de búsqueda de empleo usando tecnología full-stack. Si te encanta el desarrollo web moderno y quieres ayudar a los usuarios a encontrar el trabajo de sus sueños (o simplemente ganar un poco de dinerillo), ¡este proyecto es para ti!
+¡Bienvenido a **JobHunter**! 🎯 Este es un proyecto súper emocionante para crear una plataforma de búsqueda de empleo usando tecnología full-stack. Si te encanta el desarrollo web moderno y quieres ayudar a los usuarios a encontrar el trabajo de sus sueños (o simplemente ganar un poco de dinerillo), ¡este proyecto es para ti!
 
 ## 🌟 Tecnologías Utilizadas
 
@@ -24,7 +25,7 @@ Para darle vida a esta maravilla, estamos usando un combo poderoso:
 Este proyecto está dividido en dos bloques:
 
 ### 1. Backend (Servidor 🚀)
-- **Directorio**: `server`
+- **Directorio**: `backend`
 - Aquí es donde construimos la API que maneja los datos de ofertas de empleo, perfiles de usuario, ¡y todo lo demás! 
 - **Responsabilidades**:
   - Gestionar las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) de los trabajos.
@@ -33,7 +34,7 @@ Este proyecto está dividido en dos bloques:
   - Proteger las contraseñas con Argon2 para un almacenamiento seguro.
   
 ### 2. Frontend (Cliente 🌐)
-- **Directorio**: `client`
+- **Directorio**: `frontend`
 - El lugar donde la magia del diseño y la funcionalidad se encuentran.
 - **Responsabilidades**:
   - Mostrar las ofertas de trabajo, permitir a los usuarios crear perfiles y postularse a trabajos.
@@ -44,8 +45,9 @@ Este proyecto está dividido en dos bloques:
 
 Nuestro backend es como un chef de datos. Así que, ¿qué hay en la cocina?
 
-- `server.js`: El gran jefe que pone en marcha el servidor Express y la conexión a la base de datos.
+- `index.js`: El gran jefe que pone en marcha el servidor Express y la conexión a la base de datos.
 - `models/`: Donde definimos los esquemas de los datos, como usuarios, ofertas de trabajo, etc., usando Mongoose.
+- `middleware/`: Donde interceptaremos las operaciones del usuario para garantizar la integridad de estas
 - `routes/`: Aquí están las rutas API que deciden a qué endpoint van los datos y cómo los manejamos.
 - `controllers/`: La lógica detrás de cada solicitud, ¡donde hacemos magia con los datos!
 ### Autenticación y Seguridad 🔒
@@ -80,7 +82,7 @@ Algunas rutas son sensibles (como crear o eliminar empleos). Solo se puede acced
 
 ## 🎨 Frontend en Detalle
 
-El frontend es donde todo se ve bonito y fluye. Aquí tienes lo que compone nuestro **JobHunt**:
+El frontend es donde todo se ve bonito y fluye. Aquí tienes lo que compone nuestro **JobHunter**:
 
 - `src/app/components/`: Componentes Angular como el buscador de empleos, el formulario de registro y la lista de trabajos.
 - `src/app/services/`: Servicios que manejan las llamadas HTTP a nuestra API backend. ¡Un servicio para cada operación!
@@ -106,21 +108,21 @@ El frontend es donde todo se ve bonito y fluye. Aquí tienes lo que compone nues
 ### 1. Iniciar el backend:
 
 ```bash
-cd server
+cd ./backend/
 npm install
-node server.js
+node ./app/api/index.js
 ```
 
 ### 2. Iniciar el frontend de Angular:
 
 ```bash
-cd client
+cd ./frontend/
 npm install
-ng serve --port 8081
+ng serve --open
 ```
 
 ### 3. Abrir el navegador:
-Ve a http://localhost:8081 y ¡disfruta buscando o publicando empleos!
+Ve a http://localhost:3001 y ¡disfruta buscando o publicando empleos!
 
 ### 🚀 *Funcionalidades Épicas*
 - 🔍 `Búsqueda de empleos:` Encuentra ofertas de trabajo según tu ubicación, categoría, o nivel de experiencia.
