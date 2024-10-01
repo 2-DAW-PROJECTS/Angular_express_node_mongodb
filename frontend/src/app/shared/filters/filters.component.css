@@ -110,14 +110,14 @@ input[type="range"]::-moz-range-thumb {
 
 .filter-button-section {
   position: absolute;
-  margin-left: 900px;
+  margin-left: 750px;
   margin-top: 10px;
   left: 0;
   right: 0;
   display: flex;
   justify-content: center;
   padding: 10px;
-  z-index: 1;
+  z-index: 1000;
 }
 .abrirfiltros{
   margin-right: 320px;
