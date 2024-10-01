@@ -14,18 +14,13 @@ const createOffert = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: 'Categoría no encontrada' });
     }
 
-<<<<<<< HEAD
-    // Buscar la empresa por nombre
     const enterprise = await Enterprise.findOne({ name: company }).exec();
     if (!enterprise) {
         return res.status(400).json({ error: 'Empresa no encontrada' });
     }
 
     const randomToken = Math.random().toString(36).substring(2, 8);
-=======
-    // Crear nueva oferta
-    const randomToken = Math.random().toString(36).substring(2, 8); // Token aleatorio de 6 caracteres
->>>>>>> parent of fb8a6c6 (Merge pull request #13 from 2-DAW-PROJECTS/alfosan)
+
     const newOffert = new Offert({
         title,
         company: enterprise.name,  // Guardar el nombre de la empresa
