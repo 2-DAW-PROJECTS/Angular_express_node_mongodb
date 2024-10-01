@@ -24,6 +24,5 @@ const verifyJWT = (req, res, next) => {
     )
 };
 
-module.exports = (app) => {
-    app.use(verifyJWT);
-};
+module.exports = verifyJWT;
+

@@ -1,28 +1,28 @@
-const userController = require('../controllers/user.controller.js');
+const userController = require('../controllers/users.controller.js');
 const verifyJWT = require('../middleware/verifyJWT.js');
 
 
 module.exports = (app) => {
 
     // User registration
-    router.post('/users', userController.register);
+    app.post('/users', userController.registerUser);
 
     // User login
-    router.post('/users/login', userController.login);
+    app.post('/users/login', userController.userLogin);
 
     // Get user profile
-    router.get('/profile', verifyJWT, userController.getCurrentUser);
+    app.get('/profile', verifyJWT, userController.getCurrentUser);
 
     // Update user profile
-    router.put('/user', verifyJWT, userController.updateUser);
+    app.put('/user', verifyJWT, userController.updateUser);
 
     // // Delete user account
-    // router.delete('/account', authMiddleware, userController.deleteAccount);
+    // app.delete('/account', authMiddleware, userController.deleteAccount);
 
     // // Password reset request
-    // router.post('/reset-password', userController.requestPasswordReset);
+    // app.post('/reset-password', userController.requestPasswordReset);
 
     // // Password reset confirmation
-    // router.post('/reset-password/:token', userController.resetPassword);
+    // app.post('/reset-password/:token', userController.resetPassword);
 
 };
