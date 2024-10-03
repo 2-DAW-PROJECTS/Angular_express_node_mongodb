@@ -11,4 +11,21 @@ export class HeaderComponent {
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
   }
+  
+  constructor(
+    private userService: UserService,
+    private cd: ChangeDetectorRef
+  ) {}
+
+  currentUser: User;
+
+  ngOnInit() {
+    this.userService.currentUser.subscribe(
+      (userData) => {
+        this.currentUser = userData;
+        this.cd.markForCheck();
+      }
+    );
+  }
+  
 }
