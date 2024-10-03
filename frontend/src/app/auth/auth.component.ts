@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 // import { Errors } from '../core';
-import { UserService } from '../service/user.service';
+import { UserService } from '../core/service/user.service';
 
 @Component({
   selector: 'app-auth',
@@ -51,7 +51,7 @@ export class AuthComponent implements OnInit {
 
     const credentials = this.authForm.value;
     this.userService
-      .attemptAuth(this.authType, credentials)
+      .attemptAuth(this.authType as string, credentials)
       .subscribe(
         (_: any) => this.router.navigateByUrl('/')
         // data => this.router.navigateByUrl('/'),

@@ -41,7 +41,12 @@
       <div class="header-icons">
         <!-- <a href="#" aria-label="Login" class="login-button">Login</a> -->
        
-        <ul *appShowAuthed="false"
+
+
+
+
+
+        <!-- <ul *appShowAuthed="false"
           class="nav navbar-nav pull-xs-right">
 
           <li class="nav-item">
@@ -60,7 +65,18 @@
             </a>
           </li>
 
-        </ul>
+        </ul> -->
+        <div class="header-icons">
+          <ng-container *ngIf="currentUser; else notLoggedIn">
+            <span>Welcome, {{ currentUser.username }}</span>
+            <a href="#" (click)="logout()">Logout</a>
+          </ng-container>
+          <ng-template #notLoggedIn>
+            <a href="/login">Login</a>
+            <a href="/register">Sign up</a>
+          </ng-template>
+        </div>
+        
       </div>
     </div>
   </header>
