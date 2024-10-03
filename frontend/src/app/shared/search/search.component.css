@@ -5,13 +5,15 @@
   }
   
   .search-input {
-    width: 300px;
+    width: 400px;
     padding: 10px 15px;
     font-size: 16px;
     border: 2px solid #ddd;
     border-radius: 25px;
+    margin-left: -150px;
     outline: none;
     transition: border-color 0.3s ease;
+    z-index: 2;
   }
   
   .search-input:focus {
@@ -23,3 +25,10 @@
     color: #999;
   }
   
+  @media screen and (max-width: 768px) {
+    .search-input {
+      width: 100%;
+      margin-left: 0;
+    }
+    
+  }

@@ -117,7 +117,7 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   justify-content: center;
   padding: 10px;
-  z-index: 1000;
+  z-index: 1;
 }
 .abrirfiltros{
   margin-right: 320px;
