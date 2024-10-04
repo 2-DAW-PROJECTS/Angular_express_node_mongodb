@@ -16,30 +16,19 @@
     </nav>
 
     <div class="header-icons">
-      <ng-container *ngIf="!currentUser?.token; else authenticated">
-        <li class="nav-item">
+      <ng-container *ngIf="!currentUser; else authenticated"> <!-- Modificado -->
           <a class="nav-link" routerLink="/login" routerLinkActive="active">
             Sign in
           </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/register" routerLinkActive="active">
-            Sign up
-          </a>
-        </li>
       </ng-container>
 
       <ng-template #authenticated>
-        <li class="nav-item">
           <a class="nav-link" routerLink="/profile" routerLinkActive="active">
             Profile
           </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" (click)="logout()">
+          <a class="nav-link logout" (click)="logout()">
             Log out
           </a>
-        </li>
       </ng-template>
     </div>    
   </div>
