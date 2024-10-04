@@ -1,9 +1,7 @@
 const userController = require('../controllers/users.controller.js');
 const verifyJWT = require('../middleware/verifyJWT.js');
 
-
 module.exports = (app) => {
-
     // User registration
     app.post('/users', userController.registerUser);
 
@@ -12,6 +10,9 @@ module.exports = (app) => {
 
     // Get user profile
     app.get('/profile', verifyJWT, userController.getCurrentUser);
+
+    // Get current user details at /user
+    app.get('/user', verifyJWT, userController.getCurrentUser);
 
     // Update user profile
     app.put('/user', verifyJWT, userController.updateUser);
@@ -24,5 +25,4 @@ module.exports = (app) => {
 
     // // Password reset confirmation
     // app.post('/reset-password/:token', userController.resetPassword);
-
 };

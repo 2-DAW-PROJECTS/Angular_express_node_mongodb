@@ -10,7 +10,7 @@ import { User } from '../../../core/models/user.model';
 })
 export class HeaderComponent implements OnInit {
   isMenuOpen = false;
-  currentUser: User | null = null; // Permite que currentUser sea null
+  currentUser: User | null = null;
 
   constructor(
     private userService: UserService,
@@ -22,13 +22,11 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.currentUser.subscribe(
-      (userData: User | null) => {  // Cambia a User | null
-        this.currentUser = userData; // Ahora maneja también null
-        this.cd.markForCheck(); // Se asegura de que Angular sepa que necesita comprobar cambios
-      }
-    );
-  }
+    this.userService.populate();
+    this.userService.currentUser.subscribe(userData => {
+      this.currentUser = userData;
+    });
+}
 
   logout() {
     this.userService.purgeAuth();
