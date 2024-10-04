@@ -78,31 +78,69 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 const userLogin = asyncHandler(async (req, res) => {
     const { user } = req.body;
 
-    // confirm data
     if (!user || !user.email || !user.password) {
         return res.status(400).json({message: "All fields are required"});
     }
 
     const loginUser = await User.findOne({ email: user.email }).exec();
 
-    // console.log(loginUser);
-
     if (!loginUser) {
         return res.status(404).json({message: "User Not Found"});
     }
-
-    // const match = await argon2.compare(user.password, loginUser.password);
 
     const match = await argon2.verify(loginUser.password, user.password);
 
 
     if (!match) return res.status(401).json({ message: 'Unauthorized: Wrong password' })
 
+    const accessToken = jwt.sign({ user: { id: loginUser._id, email: loginUser.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ user: { id: loginUser._id } }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+    
+    loginUser.refreshToken = refreshToken;
+    await loginUser.save();
+
     res.status(200).json({
-        user: loginUser.toUserResponse()
+        user: loginUser.toUserResponse(),
+        accessToken,
+        refreshToken
     });
 
 });
+
+
+
+const refreshToken = asyncHandler(async (req, res) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) return res.status(401).json({ message: 'No refresh token provided' });
+
+    try {
+        const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+        console.log(payload);
+
+        const user = await User.findById(payload.user.id);
+
+        console.log(user);
+
+        
+
+        if (!user || user.refreshToken !== refreshToken) {
+            return res.status(401).json({ message: 'Invalid refresh token' });
+        }
+
+        const newAccessToken = jwt.sign({ user: { id: user._id, email: user.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+
+        res.json({ accessToken: newAccessToken });
+    } catch (err) {
+        res.status(403).json({ message: 'Invalid refresh token' });
+    }
+});
+
+
+
+
+
 
 // @desc update currently logged-in user
 // Warning: if password or email is updated, client-side must update the token
@@ -149,5 +187,6 @@ module.exports = {
     registerUser,
     getCurrentUser,
     userLogin,
-    updateUser
+    updateUser,
+    refreshToken
 }

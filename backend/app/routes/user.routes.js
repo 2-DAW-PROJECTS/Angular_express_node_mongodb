@@ -17,6 +17,10 @@ module.exports = (app) => {
     // Update user profile
     app.put('/user', verifyJWT, userController.updateUser);
 
+    // Refresh token
+    app.post('/refresh-token', userController.refreshToken);
+
+
     // // Delete user account
     // app.delete('/account', authMiddleware, userController.deleteAccount);
 
