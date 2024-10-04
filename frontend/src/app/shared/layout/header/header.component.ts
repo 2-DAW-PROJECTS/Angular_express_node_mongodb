@@ -10,7 +10,7 @@ import { User } from '../../../core/models/user.model';
 })
 export class HeaderComponent implements OnInit {
   isMenuOpen = false;
-  currentUser: User | null = null;
+  currentUser: User | null = null; // Permite que currentUser sea null
 
   constructor(
     private userService: UserService,
@@ -23,9 +23,9 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit() {
     this.userService.currentUser.subscribe(
-      (userData: User) => {
-        this.currentUser = userData;
-        this.cd.markForCheck();
+      (userData: User | null) => {  // Cambia a User | null
+        this.currentUser = userData; // Ahora maneja también null
+        this.cd.markForCheck(); // Se asegura de que Angular sepa que necesita comprobar cambios
       }
     );
   }

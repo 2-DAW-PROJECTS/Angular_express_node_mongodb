@@ -7,10 +7,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { CarouselModule } from 'primeng/carousel';
 
 @NgModule({
-  declarations: [],
+  declarations: [],  
   imports: [
     BrowserModule,
-    HttpClientModule,
+    HttpClientModule, 
     SharedModule,
     AppRoutingModule,
     CarouselModule
@@ -18,6 +18,6 @@ import { CarouselModule } from 'primeng/carousel';
   providers: [
     provideHttpClient(withFetch())
   ],
-  bootstrap: []
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

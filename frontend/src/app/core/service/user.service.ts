@@ -1,75 +1,74 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
-import { HttpClient } from '@angular/common/http'; // Importa HttpClient directamente
+import { HttpClient } from '@angular/common/http';
 import { JwtService } from './jwt.service';
-import { User } from '../models/user.model';  // Asegúrate de que esta ruta es correcta
+import { User } from '../models/user.model'; 
 import { map, distinctUntilChanged } from 'rxjs/operators';
-import { environment } from '../../../environments/environment'; // Importa environment para la URL base
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private currentUserSubject = new BehaviorSubject<User>({} as User);
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
 
   private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
-  private apiUrl = environment.api_url;  // URL base desde environment
-
+  private apiUrl = environment.api_url; 
   constructor (
-    private http: HttpClient, // Usa HttpClient directamente
+    private http: HttpClient, 
     private jwtService: JwtService
   ) {}
 
-  // Método para cargar el usuario si hay un token
   populate() {
     const token = this.jwtService.getToken();
     if (token) {
-      this.http.get(`${this.apiUrl}/user`).subscribe(
-        (data: any) => {  
-          return this.setAuth({ ...data.user, token });
-        },
-        (err: any) => this.purgeAuth()  
-      );
+        this.http.get(`${this.apiUrl}/user`).subscribe(
+            (data: any) => {  
+                this.setAuth({ ...data.user, token });
+            },
+            (err: any) => {
+                console.error('Error al obtener el usuario:', err);
+                this.isAuthenticatedSubject.next(true); 
+                this.currentUserSubject.next(null);
+            }
+        );
     } else {
-      this.purgeAuth();
+        this.isAuthenticatedSubject.next(false); 
+        this.currentUserSubject.next(null);
     }
-  }
+}
 
-  // Método para establecer la autenticación del usuario
+
   setAuth(user: User) {
     this.jwtService.saveToken(user.token);
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
   }
 
-  // Método para limpiar la autenticación
   purgeAuth() {
     this.jwtService.destroyToken();
-    this.currentUserSubject.next({} as User);
+    this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
   }
 
-  // Método para manejar el login o el registro
   attemptAuth(type: string, credentials: any): Observable<User> {
     const route = (type === 'login') ? '/users/login' : '/users';
-    return this.http.post(`${this.apiUrl}${route}`, { user: credentials })  // Usa la URL completa directamente
+    return this.http.post(`${this.apiUrl}${route}`, { user: credentials })
       .pipe(map((data: any) => {
           this.setAuth(data.user);
           return data.user;
       }));
   }
 
-  // Obtener el usuario actual
-  getCurrentUser(): User {
+  getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
-  // Actualizar el usuario
   update(user: User): Observable<User> {
-    return this.http.put(`${this.apiUrl}/user`, { user })  // Usa la URL completa directamente
+    return this.http.put(`${this.apiUrl}/user`, { user })
       .pipe(map((data: any) => {
         this.currentUserSubject.next(data.user);
         return data.user;
