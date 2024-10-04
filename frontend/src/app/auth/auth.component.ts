@@ -2,22 +2,22 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@
 import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
-// import { Errors } from '../core';
-import { UserService } from '../core/service/user.service';
+import { UserService } from '../../app/core/service/user.service';
+import { RouterModule } from '@angular/router';
+import { ListErrorsComponent } from '../shared/list-errors/list-errors.component'; // Cambia la ruta si es necesario
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ListErrorsComponent], // Añadimos el ListErrorsComponent standalone aquí
   templateUrl: './auth.component.html',
-  styleUrl: './auth.component.css',
+  styleUrls: ['./auth.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AuthComponent implements OnInit {
-  authType: String = '';
-  title: String = '';
-  // errors: Errors = {errors: {}};
+  authType: string = '';
+  title: string = '';
+  errors: any = { errors: {} };
   isSubmitting = false;
   authForm: FormGroup;
 
@@ -38,8 +38,9 @@ export class AuthComponent implements OnInit {
     this.route.url.subscribe(data => {
       this.authType = data[data.length - 1].path;
       this.title = (this.authType === 'login') ? 'Sign in' : 'Sign up';
+
       if (this.authType === 'register') {
-        this.authForm.addControl('username', new FormControl());
+        this.authForm.addControl('username', new FormControl('', Validators.required));
       }
       this.cd.markForCheck();
     });
@@ -47,19 +48,17 @@ export class AuthComponent implements OnInit {
 
   submitForm() {
     this.isSubmitting = true;
-    // this.errors = {errors: {}};
+    this.errors = { errors: {} };
 
     const credentials = this.authForm.value;
-    this.userService
-      .attemptAuth(this.authType as string, credentials)
-      .subscribe(
-        (_: any) => this.router.navigateByUrl('/')
-        // data => this.router.navigateByUrl('/'),
-        // err => {
-        //   // this.errors = err;
-        //   this.isSubmitting = false;
-        //   this.cd.markForCheck();
-        // }
-      );
-  }
+    this.userService.attemptAuth(this.authType, credentials).subscribe(
+      () => this.router.navigateByUrl('/'),
+      (err) => {
+        this.errors = err;
+        this.isSubmitting = false;
+        this.cd.markForCheck();
+      }
+    );
+}
+
 }
