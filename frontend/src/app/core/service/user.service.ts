@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable ,  BehaviorSubject ,  ReplaySubject } from 'rxjs';
-
-import { ApiService } from './api.service';
+import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http'; // Importa HttpClient directamente
 import { JwtService } from './jwt.service';
-import { User } from '../models';
-import { map ,  distinctUntilChanged } from 'rxjs/operators';
-
+import { User } from '../models/user.model';  // Asegúrate de que esta ruta es correcta
+import { map, distinctUntilChanged } from 'rxjs/operators';
+import { environment } from '../../../environments/environment'; // Importa environment para la URL base
 
 @Injectable({
   providedIn: 'root'
@@ -17,71 +16,63 @@ export class UserService {
   private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
+  private apiUrl = environment.api_url;  // URL base desde environment
+
   constructor (
-    private apiService: ApiService,
+    private http: HttpClient, // Usa HttpClient directamente
     private jwtService: JwtService
   ) {}
 
-  // Verify JWT in localstorage with server & load user's info.
-  // This runs once on application startup.
+  // Método para cargar el usuario si hay un token
   populate() {
-    // If JWT detected, attempt to get & store user's info
     const token = this.jwtService.getToken();
     if (token) {
-      this.apiService.get("/user").subscribe(
-        (data) => {
+      this.http.get(`${this.apiUrl}/user`).subscribe(
+        (data: any) => {  
           return this.setAuth({ ...data.user, token });
         },
-        (err) => this.purgeAuth()
+        (err: any) => this.purgeAuth()  
       );
     } else {
-      // Remove any potential remnants of previous auth states
       this.purgeAuth();
     }
   }
 
+  // Método para establecer la autenticación del usuario
   setAuth(user: User) {
-    // Save JWT sent from server in localstorage
     this.jwtService.saveToken(user.token);
-    // Set current user data into observable
     this.currentUserSubject.next(user);
-    // Set isAuthenticated to true
     this.isAuthenticatedSubject.next(true);
   }
 
+  // Método para limpiar la autenticación
   purgeAuth() {
-    // Remove JWT from localstorage
     this.jwtService.destroyToken();
-    // Set current user to an empty object
     this.currentUserSubject.next({} as User);
-    // Set auth status to false
     this.isAuthenticatedSubject.next(false);
   }
 
-  attemptAuth(type, credentials): Observable<User> {
-    const route = (type === 'login') ? '/login' : '';
-    return this.apiService.post(`/users${route}`, {user: credentials})
-      .pipe(map(
-      data => {
-        this.setAuth(data.user);
-        return data;
-      }
-    ));
+  // Método para manejar el login o el registro
+  attemptAuth(type: string, credentials: any): Observable<User> {
+    const route = (type === 'login') ? '/users/login' : '/users';
+    return this.http.post(`${this.apiUrl}${route}`, { user: credentials })  // Usa la URL completa directamente
+      .pipe(map((data: any) => {
+          this.setAuth(data.user);
+          return data.user;
+      }));
   }
 
+  // Obtener el usuario actual
   getCurrentUser(): User {
     return this.currentUserSubject.value;
   }
 
-  // Update the user on the server (email, pass, etc)
-  update(user): Observable<User> {
-    return this.apiService
-    .put('/user', { user })
-    .pipe(map(data => {
-      // Update the currentUser observable
-      this.currentUserSubject.next(data.user);
-      return data.user;
-    }));
+  // Actualizar el usuario
+  update(user: User): Observable<User> {
+    return this.http.put(`${this.apiUrl}/user`, { user })  // Usa la URL completa directamente
+      .pipe(map((data: any) => {
+        this.currentUserSubject.next(data.user);
+        return data.user;
+      }));
   }
-
 }

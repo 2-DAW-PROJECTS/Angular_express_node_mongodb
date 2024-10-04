@@ -1,31 +1,36 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';  
+import { UserService } from '../../../core/service/user.service';  
+import { ChangeDetectorRef } from '@angular/core'; 
+import { User } from '../../../core/models/user.model'; 
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   isMenuOpen = false;
+  currentUser: User | null = null;
 
-  toggleMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
-  }
-  
   constructor(
     private userService: UserService,
     private cd: ChangeDetectorRef
   ) {}
 
-  currentUser: User;
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
 
   ngOnInit() {
     this.userService.currentUser.subscribe(
-      (userData) => {
+      (userData: User) => {
         this.currentUser = userData;
         this.cd.markForCheck();
       }
     );
   }
-  
+
+  logout() {
+    this.userService.purgeAuth();
+  }
 }

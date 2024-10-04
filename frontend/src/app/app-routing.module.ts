@@ -1,4 +1,4 @@
-// AppRoutingModule.ts
+// app-routing.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
@@ -6,6 +6,7 @@ import { ShopComponent } from './shop/shop.component';
 import { ListOffertsComponent } from './shared/list-offerts/list-offerts.component';
 import { DetailsComponent } from './details/details.component';
 import { DetailsResolver } from './core/service/details.service';
+import { AuthComponent } from './auth/auth.component'; // Asegúrate de importar el AuthComponent
 
 const routes: Routes = [
   {
@@ -26,11 +27,19 @@ const routes: Routes = [
     component: ListOffertsComponent
   },
   {
-    path: 'details/:slug', // Nueva ruta para detalles de una oferta
+    path: 'details/:slug',
     component: DetailsComponent,
     resolve: {
-      offer: DetailsResolver // Asociamos el resolver
+      offer: DetailsResolver
     }
+  },
+  {
+    path: 'login', // Nueva ruta para login
+    component: AuthComponent
+  },
+  {
+    path: 'register', // Nueva ruta para registro
+    component: AuthComponent
   },
   {
     path: '**',
