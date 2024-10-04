@@ -57,19 +57,17 @@ const registerUser = asyncHandler(async (req, res) => {
 // @access Private
 // @return User
 const getCurrentUser = asyncHandler(async (req, res) => {
-    // After authentication; email and hashsed password was stored in req
     const email = req.userEmail;
 
     const user = await User.findOne({ email }).exec();
 
     if (!user) {
-        return res.status(404).json({message: "User Not Found"});
+        return res.status(404).json({ message: "User Not Found" });
     }
 
     res.status(200).json({
         user: user.toUserResponse()
-    })
-
+    });
 });
 
 // @desc login for a user

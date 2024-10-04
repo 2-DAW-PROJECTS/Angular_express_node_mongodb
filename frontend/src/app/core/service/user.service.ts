@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { JwtService } from './jwt.service';
 import { User } from '../models/user.model'; 
 import { map, distinctUntilChanged } from 'rxjs/operators';
@@ -24,23 +24,32 @@ export class UserService {
 
   populate() {
     const token = this.jwtService.getToken();
+    // console.log('Token en populate:', token);
+
     if (token) {
-        this.http.get(`${this.apiUrl}/user`).subscribe(
-            (data: any) => {  
-                this.setAuth({ ...data.user, token });
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        this.http.get(`${this.apiUrl}/user`, { headers }).subscribe(
+            (data: any) => {
+                // console.log('Datos del usuario:', data); 
+                if (data && data.user) {
+                    this.setAuth({ ...data.user, token });
+                } else {
+                    console.error('No se encontró el usuario en la respuesta');
+                    this.isAuthenticatedSubject.next(false);
+                    this.currentUserSubject.next(null);
+                }
             },
             (err: any) => {
                 console.error('Error al obtener el usuario:', err);
-                this.isAuthenticatedSubject.next(true); 
+                this.isAuthenticatedSubject.next(false);
                 this.currentUserSubject.next(null);
             }
         );
     } else {
-        this.isAuthenticatedSubject.next(false); 
+        this.isAuthenticatedSubject.next(false);
         this.currentUserSubject.next(null);
     }
 }
-
 
   setAuth(user: User) {
     this.jwtService.saveToken(user.token);
