@@ -1,4 +1,3 @@
-// app-routing.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
@@ -6,7 +5,8 @@ import { ShopComponent } from './shop/shop.component';
 import { ListOffertsComponent } from './shared/list-offerts/list-offerts.component';
 import { DetailsComponent } from './details/details.component';
 import { DetailsResolver } from './core/service/details.service';
-import { AuthComponent } from './auth/auth.component'; // Asegúrate de importar el AuthComponent
+import { AuthComponent } from './auth/auth.component';
+import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
   {
@@ -34,12 +34,16 @@ const routes: Routes = [
     }
   },
   {
-    path: 'login', // Nueva ruta para login
+    path: 'login',
     component: AuthComponent
   },
   {
-    path: 'register', // Nueva ruta para registro
+    path: 'register', 
     component: AuthComponent
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent
   },
   {
     path: '**',

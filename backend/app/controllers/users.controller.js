@@ -13,39 +13,42 @@ const jwt = require('jsonwebtoken');
 const registerUser = asyncHandler(async (req, res) => {
     const { user } = req.body;
 
-    // confirm data
     if (!user || !user.email || !user.username || !user.password) {
-        return res.status(400).json({message: "All fields are required"});
+        return res.status(400).json({ message: "All fields are required" });
     }
 
     const existingUser = await User.find({ $or: [{ email: user.email }, { username: user.username }] });
     if (existingUser.length > 0) {
-        return res.status(422).json({message: "The email or username is already taken"});
+        return res.status(422).json({ message: "The email or username is already taken" });
     }
 
+<<<<<<< Updated upstream
     // hash password
     const hashedPwd = await argon2.hash(user.password); // salt rounds
+=======
+    const hashedPwd = await argon2.hash(user.password);
+>>>>>>> Stashed changes
 
     const userObject = {
-        "username": user.username,
-        "password": hashedPwd,
-        "email": user.email
+        username: user.username,
+        password: hashedPwd,
+        email: user.email,
+        city: "",           // Nuevo campo por defecto vacío
+        aboutMe: "",        // Nuevo campo por defecto vacío
+        skills: []          // Nuevo campo por defecto vacío
     };
 
     const createdUser = await User.create(userObject);
 
-    if (createdUser) { // user object created successfully
+    if (createdUser) {
         res.status(201).json({
             user: createdUser.toUserResponse()
-        })
-    } else {
-        res.status(422).json({
-            errors: {
-                body: "Unable to register a user"
-            }
         });
+    } else {
+        res.status(422).json({ errors: { body: "Unable to register a user" } });
     }
 });
+
 
 // @desc get currently logged-in user
 // @route GET /api/user
@@ -150,39 +153,29 @@ const refreshToken = asyncHandler(async (req, res) => {
 // @return User
 const updateUser = asyncHandler(async (req, res) => {
     const { user } = req.body;
-
-    // confirm data
     if (!user) {
-        return res.status(400).json({message: "Required a User object"});
+        return res.status(400).json({ message: "Required a User object" });
     }
 
     const email = req.userEmail;
-
     const target = await User.findOne({ email }).exec();
 
-    if (user.email) {
-        target.email = user.email;
-    }
-    if (user.username) {
-        target.username = user.username;
-    }
-    if (user.password) {
-        const hashedPwd = await argon2.hash(user.password);
-        target.password = hashedPwd;
-    }
-    if (typeof user.image !== 'undefined') {
-        target.image = user.image;
-    }
-    if (typeof user.bio !== 'undefined') {
-        target.bio = user.bio;
-    }
+    if (user.email) target.email = user.email;
+    if (user.username) target.username = user.username;
+    if (user.password) target.password = await argon2.hash(user.password);
+    if (typeof user.image !== 'undefined') target.image = user.image;
+    if (typeof user.bio !== 'undefined') target.bio = user.bio;
+    if (typeof user.city !== 'undefined') target.city = user.city;          // Añadir city
+    if (typeof user.aboutMe !== 'undefined') target.aboutMe = user.aboutMe;  // Añadir aboutMe
+    if (Array.isArray(user.skills)) target.skills = user.skills;            // Añadir skills
+
     await target.save();
 
-    return res.status(200).json({
+    res.status(200).json({
         user: target.toUserResponse()
     });
-
 });
+
 
 module.exports = {
     registerUser,

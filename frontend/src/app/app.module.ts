@@ -6,14 +6,17 @@ import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { CarouselModule } from 'primeng/carousel';
 
+import { FormsModule } from '@angular/forms';
+
 @NgModule({
-  declarations: [],  
+  declarations: [],
   imports: [
     BrowserModule,
-    HttpClientModule, 
+    HttpClientModule,
     SharedModule,
     AppRoutingModule,
-    CarouselModule
+    CarouselModule,
+    FormsModule // Asegúrate de importar FormsModule si lo necesitas en otros módulos
   ],
   providers: [
     provideHttpClient(withFetch())
@@ -21,3 +24,4 @@ import { CarouselModule } from 'primeng/carousel';
   bootstrap: [AppComponent]
 })
 export class AppModule {}
+

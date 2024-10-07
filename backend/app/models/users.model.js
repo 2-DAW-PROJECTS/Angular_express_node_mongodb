@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+<<<<<<< Updated upstream
 ///////////
     refreshToken: { 
         type: String 
@@ -36,6 +37,20 @@ const userSchema = new mongoose.Schema({
         type: String 
     }],
 //////////
+=======
+    city: {          // Nuevo campo para la ciudad
+        type: String,
+        default: ""
+    },
+    aboutMe: {       // Nuevo campo para "Acerca de mí"
+        type: String,
+        default: ""
+    },
+    skills: {        // Nuevo campo para habilidades
+        type: [String],
+        default: []
+    },
+>>>>>>> Stashed changes
     image: {
         type: String,
         default: "https://static.productionready.io/images/smiley-cyrus.jpg"
@@ -48,13 +63,11 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }]
-},
-    {
-        timestamps: true
-    });
+}, {
+    timestamps: true
+});
 
 userSchema.plugin(uniqueValidator);
-
 // @desc generate access token for a user
 // @required valid email and password
 userSchema.methods.generateAccessToken = function() {
@@ -77,9 +90,13 @@ userSchema.methods.toUserResponse = function() {
         email: this.email,
         bio: this.bio,
         image: this.image,
-        token: this.generateAccessToken()
+        token: this.generateAccessToken(),
+        city: this.city,        
+        aboutMe: this.aboutMe,  
+        skills: this.skills     
     }
 };
+
 
 userSchema.methods.toProfileJSON = function (user) {
     return {
