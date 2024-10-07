@@ -62,14 +62,19 @@ const registerUser = asyncHandler(async (req, res) => {
 //         user: user.toUserResponse()
 //     });
 // });
-exports.getCurrentUser = async (req, res) => {
-    try {
-      const user = await User.findById(req.userId).select('-password');
-      res.json({ user: user.toJSON() });
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching user data" });
-    }
-  };
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const email = req.userEmail;
+
+  const user = await User.findOne({ email }).exec();
+
+  if (!user) {
+      return res.status(404).json({ message: "User Not Found" });
+  }
+
+  res.status(200).json({
+      user: user.toUserResponse()
+  });
+});
   
 
 
