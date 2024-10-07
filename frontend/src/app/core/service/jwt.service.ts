@@ -13,13 +13,13 @@ export class JwtService {
   //   }
   // }
   saveTokens(accessToken: string, refreshToken: string) {
-    // if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined') {
     // console.log("acces:", accessToken);
     // console.log("refresh:", refreshToken);
 
       window.localStorage.setItem(this.accessTokenKey, accessToken);
       window.localStorage.setItem(this.refreshTokenKey, refreshToken);
-    // }
+    }
   }
   getAccessToken(): string | null {
     return window.localStorage.getItem(this.accessTokenKey);

@@ -76,7 +76,7 @@ export class UserService {
     // console.log(accesToken);
     // console.log(user.refreshToken);
 
-    this.jwtService.saveTokens(user.token, user.refreshToken);  
+    this.jwtService.saveTokens(accesToken, user.refreshToken);  
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
 
@@ -151,7 +151,7 @@ export class UserService {
   /**____________________________DEBUG ZONE____________________________________________ */
   private startTokenExpirationTimer(accessToken: string, refreshToken: string) {
 
-    console.log(accessToken, refreshToken);
+    // console.log(accessToken, refreshToken);
 
     this.stopTokenExpirationTimer();
     
