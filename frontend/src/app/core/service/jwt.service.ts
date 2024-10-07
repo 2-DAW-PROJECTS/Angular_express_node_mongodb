@@ -4,21 +4,39 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class JwtService {
-  private tokenKey = 'access_token';
+  private accessTokenKey = 'access_token';
+  private refreshTokenKey = 'refresh_token';
 
-  saveToken(token: string) {
+  // saveToken(token: string) {
+  //   if (typeof window !== 'undefined') {
+  //     window.localStorage.setItem(this.tokenKey, token);
+  //   }
+  // }
+  saveTokens(accessToken: string, refreshToken: string) {
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem(this.tokenKey, token);
+      window.localStorage.setItem(this.accessTokenKey, accessToken);
+      window.localStorage.setItem(this.refreshTokenKey, refreshToken);
     }
   }
-
-  getToken(): string | null {
-    return typeof window !== 'undefined' ? window.localStorage.getItem(this.tokenKey) : null;
+  getAccessToken(): string | null {
+    return window.localStorage.getItem(this.accessTokenKey);
   }
 
-  destroyToken() {
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(this.tokenKey);
-    }
+  getRefreshToken(): string | null {
+    return window.localStorage.getItem(this.refreshTokenKey);
   }
+
+  destroyTokens() {
+    window.localStorage.removeItem(this.accessTokenKey);
+    window.localStorage.removeItem(this.refreshTokenKey);
+  }
+  // getToken(): string | null {
+  //   return typeof window !== 'undefined' ? window.localStorage.getItem(this.tokenKey) : null;
+  // }
+
+  // destroyToken() {
+  //   if (typeof window !== 'undefined') {
+  //     window.localStorage.removeItem(this.tokenKey);
+  //   }
+  // }
 }

@@ -3,8 +3,9 @@ import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { JwtService } from './jwt.service';
 import { User } from '../models/user.model'; 
-import { map, distinctUntilChanged } from 'rxjs/operators';
+import { map, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
@@ -22,45 +23,110 @@ export class UserService {
     private jwtService: JwtService
   ) {}
 
-  populate() {
-    const token = this.jwtService.getToken();
-    if (token) {
-        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-        this.http.get(`${this.apiUrl}/user`, { headers }).subscribe(
-            (data: any) => {
-                console.log('Datos del usuario:', data); // Imprime los datos del usuario
-                if (data && data.user) {
-                    this.setAuth({ ...data.user, token }); // Asegúrate de que `data.user` contenga todos los campos necesarios
-                } else {
-                    console.error('No se encontró el usuario en la respuesta');
-                    this.isAuthenticatedSubject.next(false);
-                    this.currentUserSubject.next(null);
-                }
-            },
-            (err: any) => {
-                console.error('Error al obtener el usuario:', err);
-                this.isAuthenticatedSubject.next(false);
-                this.currentUserSubject.next(null);
-            }
-        );
-    } else {
-        this.isAuthenticatedSubject.next(false);
-        this.currentUserSubject.next(null);
-    }
-}
+//   populate() {
+//     const token = this.jwtService.getToken();
+//     // console.log('Token en populate:', token);
 
+//     if (token) {
+//         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+//         this.http.get(`${this.apiUrl}/user`, { headers }).subscribe(
+//             (data: any) => {
+//                 // console.log('Datos del usuario:', data); 
+//                 if (data && data.user) {
+//                     this.setAuth({ ...data.user, token });
+//                 } else {
+//                     console.error('No se encontró el usuario en la respuesta');
+//                     this.isAuthenticatedSubject.next(false);
+//                     this.currentUserSubject.next(null);
+//                 }
+//             },
+//             (err: any) => {
+//                 console.error('Error al obtener el usuario:', err);
+//                 this.isAuthenticatedSubject.next(false);
+//                 this.currentUserSubject.next(null);
+//             }
+//         );
+//     } else {
+//         this.isAuthenticatedSubject.next(false);
+//         this.currentUserSubject.next(null);
+//     }
+// }
+    populate() {
+      const token = this.jwtService.getAccessToken();  // Sigue utilizando getAccessToken
+
+      if (token) {
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`); // Uso de HttpHeaders con token
+        this.http.get(`${this.apiUrl}/user`, { headers }).subscribe(
+          (data: any) => {
+            if (data && data.user) {
+              this.setAuth({ ...data.user, token });
+            } else {
+              this.purgeAuth();
+            }
+          },
+          () => {
+            this.purgeAuth();
+          }
+        );
+      } else {
+        this.purgeAuth();
+      }
+    }
+
+  // setAuth(user: User) {
+  //   this.jwtService.saveToken(user.token);
+  //   this.currentUserSubject.next(user);
+  //   this.isAuthenticatedSubject.next(true);
+  // }
+
+  // purgeAuth() {
+  //   this.jwtService.destroyToken();
+  //   this.currentUserSubject.next(null);
+  //   this.isAuthenticatedSubject.next(false);
+  // }
 
   setAuth(user: User) {
-    this.jwtService.saveToken(user.token);
+    this.jwtService.saveTokens(user.token, user.refreshToken);  // Mantiene el manejo de accessToken y refreshToken
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
   }
 
   purgeAuth() {
-    this.jwtService.destroyToken();
+    this.jwtService.destroyTokens();  // Mantiene la destrucción de ambos tokens
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
   }
+
+
+  refreshToken(): Observable<User> {
+    const refreshToken = this.jwtService.getRefreshToken();
+    if (refreshToken) {
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${refreshToken}`);
+      return this.http.post(`${this.apiUrl}/refresh-token`, {}, { headers })
+        .pipe(
+          map((data: any) => {
+            const currentUser = this.getCurrentUser();
+            if (currentUser) {
+              this.setAuth({ 
+                ...currentUser, 
+                token: data.accessToken, 
+                refreshToken: data.refreshToken 
+              });
+              return currentUser;
+            }
+
+            throw new Error('Current user not found');
+          })
+        );
+    } else {
+      return new Observable(observer => {
+        observer.error('No refresh token available');
+      });
+    }
+
+  }
+
+
 
   attemptAuth(type: string, credentials: any): Observable<User> {
     const route = (type === 'login') ? '/users/login' : '/users';
@@ -75,16 +141,21 @@ export class UserService {
     return this.currentUserSubject.value;
   }
 
-  // Asegúrate de que el token JWT está incluido en el encabezado de la petición
+  // update(user: User): Observable<User> {
+  //   return this.http.put(`${this.apiUrl}/user`, { user })
+  //     .pipe(map((data: any) => {
+  //       this.currentUserSubject.next(data.user);
+  //       return data.user;
+  //     }));
+  // }
   update(user: User): Observable<User> {
-    const token = this.jwtService.getToken();
+    const token = this.jwtService.getAccessToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+
     return this.http.put(`${this.apiUrl}/user`, { user }, { headers })
       .pipe(map((data: any) => {
-        this.currentUserSubject.next(data.user); // Actualiza el usuario actual en el BehaviorSubject
+        this.currentUserSubject.next(data.user);
         return data.user;
       }));
-}
-
+  }
 }

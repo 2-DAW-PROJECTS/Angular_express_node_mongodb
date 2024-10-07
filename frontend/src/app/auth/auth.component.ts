@@ -4,12 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../app/core/service/user.service';
 import { RouterModule } from '@angular/router';
-import { ListErrorsComponent } from '../shared/list-errors/list-errors.component'; // Cambia la ruta si es necesario
+import { ListErrorsComponent } from '../shared/list-errors/list-errors.component'; 
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, ListErrorsComponent], // Añadimos el ListErrorsComponent standalone aquí
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ListErrorsComponent], 
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -46,19 +46,35 @@ export class AuthComponent implements OnInit {
     });
   }
 
+  // submitForm() {
+  //   this.isSubmitting = true;
+  //   this.errors = { errors: {} };
+
+  //   const credentials = this.authForm.value;
+  //   this.userService.attemptAuth(this.authType, credentials).subscribe(
+  //     () => this.router.navigateByUrl('/'),
+  //     (err) => {
+  //       this.errors = err;
+  //       this.isSubmitting = false;
+  //       this.cd.markForCheck();
+  //     }
+  //   );
+  // }
   submitForm() {
     this.isSubmitting = true;
     this.errors = { errors: {} };
 
     const credentials = this.authForm.value;
     this.userService.attemptAuth(this.authType, credentials).subscribe(
-      () => this.router.navigateByUrl('/'),
+      (user) => {
+        this.router.navigateByUrl('/');
+      },
       (err) => {
         this.errors = err;
         this.isSubmitting = false;
         this.cd.markForCheck();
       }
     );
-}
+  }
 
 }
