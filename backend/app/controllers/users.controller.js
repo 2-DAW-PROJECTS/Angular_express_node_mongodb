@@ -49,19 +49,29 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route GET /api/user
 // @access Private
 // @return User
-const getCurrentUser = asyncHandler(async (req, res) => {
-    const email = req.userEmail;
+// const getCurrentUser = asyncHandler(async (req, res) => {
+//     const email = req.userEmail;
 
-    const user = await User.findOne({ email }).exec();
+//     const user = await User.findOne({ email }).exec();
 
-    if (!user) {
-        return res.status(404).json({ message: "User Not Found" });
+//     if (!user) {
+//         return res.status(404).json({ message: "User Not Found" });
+//     }
+
+//     res.status(200).json({
+//         user: user.toUserResponse()
+//     });
+// });
+exports.getCurrentUser = async (req, res) => {
+    try {
+      const user = await User.findById(req.userId).select('-password');
+      res.json({ user: user.toJSON() });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching user data" });
     }
+  };
+  
 
-    res.status(200).json({
-        user: user.toUserResponse()
-    });
-});
 
 // @desc login for a user
 // @route POST /api/users/login
@@ -83,11 +93,9 @@ const userLogin = asyncHandler(async (req, res) => {
 
     const match = await argon2.verify(loginUser.password, user.password);
 
-
     if (!match) return res.status(401).json({ message: 'Unauthorized: Wrong password' })
 
     const accessToken = jwt.sign({ user: { id: loginUser._id, email: loginUser.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
-    // const accessToken = loginUser.generateAccessToken();
     const refreshToken = jwt.sign({ user: { id: loginUser._id } }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
     
     loginUser.refreshToken = refreshToken;
@@ -95,12 +103,23 @@ const userLogin = asyncHandler(async (req, res) => {
     await loginUser.save();
 
     res.status(200).json({
-        user: loginUser.toUserResponse(),
-        accessToken,
-        refreshToken
+        user: {
+            ...loginUser.toUserResponse(),
+            accessToken,
+            refreshToken
+        },
+        debug: {
+            userId: loginUser._id,
+            email: loginUser.email,
+            tokenInfo: {
+                accessTokenExpiry: '15m',
+                refreshTokenExpiry: '7d'
+            },
+            timestamp: new Date().toISOString()
+        }
     });
-
 });
+
 
 
 

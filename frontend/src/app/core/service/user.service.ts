@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { Observable, BehaviorSubject, ReplaySubject, interval } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { JwtService } from './jwt.service';
 import { User } from '../models/user.model'; 
-import { map, distinctUntilChanged } from 'rxjs/operators';
+import { map, distinctUntilChanged, switchMap, takeWhile } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
@@ -17,74 +18,166 @@ export class UserService {
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
   private apiUrl = environment.api_url; 
+
+
+  private tokenExpirationTimer: any;//No toques perro es par saber el temps que falta per a 
+                                    //  caducar el token pa debugg, en com ho toques te arranque la ma
+
+
   constructor (
     private http: HttpClient, 
     private jwtService: JwtService
   ) {}
 
+
   populate() {
-    const token = this.jwtService.getToken();
-    if (token) {
-        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-        this.http.get(`${this.apiUrl}/user`, { headers }).subscribe(
-            (data: any) => {
-                console.log('Datos del usuario:', data); // Imprime los datos del usuario
-                if (data && data.user) {
-                    this.setAuth({ ...data.user, token }); // Asegúrate de que `data.user` contenga todos los campos necesarios
-                } else {
-                    console.error('No se encontró el usuario en la respuesta');
-                    this.isAuthenticatedSubject.next(false);
-                    this.currentUserSubject.next(null);
-                }
-            },
-            (err: any) => {
-                console.error('Error al obtener el usuario:', err);
-                this.isAuthenticatedSubject.next(false);
-                this.currentUserSubject.next(null);
-            }
-        );
+    const accessToken = this.jwtService.getAccessToken();
+    const refreshToken = this.jwtService.getRefreshToken();
+  
+    if (accessToken && refreshToken) {
+      this.http.get<{user: User}>(`${this.apiUrl}/user`).subscribe(
+        (data) => {
+          if (data && data.user) {
+            const user: User = {
+              ...data.user,
+              token: accessToken,
+              refreshToken: refreshToken
+            };
+            console.log('Complete user data:', user);
+            this.setAuth(user, user.refreshToken);
+
+            this.startTokenExpirationTimer(user.token, user.refreshToken);
+          } else {
+            this.purgeAuth();
+          }
+        },
+        (error) => {
+          console.error('Error fetching user data:', error);
+          this.purgeAuth();
+        }
+      );
     } else {
-        this.isAuthenticatedSubject.next(false);
-        this.currentUserSubject.next(null);
+      this.purgeAuth();
     }
-}
+  }
+  
+  
+  
 
 
-  setAuth(user: User) {
-    this.jwtService.saveToken(user.token);
+  setAuth(user: User, refreshToken: string) {
+    this.jwtService.saveTokens(user.token, refreshToken);  
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
+
+    // console.log(user);
+    // console.log(refreshToken);
+    this.startTokenExpirationTimer(user.token, refreshToken);//debugging
   }
 
   purgeAuth() {
-    this.jwtService.destroyToken();
+    this.jwtService.destroyTokens(); 
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
+  
+  
+    this.stopTokenExpirationTimer();//debugging
   }
+
+
+  refreshToken(): Observable<User> {
+    return this.http.post(`${this.apiUrl}/refresh-token`, {})
+      .pipe(
+        map((data: any) => {
+          const currentUser = this.getCurrentUser();
+          if (currentUser) {
+            const updatedUser = { 
+              ...currentUser, 
+              token: data.accessToken, 
+              refreshToken: data.refreshToken 
+            };
+            this.setAuth(updatedUser, data.refreshToken);
+            return updatedUser;
+          }
+          throw new Error('Current user not found');
+        })
+      );
+  }
+
+
 
   attemptAuth(type: string, credentials: any): Observable<User> {
     const route = (type === 'login') ? '/users/login' : '/users';
     return this.http.post(`${this.apiUrl}${route}`, { user: credentials })
       .pipe(map((data: any) => {
-          this.setAuth(data.user);
-          return data.user;
+        // console.log('Login response:', data);
+        // console.log('User data:', data.user);
+        // console.log('Access token:', data.accessToken);
+        // console.log('Refresh token:', data.refreshToken);
+        this.setAuth(data.user, data.refreshToken);
+        return data;
       }));
   }
+  
 
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
-  // Asegúrate de que el token JWT está incluido en el encabezado de la petición
   update(user: User): Observable<User> {
-    const token = this.jwtService.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
-    return this.http.put(`${this.apiUrl}/user`, { user }, { headers })
+    return this.http.put(`${this.apiUrl}/user`, { user })
       .pipe(map((data: any) => {
-        this.currentUserSubject.next(data.user); // Actualiza el usuario actual en el BehaviorSubject
+        this.currentUserSubject.next(data.user);
         return data.user;
       }));
-}
+  }
 
+
+
+
+  /**____________________________DEBUG ZONE____________________________________________ */
+  private startTokenExpirationTimer(accessToken: string, refreshToken: string) {
+    this.stopTokenExpirationTimer();
+    
+    const decodeToken = (token: string) => {
+      try {
+        return JSON.parse(atob(token.split('.')[1]));
+      } catch (e) {
+        console.error('Error decoding token:', e);
+        return null;
+      }
+    };
+  
+    const accessTokenPayload = decodeToken(accessToken);
+    const refreshTokenPayload = decodeToken(refreshToken);
+    
+    if (accessTokenPayload && refreshTokenPayload) {
+      const accessExpiration = accessTokenPayload.exp * 1000;
+      const refreshExpiration = refreshTokenPayload.exp * 1000;
+  
+      this.tokenExpirationTimer = interval(1000).pipe(
+        takeWhile(() => Date.now() < refreshExpiration)
+      ).subscribe(() => {
+        const currentTime = Date.now();
+        const accessRemaining = Math.max(0, Math.round((accessExpiration - currentTime) / 1000));
+        const refreshRemaining = Math.max(0, Math.round((refreshExpiration - currentTime) / 1000));
+        
+        console.log(`Access token expires in ${accessRemaining}s,\n Refresh token expires in ${refreshRemaining}s`);
+        
+        if (currentTime >= accessExpiration && currentTime < refreshExpiration) {
+          console.log('Access token expired. Using refresh token to get a new one.');
+          this.refreshToken().subscribe();
+        }
+      });
+    } else {
+      console.error('Invalid tokens');
+    }
+  }
+  
+
+  private stopTokenExpirationTimer() {
+    if (this.tokenExpirationTimer) {
+      this.tokenExpirationTimer.unsubscribe();
+    }
+  }
 }
