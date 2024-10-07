@@ -5,7 +5,7 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { CarouselModule } from 'primeng/carousel';
-import { TokenInterceptor } from './core/interceptors/token.interceptor';
+// import { TokenInterceptor } from './core/interceptors/token.interceptor';
 
 import { FormsModule } from '@angular/forms';
 
@@ -17,10 +17,10 @@ import { FormsModule } from '@angular/forms';
     SharedModule,
     AppRoutingModule,
     CarouselModule,
-    FormsModule // Asegúrate de importar FormsModule si lo necesitas en otros módulos
+    FormsModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    // { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     provideHttpClient(withFetch())
   ]
 })
