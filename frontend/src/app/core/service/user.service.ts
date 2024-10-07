@@ -13,75 +13,62 @@ import { environment } from '../../../environments/environment';
 export class UserService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
-
   private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
-
   private apiUrl = environment.api_url; 
-
-
   private tokenExpirationTimer: any;//No toques perro es par saber el temps que falta per a 
                                     //  caducar el token pa debugg, en com ho toques te arranque la ma
 
-
-  constructor (
+  constructor(
     private http: HttpClient, 
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
-
 
   populate() {
     const accessToken = this.jwtService.getAccessToken();
     const refreshToken = this.jwtService.getRefreshToken();
-  
+
     if (accessToken && refreshToken) {
-      this.http.get<{user: User}>(`${this.apiUrl}/user`).subscribe(
-        (data) => {
-          if (data && data.user) {
-            const user: User = {
-              ...data.user,
-              token: accessToken,
-              refreshToken: refreshToken
-            };
+        console.log('Access Token:', accessToken);
+        console.log('Refresh Token:', refreshToken);
 
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${accessToken}`);
 
-            console.log('Complete user data:', user);
+        this.http.get<{ user: User }>(`${this.apiUrl}/user`, { headers }).subscribe(
+            (data) => {
+                if (data && data.user) {
+                    const user: User = {
+                        ...data.user,
+                        token: accessToken,
+                        refreshToken: refreshToken
+                    };
 
+                    console.log('Complete user data:', user);
 
-            this.setAuth(user, accessToken);
+                    this.setAuth(user, accessToken);
 
-            this.startTokenExpirationTimer(accessToken, user.refreshToken);
-          } else {
-            this.purgeAuth();
-          }
-        },
-        (error) => {
-          console.error('Error fetching user data:', error);
-          this.purgeAuth();
-        }
-      );
+                    this.startTokenExpirationTimer(accessToken, refreshToken);
+                } else {
+                    this.purgeAuth();
+                }
+            },
+            (error) => {
+                console.error('Error fetching user data:', error);
+                this.purgeAuth();
+            }
+        );
     } else {
-      this.purgeAuth();
+        this.purgeAuth();
     }
-  }
-  
-  
-  
-
-
+}
   setAuth(user: User, accesToken: string) {
-
     // console.log('User setAuth:', user);
-
     // console.log(accesToken);
     // console.log(user.refreshToken);
 
     this.jwtService.saveTokens(accesToken, user.refreshToken);  
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
-
-
-
     this.startTokenExpirationTimer(accesToken, user.refreshToken);//debugging
   }
 
@@ -93,7 +80,6 @@ export class UserService {
   
     this.stopTokenExpirationTimer();//debugging
   }
-
 
   refreshToken(): Observable<User> {
     return this.http.post(`${this.apiUrl}/refresh-token`, {})
@@ -117,8 +103,6 @@ export class UserService {
       );
   }
 
-
-
   attemptAuth(type: string, credentials: any): Observable<User> {
     const route = (type === 'login') ? '/users/login' : '/users';
     return this.http.post(`${this.apiUrl}${route}`, { user: credentials })
@@ -131,7 +115,6 @@ export class UserService {
         return data;
       }));
   }
-  
 
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
@@ -145,14 +128,10 @@ export class UserService {
       }));
   }
 
-
-
-
   /**____________________________DEBUG ZONE____________________________________________ */
   private startTokenExpirationTimer(accessToken: string, refreshToken: string) {
 
     // console.log(accessToken, refreshToken);
-
     this.stopTokenExpirationTimer();
     
     const decodeToken = (token: string) => {
@@ -181,15 +160,17 @@ export class UserService {
         console.log(`Access token expires in ${accessRemaining}s,\n Refresh token expires in ${refreshRemaining}s`);
         
         if (currentTime >= accessExpiration && currentTime < refreshExpiration) {
-          console.log('Access token expired. Using refresh token to get a new one.');
-          this.refreshToken().subscribe();
+          console.log('El usuario se va a deslogear');
+          window.location.reload();
+          this.refreshToken().subscribe(() => {
+  
+          });
         }
       });
     } else {
       console.error('Invalid tokens');
     }
   }
-  
 
   private stopTokenExpirationTimer() {
     if (this.tokenExpirationTimer) {
