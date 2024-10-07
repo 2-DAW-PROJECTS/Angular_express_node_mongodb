@@ -1,6 +1,9 @@
 const userController = require('../controllers/users.controller.js');
 const verifyJWT = require('../middleware/verifyJWT.js');
 
+const checkTokenBlacklist = require('../middleware/tokenBlackList.js');
+
+
 module.exports = (app) => {
     // User registration
     app.post('/users', userController.registerUser);
@@ -9,13 +12,17 @@ module.exports = (app) => {
     app.post('/users/login', userController.userLogin);
 
     // Get user profile
-    app.get('/profile', verifyJWT, userController.getCurrentUser);
+    app.get('/profile', checkTokenBlacklist, verifyJWT, userController.getCurrentUser);
 
     // Get current user details at /user
-    app.get('/user', verifyJWT, userController.getCurrentUser);
+    app.get('/user', checkTokenBlacklist, verifyJWT, userController.getCurrentUser);
 
     // Update user profile
-    app.put('/user', verifyJWT, userController.updateUser);
+    app.put('/user', checkTokenBlacklist, verifyJWT, userController.updateUser);
+
+    // Refresh token
+    app.post('/refresh-token', userController.refreshToken);
+
 
     // // Delete user account
     // app.delete('/account', authMiddleware, userController.deleteAccount);

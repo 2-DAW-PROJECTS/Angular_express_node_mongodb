@@ -1,6 +1,8 @@
 const User = require('../models/users.model.js');
 const asyncHandler = require('express-async-handler');
 const argon2 = require('argon2');
+const jwt = require('jsonwebtoken');
+
 
 
 // @desc registration for a user
@@ -16,17 +18,10 @@ const registerUser = asyncHandler(async (req, res) => {
         return res.status(400).json({message: "All fields are required"});
     }
 
-
-    //
-    //
-    // Check if email or username already exists
     const existingUser = await User.find({ $or: [{ email: user.email }, { username: user.username }] });
     if (existingUser.length > 0) {
         return res.status(422).json({message: "The email or username is already taken"});
     }
-    //
-    //
-
 
     // hash password
     const hashedPwd = await argon2.hash(user.password); // salt rounds
@@ -78,31 +73,75 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 const userLogin = asyncHandler(async (req, res) => {
     const { user } = req.body;
 
-    // confirm data
     if (!user || !user.email || !user.password) {
         return res.status(400).json({message: "All fields are required"});
     }
 
     const loginUser = await User.findOne({ email: user.email }).exec();
 
-    // console.log(loginUser);
-
     if (!loginUser) {
         return res.status(404).json({message: "User Not Found"});
     }
-
-    // const match = await argon2.compare(user.password, loginUser.password);
 
     const match = await argon2.verify(loginUser.password, user.password);
 
 
     if (!match) return res.status(401).json({ message: 'Unauthorized: Wrong password' })
 
+    const accessToken = jwt.sign({ user: { id: loginUser._id, email: loginUser.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    // const accessToken = loginUser.generateAccessToken();
+    const refreshToken = jwt.sign({ user: { id: loginUser._id } }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+    
+    loginUser.refreshToken = refreshToken;
+    loginUser.usedRefreshTokens = [];
+    await loginUser.save();
+
     res.status(200).json({
-        user: loginUser.toUserResponse()
+        user: loginUser.toUserResponse(),
+        accessToken,
+        refreshToken
     });
 
 });
+
+
+
+const refreshToken = asyncHandler(async (req, res) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) return res.status(401).json({ message: 'No refresh token provided' });
+
+    try {
+        const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+        console.log(payload);
+
+        const user = await User.findById(payload.user.id);
+
+        console.log(user);
+
+        if (!user || user.refreshToken !== refreshToken || user.usedRefreshTokens.includes(refreshToken)) {
+            return res.status(401).json({ message: 'Invalid refresh token' });
+        }
+
+        const newAccessToken = jwt.sign({ user: { id: user._id, email: user.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+        const newRefreshToken = jwt.sign({ user: { id: user._id } }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+        
+        user.usedRefreshTokens.push(user.refreshToken);
+        user.refreshToken = newRefreshToken;
+
+        await user.save();
+
+        res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+    } catch (err) {
+        res.status(403).json({ message: 'Invalid refresh token' });
+    }
+});
+
+
+
+
+
 
 // @desc update currently logged-in user
 // Warning: if password or email is updated, client-side must update the token
@@ -149,5 +188,6 @@ module.exports = {
     registerUser,
     getCurrentUser,
     userLogin,
-    updateUser
+    updateUser,
+    refreshToken
 }
