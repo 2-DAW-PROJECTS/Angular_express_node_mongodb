@@ -22,13 +22,8 @@ const registerUser = asyncHandler(async (req, res) => {
         return res.status(422).json({ message: "The email or username is already taken" });
     }
 
-<<<<<<< Updated upstream
-    // hash password
-    const hashedPwd = await argon2.hash(user.password); // salt rounds
-=======
-    const hashedPwd = await argon2.hash(user.password);
->>>>>>> Stashed changes
 
+    const hashedPwd = await argon2.hash(user.password);
     const userObject = {
         username: user.username,
         password: hashedPwd,

@@ -4,11 +4,8 @@ export interface User {
   username: string;
   bio: string;
   image: string;
-<<<<<<< Updated upstream
   refreshToken: string;
-=======
   city: string;  
   aboutMe: string; 
   skills: string[]; 
->>>>>>> Stashed changes
 }

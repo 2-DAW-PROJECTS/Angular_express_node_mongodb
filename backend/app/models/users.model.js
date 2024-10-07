@@ -28,7 +28,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
-<<<<<<< Updated upstream
 ///////////
     refreshToken: { 
         type: String 
@@ -37,7 +36,6 @@ const userSchema = new mongoose.Schema({
         type: String 
     }],
 //////////
-=======
     city: {          // Nuevo campo para la ciudad
         type: String,
         default: ""
@@ -50,7 +48,6 @@ const userSchema = new mongoose.Schema({
         type: [String],
         default: []
     },
->>>>>>> Stashed changes
     image: {
         type: String,
         default: "https://static.productionready.io/images/smiley-cyrus.jpg"
