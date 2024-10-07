@@ -43,10 +43,14 @@ export class UserService {
               token: accessToken,
               refreshToken: refreshToken
             };
-            console.log('Complete user data:', user);
-            this.setAuth(user, user.refreshToken);
 
-            this.startTokenExpirationTimer(user.token, user.refreshToken);
+
+            console.log('Complete user data:', user);
+
+
+            this.setAuth(user, accessToken);
+
+            this.startTokenExpirationTimer(accessToken, user.refreshToken);
           } else {
             this.purgeAuth();
           }
@@ -65,14 +69,20 @@ export class UserService {
   
 
 
-  setAuth(user: User, refreshToken: string) {
-    this.jwtService.saveTokens(user.token, refreshToken);  
+  setAuth(user: User, accesToken: string) {
+
+    // console.log('User setAuth:', user);
+
+    // console.log(accesToken);
+    // console.log(user.refreshToken);
+
+    this.jwtService.saveTokens(user.token, user.refreshToken);  
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
 
-    // console.log(user);
-    // console.log(refreshToken);
-    this.startTokenExpirationTimer(user.token, refreshToken);//debugging
+
+
+    this.startTokenExpirationTimer(accesToken, user.refreshToken);//debugging
   }
 
   purgeAuth() {
@@ -90,13 +100,16 @@ export class UserService {
       .pipe(
         map((data: any) => {
           const currentUser = this.getCurrentUser();
+
+          console.log('Current user:', currentUser);
+
           if (currentUser) {
             const updatedUser = { 
               ...currentUser, 
               token: data.accessToken, 
               refreshToken: data.refreshToken 
             };
-            this.setAuth(updatedUser, data.refreshToken);
+            this.setAuth(updatedUser, data.accesToken);
             return updatedUser;
           }
           throw new Error('Current user not found');
@@ -112,9 +125,9 @@ export class UserService {
       .pipe(map((data: any) => {
         // console.log('Login response:', data);
         // console.log('User data:', data.user);
-        // console.log('Access token:', data.accessToken);
-        // console.log('Refresh token:', data.refreshToken);
-        this.setAuth(data.user, data.refreshToken);
+        // console.log('Access token:', data.user.accessToken);
+        // console.log('Refresh token:', data.user.refreshToken);
+        this.setAuth(data.user, data.user.accessToken);
         return data;
       }));
   }
@@ -137,6 +150,9 @@ export class UserService {
 
   /**____________________________DEBUG ZONE____________________________________________ */
   private startTokenExpirationTimer(accessToken: string, refreshToken: string) {
+
+    console.log(accessToken, refreshToken);
+
     this.stopTokenExpirationTimer();
     
     const decodeToken = (token: string) => {
