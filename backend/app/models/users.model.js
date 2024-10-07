@@ -28,6 +28,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+///////////
+    refreshToken: { 
+        type: String 
+    },
+    usedRefreshTokens: [{ 
+        type: String 
+    }],
+//////////
     image: {
         type: String,
         default: "https://static.productionready.io/images/smiley-cyrus.jpg"
