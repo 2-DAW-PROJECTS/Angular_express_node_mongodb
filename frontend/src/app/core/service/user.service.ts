@@ -24,15 +24,13 @@ export class UserService {
 
   populate() {
     const token = this.jwtService.getToken();
-    // console.log('Token en populate:', token);
-
     if (token) {
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
         this.http.get(`${this.apiUrl}/user`, { headers }).subscribe(
             (data: any) => {
-                // console.log('Datos del usuario:', data); 
+                console.log('Datos del usuario:', data); // Imprime los datos del usuario
                 if (data && data.user) {
-                    this.setAuth({ ...data.user, token });
+                    this.setAuth({ ...data.user, token }); // Asegúrate de que `data.user` contenga todos los campos necesarios
                 } else {
                     console.error('No se encontró el usuario en la respuesta');
                     this.isAuthenticatedSubject.next(false);
@@ -50,6 +48,7 @@ export class UserService {
         this.currentUserSubject.next(null);
     }
 }
+
 
   setAuth(user: User) {
     this.jwtService.saveToken(user.token);
@@ -76,11 +75,16 @@ export class UserService {
     return this.currentUserSubject.value;
   }
 
+  // Asegúrate de que el token JWT está incluido en el encabezado de la petición
   update(user: User): Observable<User> {
-    return this.http.put(`${this.apiUrl}/user`, { user })
+    const token = this.jwtService.getToken();
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+    return this.http.put(`${this.apiUrl}/user`, { user }, { headers })
       .pipe(map((data: any) => {
-        this.currentUserSubject.next(data.user);
+        this.currentUserSubject.next(data.user); // Actualiza el usuario actual en el BehaviorSubject
         return data.user;
       }));
-  }
+}
+
 }

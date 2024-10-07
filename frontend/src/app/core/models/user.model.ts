@@ -5,4 +5,7 @@ export interface User {
   bio: string;
   image: string;
   refreshToken: string;
+  city: string;  
+  aboutMe: string; 
+  skills: string[]; 
 }
