@@ -20,8 +20,7 @@ export class UserService {
   private apiUrl = environment.api_url; 
 
 
-  private accessTokenExpirationTimer: any;
-  private refreshTokenExpirationTimer: any;//No toques perro es par saber el temps que falta per a 
+  private tokenExpirationTimer: any;//No toques perro es par saber el temps que falta per a 
                                     //  caducar el token pa debugg, en com ho toques te arranque la ma
 
 
@@ -32,16 +31,28 @@ export class UserService {
 
 
   populate() {
-    if (this.jwtService.getAccessToken()) {
-      this.http.get(`${this.apiUrl}/user`).subscribe(
-        (data: any) => {
+    const accessToken = this.jwtService.getAccessToken();
+    const refreshToken = this.jwtService.getRefreshToken();
+  
+    if (accessToken && refreshToken) {
+      this.http.get<{user: User}>(`${this.apiUrl}/user`).subscribe(
+        (data) => {
           if (data && data.user) {
-            this.setAuth(data.user);
+            const user: User = {
+              ...data.user,
+              token: accessToken,
+              refreshToken: refreshToken
+            };
+            console.log('Complete user data:', user);
+            this.setAuth(user, user.refreshToken);
+
+            this.startTokenExpirationTimer(user.token, user.refreshToken);
           } else {
             this.purgeAuth();
           }
         },
-        () => {
+        (error) => {
+          console.error('Error fetching user data:', error);
           this.purgeAuth();
         }
       );
@@ -49,15 +60,19 @@ export class UserService {
       this.purgeAuth();
     }
   }
+  
+  
+  
 
 
-  setAuth(user: User) {
-    this.jwtService.saveTokens(user.token, user.refreshToken);  
+  setAuth(user: User, refreshToken: string) {
+    this.jwtService.saveTokens(user.token, refreshToken);  
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
 
-
-    this.startTokenExpirationTimers(user.token, user.refreshToken);//debugging
+    // console.log(user);
+    // console.log(refreshToken);
+    this.startTokenExpirationTimer(user.token, refreshToken);//debugging
   }
 
   purgeAuth() {
@@ -76,12 +91,13 @@ export class UserService {
         map((data: any) => {
           const currentUser = this.getCurrentUser();
           if (currentUser) {
-            this.setAuth({ 
+            const updatedUser = { 
               ...currentUser, 
               token: data.accessToken, 
               refreshToken: data.refreshToken 
-            });
-            return currentUser;
+            };
+            this.setAuth(updatedUser, data.refreshToken);
+            return updatedUser;
           }
           throw new Error('Current user not found');
         })
@@ -94,10 +110,15 @@ export class UserService {
     const route = (type === 'login') ? '/users/login' : '/users';
     return this.http.post(`${this.apiUrl}${route}`, { user: credentials })
       .pipe(map((data: any) => {
-          this.setAuth(data.user);
-          return data.user;
+        // console.log('Login response:', data);
+        // console.log('User data:', data.user);
+        // console.log('Access token:', data.accessToken);
+        // console.log('Refresh token:', data.refreshToken);
+        this.setAuth(data.user, data.refreshToken);
+        return data;
       }));
   }
+  
 
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
@@ -115,43 +136,48 @@ export class UserService {
 
 
   /**____________________________DEBUG ZONE____________________________________________ */
-  private startTokenExpirationTimers(accessToken: string, refreshToken: string) {
-    this.stopTokenExpirationTimers();
+  private startTokenExpirationTimer(accessToken: string, refreshToken: string) {
+    this.stopTokenExpirationTimer();
     
-    this.startTokenTimer(accessToken, 'Access');
-    this.startTokenTimer(refreshToken, 'Refresh');
-  }
-
-  private startTokenTimer(token: string, tokenType: string) {
-    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-    const expirationTime = tokenPayload.exp * 1000; // Convert to milliseconds
-    const currentTime = Date.now();
-    const timeUntilExpiration = expirationTime - currentTime;
-
-    if (timeUntilExpiration > 0) {
-      const timer = interval(1000).pipe(
-        takeWhile(() => Date.now() < expirationTime)
-      ).subscribe(() => {
-        const remainingTime = Math.round((expirationTime - Date.now()) / 1000);
-        console.log(`${tokenType} token expires in ${remainingTime} seconds`);
-      });
-
-      if (tokenType === 'Access') {
-        this.accessTokenExpirationTimer = timer;
-      } else {
-        this.refreshTokenExpirationTimer = timer;
+    const decodeToken = (token: string) => {
+      try {
+        return JSON.parse(atob(token.split('.')[1]));
+      } catch (e) {
+        console.error('Error decoding token:', e);
+        return null;
       }
+    };
+  
+    const accessTokenPayload = decodeToken(accessToken);
+    const refreshTokenPayload = decodeToken(refreshToken);
+    
+    if (accessTokenPayload && refreshTokenPayload) {
+      const accessExpiration = accessTokenPayload.exp * 1000;
+      const refreshExpiration = refreshTokenPayload.exp * 1000;
+  
+      this.tokenExpirationTimer = interval(1000).pipe(
+        takeWhile(() => Date.now() < refreshExpiration)
+      ).subscribe(() => {
+        const currentTime = Date.now();
+        const accessRemaining = Math.max(0, Math.round((accessExpiration - currentTime) / 1000));
+        const refreshRemaining = Math.max(0, Math.round((refreshExpiration - currentTime) / 1000));
+        
+        console.log(`Access token expires in ${accessRemaining}s,\n Refresh token expires in ${refreshRemaining}s`);
+        
+        if (currentTime >= accessExpiration && currentTime < refreshExpiration) {
+          console.log('Access token expired. Using refresh token to get a new one.');
+          this.refreshToken().subscribe();
+        }
+      });
     } else {
-      console.log(`${tokenType} token has already expired`);
+      console.error('Invalid tokens');
     }
   }
+  
 
-  private stopTokenExpirationTimers() {
-    if (this.accessTokenExpirationTimer) {
-      this.accessTokenExpirationTimer.unsubscribe();
-    }
-    if (this.refreshTokenExpirationTimer) {
-      this.refreshTokenExpirationTimer.unsubscribe();
+  private stopTokenExpirationTimer() {
+    if (this.tokenExpirationTimer) {
+      this.tokenExpirationTimer.unsubscribe();
     }
   }
 }
