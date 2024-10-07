@@ -29,8 +29,8 @@ export class UserService {
     const refreshToken = this.jwtService.getRefreshToken();
 
     if (accessToken && refreshToken) {
-        console.log('Access Token:', accessToken);
-        console.log('Refresh Token:', refreshToken);
+        // console.log('Access Token:', accessToken);
+        // console.log('Refresh Token:', refreshToken);
 
         const headers = new HttpHeaders().set('Authorization', `Bearer ${accessToken}`);
 
@@ -43,7 +43,7 @@ export class UserService {
                         refreshToken: refreshToken
                     };
 
-                    console.log('Complete user data:', user);
+                    // console.log('Complete user data:', user);
 
                     this.setAuth(user, accessToken);
 
