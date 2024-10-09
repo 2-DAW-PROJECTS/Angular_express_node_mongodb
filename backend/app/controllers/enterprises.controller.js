@@ -56,7 +56,7 @@ const findAllEnterprises = asyncHandler(async (req, res) => {
         query.name = { $regex: new RegExp(name, 'i') };
     }
 
-    const enterprises = await Enterprise.find(query).limit(limit).skip(offset);
+    const enterprises = await Enterprise.find(query).limit(limit).skip(offset).populate('category').populate('offers');
     const enterpriseCount = await Enterprise.countDocuments(query);
 
     return res.status(200).json({ enterprises, count: enterpriseCount });
@@ -69,9 +69,11 @@ const findAllEnterprises = asyncHandler(async (req, res) => {
 
 
 
-// FIND ONE ENTERPRISE
+// FIND ONE ENTERPRISE with category and offers populated
 const findOneEnterprise = asyncHandler(async (req, res) => {
-    const enterprise = await Enterprise.findOne({ slug: req.params.slug });
+    const enterprise = await Enterprise.findOne({ slug: req.params.slug })
+        .populate('category')
+        .populate('offers'); // Asegúrate de tener el esquema de categoría y oferta bien definido.
 
     if (!enterprise) {
         return res.status(404).json({ message: 'Enterprise not found' });

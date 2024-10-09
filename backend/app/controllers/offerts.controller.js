@@ -8,23 +8,18 @@ const slugify = require('slugify');
 const createOffert = asyncHandler(async (req, res) => {
     const { title, company, location, description, requirements, salary, image, categorySlug } = req.body;
 
-    // Validar si la categoría existe utilizando el slug
     const categoryObj = await Category.findOne({ slug: categorySlug }).exec();
-    if (!categoryObj) {
-        return res.status(400).json({ error: 'Categoría no encontrada' });
-    }
+    if (!categoryObj) return res.status(400).json({ error: 'Categoría no encontrada' });
 
     const enterprise = await Enterprise.findOne({ name: company }).exec();
-    if (!enterprise) {
-        return res.status(400).json({ error: 'Empresa no encontrada' });
-    }
+    if (!enterprise) return res.status(400).json({ error: 'Empresa no encontrada' });
 
     const randomToken = Math.random().toString(36).substring(2, 8);
 
     const newOffert = new Offert({
         title,
-        company: enterprise.name,  // Guardar el nombre de la empresa
-        company_slug: enterprise.slug,  // Guardar el slug de la empresa
+        company: enterprise.name,
+        company_slug: enterprise.slug,
         location,
         description,
         requirements,
@@ -32,13 +27,12 @@ const createOffert = asyncHandler(async (req, res) => {
         category: categoryObj._id,
         slug: `${slugify(title, { lower: true })}-${randomToken}`,
         image, 
-        categorySlug: categoryObj.slug // Establecer el slug de la categoría
+        categorySlug: categoryObj.slug
     });
 
     const savedOffert = await newOffert.save();
     res.status(201).json(savedOffert);
 });
-
 // FIND ALL OFFERTS
 const findAllOfferts = asyncHandler(async (req, res) => {
     let query = {};
@@ -135,7 +129,54 @@ const filterOffert = asyncHandler(async (req, res) => {
     }
 });
 
+// FAVORITE OFFER
+const favoriteOffert = asyncHandler(async (req, res) => {
+    const userId = req.userId;
+    const { slug } = req.params;
 
+    const user = await User.findById(userId).exec();
+    const offert = await Offert.findOne({ slug }).exec();
+    if (!user || !offert) return res.status(404).json({ message: "Offert or User Not Found" });
+
+    await user.favorite(offert._id);
+    const updatedOffert = await offert.updateFavoriteCount();
+
+    return res.status(200).json({ offert: await updatedOffert.toOffertResponse(user) });
+});
+
+// UNFAVORITE OFFER
+const unfavoriteOffert = asyncHandler(async (req, res) => {
+    const userId = req.userId;
+    const { slug } = req.params;
+
+    const user = await User.findById(userId).exec();
+    const offert = await Offert.findOne({ slug }).exec();
+    if (!user || !offert) return res.status(404).json({ message: "Offert or User Not Found" });
+
+    await user.unfavorite(offert._id);
+    const updatedOffert = await offert.updateFavoriteCount();
+
+    return res.status(200).json({ offert: await updatedOffert.toOffertResponse(user) });
+});
+
+// FEED OFFERTS (offers from followed companies)
+const feedOfferts = asyncHandler(async (req, res) => {
+    let limit = parseInt(req.query.limit) || 20;
+    let offset = parseInt(req.query.offset) || 0;
+
+    const user = await User.findById(req.userId).exec();
+    const filteredOfferts = await Offert.find({ company_slug: { $in: user.followingCompanies } })
+        .limit(limit)
+        .skip(offset)
+        .exec();
+
+    const offertCount = await Offert.countDocuments({ company_slug: { $in: user.followingCompanies } });
+
+    return res.status(200).json({
+        offerts: await Promise.all(filteredOfferts.map(async offert => await offert.toOffertResponse(user))),
+        offertCount
+    });
+});
 
 
 // EXPORT MODULE
@@ -145,5 +186,8 @@ module.exports = {
     findOneOffert,
     filterOffert,
     deleteOneOffert,
+    favoriteOffert,
+    unfavoriteOffert,
+    feedOfferts,
     updateOffert,
 };

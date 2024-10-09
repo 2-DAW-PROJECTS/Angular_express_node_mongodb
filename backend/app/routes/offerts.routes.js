@@ -1,24 +1,32 @@
 const offertsController = require('../controllers/offerts.controller.js');
+const verifyJWT = require('../middleware/verifyJWT');  // Verifica JWT para rutas protegidas
+const verifyJWTOptional = require('../middleware/verifyJWTOptional');  // JWT opcional para ciertas rutas
 
 module.exports = (app) => {
     // CREATE OFFERT
-    app.post('/offerts', offertsController.createOffert);
+    app.post('/offerts', verifyJWT, offertsController.createOffert);  // Requiere autenticación
 
     // FIND ALL OFFERTS
-    app.get('/offerts', offertsController.findAllOfferts);
+    app.get('/offerts', verifyJWTOptional, offertsController.findAllOfferts);  // Autenticación opcional
 
     // FIND OFFERTS BY FILTERS
-    app.get('/offerts/filter', offertsController.filterOffert); // Cambiado a filterOffert
-    console.log('Ruta de filtro de ofertas');
+    app.get('/offerts/filter', verifyJWTOptional, offertsController.filterOffert);  // Autenticación opcional
 
     // FIND ONE OFFERT
-    app.get('/offerts/:slug', offertsController.findOneOffert);
+    app.get('/offerts/:slug', verifyJWTOptional, offertsController.findOneOffert);  // Autenticación opcional
 
     // DELETE ONE OFFERT
-    app.delete('/offerts/:slug', offertsController.deleteOneOffert);
+    app.delete('/offerts/:slug', verifyJWT, offertsController.deleteOneOffert);  // Requiere autenticación
 
     // UPDATE OFFERT
-    app.put('/offerts/:slug', offertsController.updateOffert);
+    app.put('/offerts/:slug', verifyJWT, offertsController.updateOffert);  // Requiere autenticación
 
+    // FAVORITE OFFERT
+    app.post('/offerts/:slug/favorite', verifyJWT, offertsController.favoriteOffert);  // Añadir a favoritos (Requiere autenticación)
 
+    // UNFAVORITE OFFERT
+    app.delete('/offerts/:slug/favorite', verifyJWT, offertsController.unfavoriteOffert);  // Eliminar de favoritos
+
+    // FEED OFFERTS (ofertas de empresas seguidas)
+    app.get('/offerts/feed', verifyJWT, offertsController.feedOfferts);  // Requiere autenticación para ver ofertas de empresas seguidas
 };

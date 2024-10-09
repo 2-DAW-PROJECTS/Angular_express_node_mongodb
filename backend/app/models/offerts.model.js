@@ -39,7 +39,7 @@ const offertSchema = new Schema({
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Categorys',
+        ref: 'Categorys', // Asegúrate de que este modelo exista
         required: true
     },
     image: {
@@ -50,7 +50,17 @@ const offertSchema = new Schema({
         type: String,
         lowercase: true,
         required: true
-    }
+    },
+    favouritesCount: {
+        type: Number,
+        default: 0
+    },
+    comments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment'
+    }]
+}, {
+    timestamps: true // Agrega timestamps (createdAt y updatedAt)
 });
 
 // MIDDLEWARE PARA GENERAR SLUG CON TOKEN ALEATORIO
@@ -62,15 +72,69 @@ offertSchema.pre('save', async function (next) {
 
     // Obtener el slug de la categoría, si no está ya establecido.
     if (this.category && !this.categorySlug) {
-        const category = await mongoose.model('Categorys').findById(this.category).exec();
-        if (category) {
-            this.categorySlug = category.slug;
-        } else {
-            return next(new Error('Categoría no encontrada'));
+        try {
+            const category = await mongoose.model('Categorys').findById(this.category).exec();
+            if (category) {
+                this.categorySlug = category.slug;
+            } else {
+                return next(new Error('Categoría no encontrada'));
+            }
+        } catch (error) {
+            return next(new Error('Error al buscar la categoría: ' + error.message));
         }
     }
 
     next();
 });
+
+// Método para actualizar el contador de favoritos (likes)
+offertSchema.methods.updateFavoriteCount = async function (User) {
+    const favoriteCount = await User.count({
+        favouriteOfferts: { $in: [this._id] }
+    });
+
+    this.favouritesCount = favoriteCount;
+
+    return this.save();
+};
+
+// Método para generar la respuesta de la oferta
+offertSchema.methods.toOffertResponse = async function (user) {
+    const authorObj = await User.findById(this.author).exec();
+    return {
+        slug: this.slug,
+        title: this.title,
+        description: this.description,
+        company: this.company,
+        location: this.location,
+        requirements: this.requirements,
+        salary: this.salary,
+        image: this.image,
+        postedDate: this.postedDate,
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
+        favoritesCount: this.favouritesCount,
+        favorited: user ? user.isFavourite(this._id) : false, // Comprueba si el usuario la ha marcado como favorita
+        comments: this.comments,
+        author: authorObj ? authorObj.toProfileJSON(user) : null // Relacionado al autor de la oferta, si existe
+    };
+};
+
+// Método para añadir un comentario
+offertSchema.methods.addComment = function (commentId) {
+    if (this.comments.indexOf(commentId) === -1) {
+        this.comments.push(commentId);
+    }
+    return this.save();
+};
+
+// Método para eliminar un comentario
+offertSchema.methods.removeComment = function (commentId) {
+    const index = this.comments.indexOf(commentId);
+    if (index !== -1) {
+        this.comments.splice(index, 1);
+    }
+    return this.save();
+};
 
 module.exports = mongoose.model('Offert', offertSchema);
