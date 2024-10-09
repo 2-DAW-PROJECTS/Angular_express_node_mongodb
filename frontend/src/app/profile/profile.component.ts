@@ -24,15 +24,21 @@ export class ProfileComponent implements OnInit {
     });
   }
 
- // Método para actualizar los campos de perfil
- updateProfile(updatedFields: Partial<User>) {
-  if (this.user) {
-    const updatedUser = { ...this.user, ...updatedFields };
-    this.userService.update(updatedUser).subscribe(updated => {
-      this.user = updated; // Actualiza la información local del usuario
-    });
-  }
+// Método para actualizar los campos de perfil
+updateProfile(updatedFields: Partial<User>) {
+    if (this.user) {
+        const updatedUser = { ...this.user, ...updatedFields };
+        this.userService.update(updatedUser).subscribe({
+            next: updated => {
+                this.user = updated; // Actualiza la información local del usuario
+            },
+            error: err => {
+                console.error('Error updating user:', err); // Captura el error
+            }
+        });
+    }
 }
+
 
 // Método para alternar la visibilidad del formulario de edición
 toggleEditForm(): void {

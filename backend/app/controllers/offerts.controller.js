@@ -3,6 +3,7 @@ const Category = require('../models/categorys.model.js');
 const Enterprise = require('../models/enterprises.model.js'); // Importar el modelo de empresa
 const asyncHandler = require('express-async-handler');
 const slugify = require('slugify');
+const User = require('../models/users.model.js'); // Asegúrate de que esta ruta sea correcta
 
 // CREATE NUEVA OFFERT
 const createOffert = asyncHandler(async (req, res) => {
@@ -27,7 +28,9 @@ const createOffert = asyncHandler(async (req, res) => {
         category: categoryObj._id,
         slug: `${slugify(title, { lower: true })}-${randomToken}`,
         image, 
-        categorySlug: categoryObj.slug
+        categorySlug: categoryObj.slug,
+        favouritesCount: 0,
+        comments: []
     });
 
     const savedOffert = await newOffert.save();
@@ -131,38 +134,53 @@ const filterOffert = asyncHandler(async (req, res) => {
 
 // FAVORITE OFFER
 const favoriteOffert = asyncHandler(async (req, res) => {
-    const userId = req.userId;
-    const { slug } = req.params;
-
+    const userId = req.userId; 
+    const { slug } = req.params; 
+    
     const user = await User.findById(userId).exec();
     const offert = await Offert.findOne({ slug }).exec();
-    if (!user || !offert) return res.status(404).json({ message: "Offert or User Not Found" });
 
-    await user.favorite(offert._id);
-    const updatedOffert = await offert.updateFavoriteCount();
+    if (!user || !offert) {
+        return res.status(404).json({ message: "Offert or User Not Found" });
+    }
 
-    return res.status(200).json({ offert: await updatedOffert.toOffertResponse(user) });
+    if (!offert.favorites.includes(userId)) {
+        offert.favorites.push(userId); // Agregar el ID del usuario a favorites
+        await offert.updateFavoriteCount(); // Actualiza el contador de favoritos
+        await offert.save(); // Guarda la oferta
+    }
+
+    return res.status(200).json({ offert: await offert.toOffertResponse(user) });
 });
+
+
 
 // UNFAVORITE OFFER
 const unfavoriteOffert = asyncHandler(async (req, res) => {
-    const userId = req.userId;
-    const { slug } = req.params;
+    const userId = req.userId; // ID del usuario desde el token
+    const { slug } = req.params; // slug de la oferta
 
     const user = await User.findById(userId).exec();
     const offert = await Offert.findOne({ slug }).exec();
-    if (!user || !offert) return res.status(404).json({ message: "Offert or User Not Found" });
 
-    await user.unfavorite(offert._id);
-    const updatedOffert = await offert.updateFavoriteCount();
+    if (!user || !offert) {
+        return res.status(404).json({ message: "Offert or User Not Found" });
+    }
 
-    return res.status(200).json({ offert: await updatedOffert.toOffertResponse(user) });
+    const index = offert.favorites.indexOf(userId);
+    if (index !== -1) {
+        offert.favorites.splice(index, 1);
+        offert.favouritesCount = offert.favorites.length;
+        await offert.save(); // Guardar los cambios en la oferta
+    }
+
+    return res.status(200).json({ offert: await offert.toOffertResponse(user) });
 });
 
 // FEED OFFERTS (offers from followed companies)
 const feedOfferts = asyncHandler(async (req, res) => {
-    let limit = parseInt(req.query.limit) || 20;
-    let offset = parseInt(req.query.offset) || 0;
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = parseInt(req.query.offset) || 0;
 
     const user = await User.findById(req.userId).exec();
     const filteredOfferts = await Offert.find({ company_slug: { $in: user.followingCompanies } })
@@ -174,10 +192,43 @@ const feedOfferts = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
         offerts: await Promise.all(filteredOfferts.map(async offert => await offert.toOffertResponse(user))),
-        offertCount
+        count: offertCount // Asegúrate de enviar el recuento total
     });
 });
 
+// GET COUNT OF FAVORITES
+const getFavoriteCount = asyncHandler(async (req, res) => {
+    const { slug } = req.params; // Obtener el slug de la oferta
+
+    const offert = await Offert.findOne({ slug }).exec();
+
+    if (!offert) {
+        return res.status(404).json({ message: 'Offert not found' });
+    }
+
+    return res.status(200).json({ favoritesCount: offert.favouritesCount });
+});
+
+// OBTENER OFERTAS FAVORITAS DEL USUARIO
+const getUserFavorites = asyncHandler(async (req, res) => {
+    console.log("getUserFavorites called");
+
+    const userId = req.userId;
+    // console.log("User ID:", userId); 
+
+    const user = await User.findById(userId).exec();
+    if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    const favorites = await Offert.find({ favorites: { $in: [userId] } }).exec();
+
+    if (!favorites || favorites.length === 0) {
+        return res.status(200).json({ offerts: [], message: 'No tienes ofertas favoritas' });
+    }
+
+    return res.status(200).json({ offerts: favorites });
+});
 
 // EXPORT MODULE
 module.exports = {
@@ -188,6 +239,8 @@ module.exports = {
     deleteOneOffert,
     favoriteOffert,
     unfavoriteOffert,
+    getFavoriteCount,
+    getUserFavorites,
     feedOfferts,
     updateOffert,
 };

@@ -3,8 +3,6 @@ const asyncHandler = require('express-async-handler');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 
-
-
 // @desc registration for a user
 // @route POST /api/users
 // @access Public
@@ -13,70 +11,67 @@ const jwt = require('jsonwebtoken');
 const registerUser = asyncHandler(async (req, res) => {
     const { user } = req.body;
 
+    // Verificar campos requeridos
     if (!user || !user.email || !user.username || !user.password) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
-    const existingUser = await User.find({ $or: [{ email: user.email }, { username: user.username }] });
-    if (existingUser.length > 0) {
-        return res.status(422).json({ message: "The email or username is already taken" });
+    // Verificar si ya existe un usuario con el mismo email o username
+    const existingUser = await User.findOne({ 
+        $or: [{ email: user.email }, { username: user.username }] 
+    });
+
+    if (existingUser) {
+        return res.status(422).json({ message: "Email or username already taken" });
     }
 
-
+    // Hashear la contraseña
     const hashedPwd = await argon2.hash(user.password);
     const userObject = {
         username: user.username,
         password: hashedPwd,
         email: user.email,
-        city: "",           // Nuevo campo por defecto vacío
-        aboutMe: "",        // Nuevo campo por defecto vacío
-        skills: []          // Nuevo campo por defecto vacío
+        city: "", 
+        aboutMe: "",
+        skills: []
     };
 
+    // Crear el nuevo usuario
     const createdUser = await User.create(userObject);
 
+    // Generar token JWT
     if (createdUser) {
-        res.status(201).json({
-            user: createdUser.toUserResponse()
+        const token = jwt.sign(
+            { user: { id: createdUser._id, email: createdUser.email } },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        return res.status(201).json({
+            user: createdUser.toUserResponse(), // Devuelve la respuesta del usuario
+            token  // Enviar el token como respuesta
         });
     } else {
-        res.status(422).json({ errors: { body: "Unable to register a user" } });
+        return res.status(422).json({ errors: { body: "Unable to register a user" } });
     }
 });
-
 
 // @desc get currently logged-in user
 // @route GET /api/user
 // @access Private
 // @return User
-// const getCurrentUser = asyncHandler(async (req, res) => {
-//     const email = req.userEmail;
-
-//     const user = await User.findOne({ email }).exec();
-
-//     if (!user) {
-//         return res.status(404).json({ message: "User Not Found" });
-//     }
-
-//     res.status(200).json({
-//         user: user.toUserResponse()
-//     });
-// });
 const getCurrentUser = asyncHandler(async (req, res) => {
-  const email = req.userEmail;
+    const email = req.userEmail;
 
-  const user = await User.findOne({ email }).exec();
+    const user = await User.findOne({ email }).exec();
+    if (!user) {
+        return res.status(404).json({ message: "User Not Found" });
+    }
 
-  if (!user) {
-      return res.status(404).json({ message: "User Not Found" });
-  }
-
-  res.status(200).json({
-      user: user.toUserResponse()
-  });
+    res.status(200).json({
+        user: user.toUserResponse()
+    });
 });
-  
-
 
 // @desc login for a user
 // @route POST /api/users/login
@@ -87,27 +82,33 @@ const userLogin = asyncHandler(async (req, res) => {
     const { user } = req.body;
 
     if (!user || !user.email || !user.password) {
-        return res.status(400).json({message: "All fields are required"});
+        return res.status(400).json({ message: "All fields are required" });
     }
 
     const loginUser = await User.findOne({ email: user.email }).exec();
 
     if (!loginUser) {
-        return res.status(404).json({message: "User Not Found"});
+        return res.status(404).json({ message: "User Not Found" });
     }
 
+    // Verificar la contraseña
     const match = await argon2.verify(loginUser.password, user.password);
+    if (!match) return res.status(401).json({ message: 'Unauthorized: Wrong password' });
 
-    if (!match) return res.status(401).json({ message: 'Unauthorized: Wrong password' })
+    // Generar tokens
+    const accessToken = jwt.sign(
+        { user: { id: loginUser._id, email: loginUser.email } },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: process.env.ACCESS_TOKEN_INTERVAL }
+    );
 
-        const accessToken = jwt.sign({ user: { id: loginUser._id, email: loginUser.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_INTERVAL });
-        
-        const refreshToken = jwt.sign(
-            { user: { id: loginUser._id } },
-            process.env.REFRESH_TOKEN_SECRET,
-            { expiresIn: process.env.REFRESH_TOKEN_INTERVAL }
-          );
-    
+    const refreshToken = jwt.sign(
+        { user: { id: loginUser._id } },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: process.env.REFRESH_TOKEN_INTERVAL }
+    );
+
+    // Guardar el refresh token en el usuario
     loginUser.refreshToken = refreshToken;
     loginUser.usedRefreshTokens = [];
     await loginUser.save();
@@ -122,15 +123,13 @@ const userLogin = asyncHandler(async (req, res) => {
             userId: loginUser._id,
             email: loginUser.email,
             tokenInfo: {
-                accessTokenExpiry: '15m',
-                refreshTokenExpiry: '7d'
+                accessTokenExpiry: process.env.ACCESS_TOKEN_INTERVAL,
+                refreshTokenExpiry: process.env.REFRESH_TOKEN_INTERVAL
             },
             timestamp: new Date().toISOString()
         }
     });
 });
-
-
 
 
 const refreshToken = asyncHandler(async (req, res) => {
@@ -140,23 +139,15 @@ const refreshToken = asyncHandler(async (req, res) => {
 
     try {
         const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-
-        console.log(payload);
-
         const user = await User.findById(payload.user.id);
-
-        console.log(user);
 
         if (!user || user.refreshToken !== refreshToken || user.usedRefreshTokens.includes(refreshToken)) {
             return res.status(401).json({ message: 'Invalid refresh token' });
         }
 
         const newAccessToken = jwt.sign({ user: { id: user._id, email: user.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_INTERVAL });
-
-    
         const newRefreshToken = jwt.sign({ user: { id: user._id } }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_INTERVAL });
 
-        
         user.usedRefreshTokens.push(user.refreshToken);
         user.refreshToken = newRefreshToken;
 
@@ -168,18 +159,15 @@ const refreshToken = asyncHandler(async (req, res) => {
     }
 });
 
-
-
-
-
-
 // @desc update currently logged-in user
 // Warning: if password or email is updated, client-side must update the token
 // @route PUT /api/user
 // @access Private
 // @return User
 const updateUser = asyncHandler(async (req, res) => {
+    console.log("Updating user with ID:", req.userId);
     const { user } = req.body;
+
     if (!user) {
         return res.status(400).json({ message: "Required a User object" });
     }
@@ -187,14 +175,19 @@ const updateUser = asyncHandler(async (req, res) => {
     const email = req.userEmail;
     const target = await User.findOne({ email }).exec();
 
-    if (user.email) target.email = user.email;
-    if (user.username) target.username = user.username;
+    if (!target) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update fields
+    target.email = user.email || target.email;
+    target.username = user.username || target.username;
     if (user.password) target.password = await argon2.hash(user.password);
-    if (typeof user.image !== 'undefined') target.image = user.image;
-    if (typeof user.bio !== 'undefined') target.bio = user.bio;
-    if (typeof user.city !== 'undefined') target.city = user.city;          // Añadir city
-    if (typeof user.aboutMe !== 'undefined') target.aboutMe = user.aboutMe;  // Añadir aboutMe
-    if (Array.isArray(user.skills)) target.skills = user.skills;            // Añadir skills
+    target.image = user.image || target.image;
+    target.bio = user.bio || target.bio;
+    target.city = user.city || target.city;
+    target.aboutMe = user.aboutMe || target.aboutMe;
+    if (Array.isArray(user.skills)) target.skills = user.skills;
 
     await target.save();
 
@@ -236,8 +229,6 @@ const unfollowEnterprise = asyncHandler(async (req, res) => {
     await user.unfollowEnterprise(enterprise._id);
     return res.status(200).json({ profile: enterprise.toEnterpriseProfileJSON(user) });
 });
-
-
 
 module.exports = {
     registerUser,

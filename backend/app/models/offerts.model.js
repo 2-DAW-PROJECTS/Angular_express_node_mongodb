@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify'); // SLUGIFY
 const { Schema } = mongoose;
+const User = require('./users.model'); // Asegúrate de que esta ruta sea correcta
 
 const offertSchema = new Schema({
     title: {
@@ -55,6 +56,10 @@ const offertSchema = new Schema({
         type: Number,
         default: 0
     },
+    favorites: [{ // Nuevo campo para almacenar los IDs de usuarios que han dado like
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' // Asegúrate de que este modelo exista
+    }],
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'
@@ -88,13 +93,9 @@ offertSchema.pre('save', async function (next) {
 });
 
 // Método para actualizar el contador de favoritos (likes)
-offertSchema.methods.updateFavoriteCount = async function (User) {
-    const favoriteCount = await User.count({
-        favouriteOfferts: { $in: [this._id] }
-    });
-
-    this.favouritesCount = favoriteCount;
-
+offertSchema.methods.updateFavoriteCount = async function () {
+    // No es necesario recibir User aquí, ya que simplemente contamos los favoritos
+    this.favouritesCount = this.favorites.length; // Actualiza el contador de favoritos basado en el arreglo de IDs
     return this.save();
 };
 
@@ -114,7 +115,7 @@ offertSchema.methods.toOffertResponse = async function (user) {
         createdAt: this.createdAt,
         updatedAt: this.updatedAt,
         favoritesCount: this.favouritesCount,
-        favorited: user ? user.isFavourite(this._id) : false, // Comprueba si el usuario la ha marcado como favorita
+        favorited: user ? this.favorites.includes(user._id) : false, // Usamos user._id para comprobar si es un favorito
         comments: this.comments,
         author: authorObj ? authorObj.toProfileJSON(user) : null // Relacionado al autor de la oferta, si existe
     };
