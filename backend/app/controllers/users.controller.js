@@ -100,8 +100,13 @@ const userLogin = asyncHandler(async (req, res) => {
 
     if (!match) return res.status(401).json({ message: 'Unauthorized: Wrong password' })
 
-    const accessToken = jwt.sign({ user: { id: loginUser._id, email: loginUser.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10s' });
-    const refreshToken = jwt.sign({ user: { id: loginUser._id } }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+        const accessToken = jwt.sign({ user: { id: loginUser._id, email: loginUser.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_INTERVAL });
+        
+        const refreshToken = jwt.sign(
+            { user: { id: loginUser._id } },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: process.env.REFRESH_TOKEN_INTERVAL }
+          );
     
     loginUser.refreshToken = refreshToken;
     loginUser.usedRefreshTokens = [];
@@ -146,8 +151,11 @@ const refreshToken = asyncHandler(async (req, res) => {
             return res.status(401).json({ message: 'Invalid refresh token' });
         }
 
-        const newAccessToken = jwt.sign({ user: { id: user._id, email: user.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10s' });
-        const newRefreshToken = jwt.sign({ user: { id: user._id } }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+        const newAccessToken = jwt.sign({ user: { id: user._id, email: user.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_INTERVAL });
+
+    
+        const newRefreshToken = jwt.sign({ user: { id: user._id } }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_INTERVAL });
+
         
         user.usedRefreshTokens.push(user.refreshToken);
         user.refreshToken = newRefreshToken;
@@ -195,11 +203,49 @@ const updateUser = asyncHandler(async (req, res) => {
     });
 });
 
+// GET PROFILE
+const getProfile = asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    const user = await User.findOne({ username }).exec();
+    if (!user) return res.status(404).json({ message: "User Not Found" });
+    
+    const loggedInUser = req.loggedin ? await User.findById(req.userId).exec() : null;
+    return res.status(200).json({ profile: user.toProfileJSON(loggedInUser) });
+});
+
+// FOLLOW ENTERPRISE
+const followEnterprise = asyncHandler(async (req, res) => {
+    const { slug } = req.params;
+    const user = await User.findById(req.userId).exec();
+    const enterprise = await Enterprise.findOne({ slug }).exec();
+
+    if (!enterprise || !user) return res.status(404).json({ message: "User or Enterprise Not Found" });
+
+    await user.followEnterprise(enterprise._id);
+    return res.status(200).json({ profile: enterprise.toEnterpriseProfileJSON(user) });
+});
+
+// UNFOLLOW ENTERPRISE
+const unfollowEnterprise = asyncHandler(async (req, res) => {
+    const { slug } = req.params;
+    const user = await User.findById(req.userId).exec();
+    const enterprise = await Enterprise.findOne({ slug }).exec();
+
+    if (!enterprise || !user) return res.status(404).json({ message: "User or Enterprise Not Found" });
+
+    await user.unfollowEnterprise(enterprise._id);
+    return res.status(200).json({ profile: enterprise.toEnterpriseProfileJSON(user) });
+});
+
+
 
 module.exports = {
     registerUser,
     getCurrentUser,
     userLogin,
     updateUser,
-    refreshToken
+    getProfile,
+    followEnterprise,
+    unfollowEnterprise,
+    refreshToken,
 }
