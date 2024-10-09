@@ -21,9 +21,16 @@ module.exports = (app) => {
     // UPDATE OFFERT
     app.put('/offerts/:slug', verifyJWT, offertsController.updateOffert);  // Requiere autenticación
 
+    // GET COUNT OF FAVORITES FOR A SPECIFIC OFFER
+    app.get('/offerts/:slug/favorites/count', verifyJWTOptional, offertsController.getFavoriteCount);  // Obtener el conteo de favoritos (opcional)
+
     // FAVORITE OFFERT
     app.post('/offerts/:slug/favorite', verifyJWT, offertsController.favoriteOffert);  // Añadir a favoritos (Requiere autenticación)
 
+    // GET USER FAVORITES
+    app.post('/offerts/favorites', verifyJWT, offertsController.getUserFavorites);  // Requiere autenticación
+
+    // console.log("Routes for offerts loaded");
     // UNFAVORITE OFFERT
     app.delete('/offerts/:slug/favorite', verifyJWT, offertsController.unfavoriteOffert);  // Eliminar de favoritos
 

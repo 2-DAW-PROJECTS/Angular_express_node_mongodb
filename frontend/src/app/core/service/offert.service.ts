@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { Offert } from '../models/offert.model';
 import { environment } from '../../../environments/environment';
@@ -36,33 +36,65 @@ export class OffertService {
     );
   }
   
-// Método para filtrar ofertas con múltiples parámetros, ahora con salario
-filterOfferts(filters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number }): Observable<{ offerts: Offert[], count: number }> {
-  let params = new HttpParams();
+  // Método para filtrar ofertas con múltiples parámetros
+  filterOfferts(filters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number }): Observable<{ offerts: Offert[], count: number }> {
+    let params = new HttpParams();
 
-  if (filters.category) {
-    params = params.append('categorySlug', filters.category);
-  }
-  if (filters.company) {
-    params = params.append('companySlug', filters.company);
-  }
-  if (filters.salaryMin !== undefined) {
-    params = params.append('salaryMin', filters.salaryMin.toString());
-  }
-  if (filters.salaryMax !== undefined) {
-    params = params.append('salaryMax', filters.salaryMax.toString());
+    if (filters.category) {
+      params = params.append('categorySlug', filters.category);
+    }
+    if (filters.company) {
+      params = params.append('companySlug', filters.company);
+    }
+    if (filters.salaryMin !== undefined) {
+      params = params.append('salaryMin', filters.salaryMin.toString());
+    }
+    if (filters.salaryMax !== undefined) {
+      params = params.append('salaryMax', filters.salaryMax.toString());
+    }
+
+    return this.http.get<{ offerts: Offert[], count: number }>(`${URL}/filter`, { params }).pipe(
+      catchError(this.handleError<{ offerts: Offert[], count: 0 }>('filterOfferts', { offerts: [], count: 0 }))
+    );
   }
 
-  return this.http.get<{ offerts: Offert[], count: number }>(`${URL}/filter`, { params }).pipe(
-    catchError(this.handleError<{ offerts: Offert[], count: 0 }>('filterOfferts', { offerts: [], count: 0 }))
+  // Método para agregar a favoritos
+  favoriteOffert(slug: string): Observable<Offert> {
+    return this.http.post<Offert>(`${URL}/${slug}/favorite`, {}, this.getAuthHeaders()).pipe(
+      catchError(this.handleError<Offert>('favoriteOffert'))
+    );
+  }
+
+  // Método para quitar de favoritos
+  unfavoriteOffert(slug: string): Observable<Offert> {
+    return this.http.delete<Offert>(`${URL}/${slug}/favorite`, this.getAuthHeaders()).pipe(
+      catchError(this.handleError<Offert>('unfavoriteOffert'))
+    );
+  }
+
+  // Método para obtener los encabezados de autorización
+  private getAuthHeaders() {
+    const token = localStorage.getItem('access_token');
+    return {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      })
+    };
+  }
+  
+// Método para obtener los favoritos del usuario (ajustado)
+getUserFavorites(): Observable<{ offerts: Offert[] }> {
+  return this.http.post<{ offerts: Offert[] }>(`${URL}/favorites`, {}, this.getAuthHeaders()).pipe( // Cambiar a POST
+      catchError(this.handleError<{ offerts: Offert[] }>('getUserFavorites', { offerts: [] }))
   );
 }
 
 
+
   // Manejo de errores
-  private handleError<T>(operation = 'operación', result?: T) {
+  private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-      console.error(`Error en ${operation}: ${error.message}`);
+      console.error(`${operation} failed: ${error.message}`);
       return of(result as T);
     };
   }

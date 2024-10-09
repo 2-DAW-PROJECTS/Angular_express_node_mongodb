@@ -6,14 +6,13 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { Subject, Observable } from 'rxjs';
 
-// Define the Filter interface to include all necessary properties
 interface Filter {
   category?: string;
   company?: string;
   salaryMin?: number;
   salaryMax?: number;
-  offset?: number; // Optional offset
-  limit?: number;  // Optional limit
+  offset?: number;
+  limit?: number;  
 }
 
 @Component({
@@ -25,25 +24,16 @@ interface Filter {
 })
 export class ListOffertsComponent implements OnInit {
   offerts: Offert[] = [];
-
-  // Initialize selectedFilters with offset and limit
-  selectedFilters: Filter = { 
-    offset: 0, 
-    limit: 2 
-  }; 
-
-  currentPage: number = 1; // Current page
-  totalPages: number[] = []; // Total pages
-  limit: number = 2; // Limit to 2 offers per page
-
-  // Update the type definition to include offset and limit in filtersChangeSubject
+  selectedFilters: Filter = { offset: 0, limit: 2 }; 
+  currentPage: number = 1;
+  totalPages: number[] = [];
+  limit: number = 2;
   private filtersChangeSubject: Subject<Filter> = new Subject();
   filtersChange: Observable<Filter> = this.filtersChangeSubject.asObservable();
+  
+  private favoriteSlugs: string[] = [];
 
-  constructor(
-    private offertService: OffertService,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private offertService: OffertService, private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -56,50 +46,115 @@ export class ListOffertsComponent implements OnInit {
           salaryMin: decodedFilters.salaryMin ? Number(decodedFilters.salaryMin) : undefined,
           salaryMax: decodedFilters.salaryMax ? Number(decodedFilters.salaryMax) : undefined,
           offset: decodedFilters.offset || 0,
-          limit: decodedFilters.limit || this.limit 
+          limit: decodedFilters.limit || this.limit
         };
-        this.currentPage = 1; // Start on page 1
-        this.loadOfferts(); // Load filtered offers on init
+        this.currentPage = 1;
+        this.loadOfferts(); 
       } else {
-        this.currentPage = 1; // Start on page 1
-        this.loadAllOfferts(); // Load all offers if no filters
+        this.currentPage = 1; 
+        this.loadAllOfferts(); 
       }
     });
-
+  
+    if (this.isUserAuthenticated()) {
+      this.loadUserFavorites();
+    }
+  
     this.filtersChange.subscribe((newFilters: Filter) => {
       this.selectedFilters = { 
         ...newFilters, 
-        offset: 0,  // Always initialize the offset to 0 when filters change
-        limit: this.limit // Ensure to include the limit
+        offset: 0, 
+        limit: this.limit 
       };
-      this.currentPage = 1; // Reset to page 1
-      this.loadOfferts(); // Reload offers
+      this.currentPage = 1;
+      this.loadOfferts();
     });
+  }
+  toggleFavorite(offert: Offert) {
+    if (offert.isFavorited) {
+      this.offertService.unfavoriteOffert(offert.slug).subscribe({
+        next: (response) => {
+          console.log('Removed from favorites:', response);
+          offert.isFavorited = false; // Update the state
+          this.favoriteSlugs = this.favoriteSlugs.filter(slug => slug !== offert.slug);
+        },
+        error: (err) => {
+          console.error('Error removing from favorites:', err);
+        }
+      });
+    } else {
+      this.offertService.favoriteOffert(offert.slug).subscribe({
+        next: (response) => {
+          console.log('Added to favorites:', response);
+          offert.isFavorited = true; // Update the state
+          this.favoriteSlugs.push(offert.slug);
+        },
+        error: (err) => {
+          console.error('Error adding to favorites:', err);
+        }
+      });
+    }
+  }
+
+loadUserFavorites() {
+  this.offertService.getUserFavorites().subscribe({
+    next: (response: { offerts: Offert[] }) => { 
+      const favorites = response.offerts; 
+      console.log('User favorites loaded:', favorites);
+
+      if (Array.isArray(favorites)) {
+        this.favoriteSlugs = favorites.map(fav => fav.slug);
+        console.log('Favorite slugs:', this.favoriteSlugs);
+        
+        this.offerts.forEach(offert => {
+          offert.isFavorited = this.favoriteSlugs.includes(offert.slug);
+        });
+      } else {
+        console.error('Favorites is not an array:', favorites);
+      }
+    },
+    error: (err) => {
+      console.error('Error loading user favorites:', err);
+    }
+  });
+}
+
+  isUserAuthenticated(): boolean {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const token = localStorage.getItem('access_token');
+      return !!token;
+    }
+    return false;
   }
 
   loadOfferts() {
-    // Ensure offset has a default value
-    const offset = this.selectedFilters.offset || 0;
-  
-    // Apply the offset calculation correctly
+    const offset = this.selectedFilters.offset || 0; 
     this.selectedFilters.offset = (this.currentPage - 1) * this.limit;
-  
-    // Check if any filters are applied
+
     if (this.selectedFilters.category || this.selectedFilters.company || this.selectedFilters.salaryMin || this.selectedFilters.salaryMax) {
-      this.loadOffertsByFilters(); // Load filtered offers
+      this.loadOffertsByFilters();
     } else {
-      this.loadAllOfferts(); // Load all offers if no filters
+      this.loadAllOfferts();
     }
   }
-  
   loadOffertsByFilters() {
     this.offertService.filterOfferts(this.selectedFilters).subscribe({
       next: (data) => {
         if (data && data.offerts && data.count) {
-          // Ensure offset has a default value
-          const offset = this.selectedFilters.offset ?? 0; // Use nullish coalescing to provide a default value
-          this.offerts = data.offerts.slice(offset, offset + this.limit); // Paginate locally
-          this.totalPages = Array(Math.ceil(data.count / this.limit)).fill(0).map((x, i) => i + 1); // Calculate total pages
+          const currentFavoriteSlugs = this.offerts
+            .filter(offert => offert.isFavorited)
+            .map(offert => offert.slug);
+  
+          this.offerts = data.offerts.map(offert => ({
+            ...offert,
+            isFavorited: currentFavoriteSlugs.includes(offert.slug) 
+          })).slice(
+            this.selectedFilters.offset || 0,  
+            (this.selectedFilters.offset || 0) + this.limit 
+          ); // Paginate locally
+  
+          // Actualiza totalPages
+          this.totalPages = Array(Math.ceil(data.count / this.limit)).fill(0).map((x, i) => i + 1);
         } else {
           console.error('Unexpected server response:', data);
         }
@@ -110,37 +165,39 @@ export class ListOffertsComponent implements OnInit {
         this.totalPages = [];
       }
     });
-}
-
+  }
+  
 
   loadAllOfferts() {
-    // Set the limit
     this.selectedFilters.limit = this.limit; 
-    // Ensure offset is calculated before loading all offers
     this.selectedFilters.offset = (this.currentPage - 1) * this.limit;
 
     this.offertService.all_offerts({ offset: this.selectedFilters.offset, limit: this.limit }).subscribe({
-        next: (data) => {
-            this.offerts = data.offerts;
-            this.totalPages = Array(Math.ceil(data.count / this.limit)).fill(0).map((x, i) => i + 1); // Calculate total pages
-        },
-        error: (err) => {
-            console.error('Error fetching all offers', err);
-        }
+      next: (data) => {
+        this.offerts = data.offerts.map(offert => ({
+          ...offert,
+          isFavorited: this.favoriteSlugs.includes(offert.slug) 
+        }));        
+        this.totalPages = Array(Math.ceil(data.count / this.limit)).fill(0).map((x, i) => i + 1);
+      },
+      error: (err) => {
+        console.error('Error fetching all offers', err);
+      }
     });
   }
 
+
   onPageChange(page: number) {
-    this.currentPage = page; // Update current page
-    this.selectedFilters.offset = (this.currentPage - 1) * this.limit; // Calculate new offset
-    this.loadOfferts(); // Reload offers with applied filters
+    this.currentPage = page; 
+    this.selectedFilters.offset = (this.currentPage - 1) * this.limit;
+    this.loadOfferts(); 
   }
 
   updateFilters(newFilters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number }) {
     this.filtersChangeSubject.next({
       ...newFilters,
-      offset: this.selectedFilters.offset || 0,  // Ensure there's always an offset
-      limit: this.selectedFilters.limit || this.limit // Ensure there's always a limit
+      offset: this.selectedFilters.offset || 0, 
+      limit: this.selectedFilters.limit || this.limit 
     });
   }
 
@@ -149,13 +206,12 @@ export class ListOffertsComponent implements OnInit {
       next: (data) => {
         this.offerts = data.offerts;
         console.log('Ofertas encontradas:', this.offerts);
-        // If a search is performed, you can reset or adapt pagination
-        this.totalPages = Array(Math.ceil(data.count / this.limit)).fill(0).map((x, i) => i + 1); // Calculate total pages
+        this.totalPages = Array(Math.ceil(data.count / this.limit)).fill(0).map((x, i) => i + 1); 
       },
       error: (err) => {
         console.error('Error fetching offers by search', err);
         this.offerts = [];
-        this.totalPages = []; // Reset pages in case of error
+        this.totalPages = []; 
       }
     });
   }

@@ -1,3 +1,4 @@
+// offert.model.ts
 export interface Offert {
   _id: string;
   title: string;
@@ -16,4 +17,5 @@ export interface Offert {
   contractType?: string;
   experience?: string;
   __v: number;
+  isFavorited?: boolean; 
 }

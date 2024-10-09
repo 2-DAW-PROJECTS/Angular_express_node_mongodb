@@ -5,6 +5,8 @@ import { JwtService } from './jwt.service';
 import { User } from '../models/user.model'; 
 import { map, distinctUntilChanged, switchMap, takeWhile } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { catchError } from 'rxjs/operators';
+
 
 
 @Injectable({
@@ -121,12 +123,15 @@ export class UserService {
   }
 
   update(user: User): Observable<User> {
-    return this.http.put(`${this.apiUrl}/user`, { user })
-      .pipe(map((data: any) => {
-        this.currentUserSubject.next(data.user);
-        return data.user;
-      }));
-  }
+    const accessToken = this.jwtService.getAccessToken(); // Asegúrate de obtener el token
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${accessToken}`);
+
+    return this.http.put(`${this.apiUrl}/user`, { user }, { headers }) // Aquí se añade la cabecera
+        .pipe(map((data: any) => {
+            this.currentUserSubject.next(data.user);
+            return data.user;
+        }));
+}
 
   /**____________________________DEBUG ZONE____________________________________________ */
   private startTokenExpirationTimer(accessToken: string, refreshToken: string) {
@@ -157,7 +162,7 @@ export class UserService {
         const accessRemaining = Math.max(0, Math.round((accessExpiration - currentTime) / 1000));
         const refreshRemaining = Math.max(0, Math.round((refreshExpiration - currentTime) / 1000));
         
-        console.log(`Access token expires in ${accessRemaining}s,\n Refresh token expires in ${refreshRemaining}s`);
+        // console.log(`Access token expires in ${accessRemaining}s,\n Refresh token expires in ${refreshRemaining}s`);
         
         if (currentTime >= accessExpiration && currentTime < refreshExpiration) {
           console.log('El usuario se va a deslogear');
