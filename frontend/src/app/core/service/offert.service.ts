@@ -89,8 +89,6 @@ getUserFavorites(): Observable<{ offerts: Offert[] }> {
   );
 }
 
-
-
   // Manejo de errores
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {

@@ -7,13 +7,15 @@ import { CarouselModule } from 'primeng/carousel';
 // Se usa comúnmente para lógica específica de plataforma, especialmente en escenarios donde el código necesita comportarse de manera diferente
 // cuando se ejecuta en un entorno de navegador versus renderizado del lado del servidor.
 import { isPlatformBrowser } from '@angular/common'; 
+import { DetailsCommentsComponent } from './details-comments.component';  // Importar el componente standalone
+
 
 @Component({
   selector: 'app-details',
   standalone: true,
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.css'],
-  imports: [CommonModule, CarouselModule]
+  imports: [CommonModule, CarouselModule,DetailsCommentsComponent]
 })
 
 export class DetailsComponent implements OnInit {

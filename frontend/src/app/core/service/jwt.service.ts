@@ -42,7 +42,7 @@ export class JwtService {
       console.log("Destroying tokens");  // Debug
       localStorage.removeItem(this.accessTokenKey);
       localStorage.removeItem(this.refreshTokenKey);
-      console.clear(); 
+      console.clear();
     }
   }
 }

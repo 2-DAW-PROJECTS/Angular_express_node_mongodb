@@ -2,7 +2,7 @@ import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { OffertService } from '../../core/service/offert.service';
 import { Offert } from '../../core/models/offert.model';
 import { ViewportScroller, CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router'; // Asegúrate de importar Router
 import { PaginationComponent } from '../pagination/pagination.component';
 import { Subject, Observable } from 'rxjs';
 
@@ -32,10 +32,15 @@ export class ListOffertsComponent implements OnInit {
   filtersChange: Observable<Filter> = this.filtersChangeSubject.asObservable();
   
   private favoriteSlugs: string[] = [];
-
-  constructor(private offertService: OffertService, private route: ActivatedRoute) {}
+  
+  constructor(
+    private offertService: OffertService, 
+    private route: ActivatedRoute, 
+    private router: Router // Inyectar Router aquí
+  ) {}
 
   ngOnInit() {
+    // Cargar filtros y ofertas al iniciar
     this.route.queryParams.subscribe(params => {
       const encodedFilters = params['filters'];
       if (encodedFilters) {
@@ -70,7 +75,14 @@ export class ListOffertsComponent implements OnInit {
       this.loadOfferts();
     });
   }
+
   toggleFavorite(offert: Offert) {
+    if (!this.isUserAuthenticated()) {
+      alert('User is not authenticated. Please log in to add favorites.');
+      this.router.navigate(['/login']); // Redirigir al login
+      return; // Salir de la función si no está autenticado
+    }
+
     if (offert.isFavorited) {
       this.offertService.unfavoriteOffert(offert.slug).subscribe({
         next: (response) => {
@@ -96,28 +108,28 @@ export class ListOffertsComponent implements OnInit {
     }
   }
 
-loadUserFavorites() {
-  this.offertService.getUserFavorites().subscribe({
-    next: (response: { offerts: Offert[] }) => { 
-      const favorites = response.offerts; 
-      console.log('User favorites loaded:', favorites);
+  loadUserFavorites() {
+    this.offertService.getUserFavorites().subscribe({
+      next: (response: { offerts: Offert[] }) => { 
+        const favorites = response.offerts; 
+        console.log('User favorites loaded:', favorites);
 
-      if (Array.isArray(favorites)) {
-        this.favoriteSlugs = favorites.map(fav => fav.slug);
-        console.log('Favorite slugs:', this.favoriteSlugs);
-        
-        this.offerts.forEach(offert => {
-          offert.isFavorited = this.favoriteSlugs.includes(offert.slug);
-        });
-      } else {
-        console.error('Favorites is not an array:', favorites);
+        if (Array.isArray(favorites)) {
+          this.favoriteSlugs = favorites.map(fav => fav.slug);
+          console.log('Favorite slugs:', this.favoriteSlugs);
+          
+          this.offerts.forEach(offert => {
+            offert.isFavorited = this.favoriteSlugs.includes(offert.slug);
+          });
+        } else {
+          console.error('Favorites is not an array:', favorites);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading user favorites:', err);
       }
-    },
-    error: (err) => {
-      console.error('Error loading user favorites:', err);
-    }
-  });
-}
+    });
+  }
 
   isUserAuthenticated(): boolean {
     if (typeof window !== 'undefined' && window.localStorage) {

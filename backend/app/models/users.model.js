@@ -63,6 +63,7 @@ userSchema.plugin(uniqueValidator);
 // Método para representar al usuario
 userSchema.methods.toUserResponse = function() {
     return {
+        // id: this._id,         
         username: this.username,
         email: this.email,
         bio: this.bio,
@@ -71,6 +72,20 @@ userSchema.methods.toUserResponse = function() {
         aboutMe: this.aboutMe,
         skills: this.skills,
         refreshToken: this.refreshToken
+    };
+};
+
+// Método para representar al usuario en comentarios
+userSchema.methods.toProfileJSON = function() {
+    return {
+        id: this._id,         
+        username: this.username,
+        email: this.email,
+        bio: this.bio,
+        image: this.image,
+        city: this.city,
+        aboutMe: this.aboutMe,
+        skills: this.skills,
     };
 };
 
