@@ -27,9 +27,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
-    usedRefreshTokens: [{ 
-        type: String 
-    }],
+    expiredRefreshTokens: [{ 
+        type: String,
+        default: [] 
+    }],    
     city: {
         type: String,
         default: ""

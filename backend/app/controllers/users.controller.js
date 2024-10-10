@@ -118,18 +118,60 @@ const userLogin = asyncHandler(async (req, res) => {
             ...loginUser.toUserResponse(),
             accessToken,
             refreshToken
-        },
-        debug: {
-            userId: loginUser._id,
-            email: loginUser.email,
-            tokenInfo: {
-                accessTokenExpiry: process.env.ACCESS_TOKEN_INTERVAL,
-                refreshTokenExpiry: process.env.REFRESH_TOKEN_INTERVAL
-            },
-            timestamp: new Date().toISOString()
         }
+        // debug: {
+        //     userId: loginUser._id,
+        //     email: loginUser.email,
+        //     tokenInfo: {
+        //         accessTokenExpiry: process.env.ACCESS_TOKEN_INTERVAL,
+        //         refreshTokenExpiry: process.env.REFRESH_TOKEN_INTERVAL
+        //     },
+        //     timestamp: new Date().toISOString()
+        // }
     });
 });
+
+
+// const refreshToken = asyncHandler(async (req, res) => {
+//     const { refreshToken } = req.body;
+
+//     // console.log("Received refresh token:", refreshToken);
+
+//     if (!refreshToken) return res.status(401).json({ message: 'No refresh token provided' });
+
+//     try {
+//         const decoded = jwt.decode(refreshToken);
+//         if (!decoded) {
+//             return res.status(401).json({ message: 'Invalid refresh token (decode)', isExpired: true  });
+//         }
+
+//         const user = await User.findById(decoded.user.id);
+
+//         if (!user || user.refreshToken !== refreshToken || user.expiredRefreshTokens.includes(refreshToken)) {
+//             return res.status(401).json({ message: 'Invalid refresh token (User)', isExpired: true  });
+//         }
+
+//         const newAccessToken = jwt.sign(
+//             { user: { id: user._id, email: user.email } },
+//             process.env.ACCESS_TOKEN_SECRET,
+//             { expiresIn: process.env.ACCESS_TOKEN_INTERVAL }
+//         );
+//         const newRefreshToken = jwt.sign(
+//             { user: { id: user._id } },
+//             process.env.REFRESH_TOKEN_SECRET,
+//             { expiresIn: process.env.REFRESH_TOKEN_INTERVAL }
+//         );
+
+//         user.expiredRefreshTokens.push(refreshToken);
+//         user.refreshToken = newRefreshToken;
+//         await user.save();
+
+//         res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+//     } catch (err) {
+//         console.error("Error in refreshToken:", err);
+//         res.status(403).json({ message: 'Invalid refresh token (catch)', isExpired: true  });
+//     }
+// });
 
 
 const refreshToken = asyncHandler(async (req, res) => {
@@ -138,26 +180,56 @@ const refreshToken = asyncHandler(async (req, res) => {
     if (!refreshToken) return res.status(401).json({ message: 'No refresh token provided' });
 
     try {
-        const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-        const user = await User.findById(payload.user.id);
+        const decoded = jwt.decode(refreshToken);
 
-        if (!user || user.refreshToken !== refreshToken || user.usedRefreshTokens.includes(refreshToken)) {
-            return res.status(401).json({ message: 'Invalid refresh token' });
+
+        // console.log("Decoded refresh token:", decoded);
+
+
+        if (!decoded) {
+            return res.status(401).json({ message: 'Invalid refresh token (decode)', isExpired: true  });
         }
 
-        const newAccessToken = jwt.sign({ user: { id: user._id, email: user.email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_INTERVAL });
-        const newRefreshToken = jwt.sign({ user: { id: user._id } }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_INTERVAL });
+        const user = await User.findById(decoded.user.id);
 
-        user.usedRefreshTokens.push(user.refreshToken);
+
+        // console.log("Found user:", user);
+
+
+        if (!user || user.refreshToken !== refreshToken || user.expiredRefreshTokens.includes(refreshToken)) {
+            return res.status(401).json({ message: 'Invalid refresh token (User)', isExpired: true  });
+        }
+
+        const newAccessToken = jwt.sign(
+            { user: { id: user._id, email: user.email } },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: process.env.ACCESS_TOKEN_INTERVAL }
+        );
+        // console.log("New access token:", newAccessToken);
+
+        const newRefreshToken = jwt.sign(
+            { user: { id: user._id } },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: process.env.REFRESH_TOKEN_INTERVAL }
+        );
+        // console.log("New refresh token:", newRefreshToken);
+        // console.log("Received refresh token:", refreshToken);
+        user.expiredRefreshTokens.push(refreshToken);
+        // console.log("Updated expired refresh tokens:", user.expiredRefreshTokens);
         user.refreshToken = newRefreshToken;
-
+        // console.log("Updated user refresh token:", user.refreshToken);
         await user.save();
+        // console.log("User saved:", user);
 
         res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
     } catch (err) {
-        res.status(403).json({ message: 'Invalid refresh token' });
+        console.error("Error in refreshToken:", err);
+        res.status(403).json({ message: 'Invalid refresh token (catch)', isExpired: true  });
     }
 });
+
+
+
 
 // @desc update currently logged-in user
 // Warning: if password or email is updated, client-side must update the token
@@ -165,13 +237,7 @@ const refreshToken = asyncHandler(async (req, res) => {
 // @access Private
 // @return User
 const updateUser = asyncHandler(async (req, res) => {
-    console.log("Updating user with ID:", req.userId);
     const { user } = req.body;
-
-    if (!user) {
-        return res.status(400).json({ message: "Required a User object" });
-    }
-
     const email = req.userEmail;
     const target = await User.findOne({ email }).exec();
 
@@ -179,7 +245,6 @@ const updateUser = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: "User not found" });
     }
 
-    // Update fields
     target.email = user.email || target.email;
     target.username = user.username || target.username;
     if (user.password) target.password = await argon2.hash(user.password);
@@ -195,6 +260,20 @@ const updateUser = asyncHandler(async (req, res) => {
         user: target.toUserResponse()
     });
 });
+
+// @desc logout for a user
+const logoutUser = asyncHandler(async (req, res) => {
+    const { refreshToken } = req.body;
+    const user = await User.findOne({ refreshToken });
+  
+    if (user) {
+      user.expiredRefreshTokens.push(refreshToken);
+      user.refreshToken = null;
+      await user.save();
+    }
+  
+    res.status(204).json({ message: 'Logged out successfully' });
+  });
 
 // GET PROFILE
 const getProfile = asyncHandler(async (req, res) => {
@@ -239,4 +318,5 @@ module.exports = {
     followEnterprise,
     unfollowEnterprise,
     refreshToken,
+    logoutUser,
 }
