@@ -1,8 +1,6 @@
 const userController = require('../controllers/users.controller.js');
 const verifyJWT = require('../middleware/verifyJWT.js');
-
 const checkTokenBlacklist = require('../middleware/tokenBlackList.js');
-
 
 module.exports = (app) => {
     // User registration
@@ -23,13 +21,6 @@ module.exports = (app) => {
     // Refresh token
     app.post('/refresh-token', userController.refreshToken);
 
-
-    // // Delete user account
-    // app.delete('/account', authMiddleware, userController.deleteAccount);
-
-    // // Password reset request
-    // app.post('/reset-password', userController.requestPasswordReset);
-
-    // // Password reset confirmation
-    // app.post('/reset-password/:token', userController.resetPassword);
+    // Logout
+    app.post('/users/logout', userController.logoutUser);
 };
