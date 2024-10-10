@@ -12,7 +12,7 @@ const verifyJWT = (req, res, next) => {
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
         if (err) {
-            console.log('JWT verification error:', err); // Agregar este console log para más detalles
+            // console.log('JWT verification error:', err); // Agregar este console log para más detalles
             return res.status(403).json({ message: 'Forbidden - Invalid token', error: err.message });
         }
     

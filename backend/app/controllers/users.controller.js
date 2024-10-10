@@ -102,13 +102,19 @@ const userLogin = asyncHandler(async (req, res) => {
         { expiresIn: process.env.ACCESS_TOKEN_INTERVAL }
     );
 
-    const refreshToken = jwt.sign(
-        { user: { id: loginUser._id } },
-        process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: process.env.REFRESH_TOKEN_INTERVAL }
-    );
+    if (!loginUser.refreshToken || isRefreshTokenExpired(loginUser.refreshToken)) {
+        const refreshToken = jwt.sign(
+            { user: { id: loginUser._id } },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: process.env.REFRESH_TOKEN_INTERVAL }
+        );
 
-    // Guardar el refresh token en el usuario
+        loginUser.refreshToken = refreshToken;
+        await loginUser.save();
+    }
+
+    const refreshToken = loginUser.refreshToken;
+
     loginUser.refreshToken = refreshToken;
     loginUser.usedRefreshTokens = [];
     await loginUser.save();
@@ -131,47 +137,14 @@ const userLogin = asyncHandler(async (req, res) => {
     });
 });
 
-
-// const refreshToken = asyncHandler(async (req, res) => {
-//     const { refreshToken } = req.body;
-
-//     // console.log("Received refresh token:", refreshToken);
-
-//     if (!refreshToken) return res.status(401).json({ message: 'No refresh token provided' });
-
-//     try {
-//         const decoded = jwt.decode(refreshToken);
-//         if (!decoded) {
-//             return res.status(401).json({ message: 'Invalid refresh token (decode)', isExpired: true  });
-//         }
-
-//         const user = await User.findById(decoded.user.id);
-
-//         if (!user || user.refreshToken !== refreshToken || user.expiredRefreshTokens.includes(refreshToken)) {
-//             return res.status(401).json({ message: 'Invalid refresh token (User)', isExpired: true  });
-//         }
-
-//         const newAccessToken = jwt.sign(
-//             { user: { id: user._id, email: user.email } },
-//             process.env.ACCESS_TOKEN_SECRET,
-//             { expiresIn: process.env.ACCESS_TOKEN_INTERVAL }
-//         );
-//         const newRefreshToken = jwt.sign(
-//             { user: { id: user._id } },
-//             process.env.REFRESH_TOKEN_SECRET,
-//             { expiresIn: process.env.REFRESH_TOKEN_INTERVAL }
-//         );
-
-//         user.expiredRefreshTokens.push(refreshToken);
-//         user.refreshToken = newRefreshToken;
-//         await user.save();
-
-//         res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
-//     } catch (err) {
-//         console.error("Error in refreshToken:", err);
-//         res.status(403).json({ message: 'Invalid refresh token (catch)', isExpired: true  });
-//     }
-// });
+function isRefreshTokenExpired(token) {
+    try {
+        const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+        return false;
+    } catch (error) {
+        return true;
+    }
+}
 
 
 const refreshToken = asyncHandler(async (req, res) => {

@@ -76,7 +76,7 @@ export class UserService {
   private isTokenExpiringSoon(token: string, thresholdSeconds: number = 60): boolean {
     
     try {
-      console.log('Checking token expiration...');
+      // console.log('Checking token expiration...');
       const payload = JSON.parse(atob(token.split('.')[1]));
       const expirationTime = payload.exp * 1000;
       return Date.now() > expirationTime - thresholdSeconds * 1000;
@@ -254,11 +254,18 @@ export class UserService {
         
         console.log(`Access token expires in ${accessRemaining}s,\n Refresh token expires in ${refreshRemaining}s`);
         
+        if( currentTime >= accessExpiration && currentTime < refreshExpiration) {
+          // console.log('El usuario se va a deslogear');
+          window.location.reload();
+          this.refreshToken();
+        }
+
         if (refreshRemaining <= 0) {
           // console.log('El usuario se va a deslogear');
           window.location.reload();
           this.refreshToken();
         }
+
       });
     } else {
       console.error('Invalid tokens');

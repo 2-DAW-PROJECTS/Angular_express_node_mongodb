@@ -86,7 +86,7 @@ export class ListOffertsComponent implements OnInit {
     if (offert.isFavorited) {
       this.offertService.unfavoriteOffert(offert.slug).subscribe({
         next: (response) => {
-          console.log('Removed from favorites:', response);
+          // console.log('Removed from favorites:', response);
           offert.isFavorited = false; // Update the state
           this.favoriteSlugs = this.favoriteSlugs.filter(slug => slug !== offert.slug);
         },
@@ -97,7 +97,7 @@ export class ListOffertsComponent implements OnInit {
     } else {
       this.offertService.favoriteOffert(offert.slug).subscribe({
         next: (response) => {
-          console.log('Added to favorites:', response);
+          // console.log('Added to favorites:', response);
           offert.isFavorited = true; // Update the state
           this.favoriteSlugs.push(offert.slug);
         },
@@ -112,11 +112,11 @@ export class ListOffertsComponent implements OnInit {
     this.offertService.getUserFavorites().subscribe({
       next: (response: { offerts: Offert[] }) => { 
         const favorites = response.offerts; 
-        console.log('User favorites loaded:', favorites);
+        // console.log('User favorites loaded:', favorites);
 
         if (Array.isArray(favorites)) {
           this.favoriteSlugs = favorites.map(fav => fav.slug);
-          console.log('Favorite slugs:', this.favoriteSlugs);
+          // console.log('Favorite slugs:', this.favoriteSlugs);
           
           this.offerts.forEach(offert => {
             offert.isFavorited = this.favoriteSlugs.includes(offert.slug);
@@ -217,7 +217,7 @@ export class ListOffertsComponent implements OnInit {
     this.offertService.find_product_name(encodedSearch).subscribe({
       next: (data) => {
         this.offerts = data.offerts;
-        console.log('Ofertas encontradas:', this.offerts);
+        // console.log('Ofertas encontradas:', this.offerts);
         this.totalPages = Array(Math.ceil(data.count / this.limit)).fill(0).map((x, i) => i + 1); 
       },
       error: (err) => {

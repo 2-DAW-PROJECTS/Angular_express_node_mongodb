@@ -2,7 +2,9 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { User, UserService } from '../core';
+// import { User, UserService } from '../core/';//este es el original
+import { User } from '../core/models/user.model';
+import { UserService } from '../core/service/user.service';
 
 @Component({
   selector: 'app-settings-page',
