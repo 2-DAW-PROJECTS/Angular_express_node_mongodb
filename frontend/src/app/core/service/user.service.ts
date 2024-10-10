@@ -256,7 +256,7 @@ export class UserService {
         
         if (refreshRemaining <= 0) {
           // console.log('El usuario se va a deslogear');
-          // window.location.reload();
+          window.location.reload();
           this.refreshToken();
         }
       });
