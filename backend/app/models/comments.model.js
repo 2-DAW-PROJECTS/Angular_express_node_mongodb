@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const User = require("./User");
+const User = require("./users.model");  // Cambiado a 'users.model'
 
 const commentSchema = new mongoose.Schema({
     body: {
@@ -20,13 +20,15 @@ const commentSchema = new mongoose.Schema({
 
 commentSchema.methods.toCommentResponse = async function (user) {
     const authorObj = await User.findById(this.author).exec();
+    // console.log("Author Object:", authorObj); // Agregar este log para depuración
     return {
         id: this._id,
         body: this.body,
         createdAt: this.createdAt,
         updatedAt: this.updatedAt,
-        author: authorObj ? authorObj.toProfileJSON(user) : null 
+        author: authorObj ? authorObj.toProfileJSON() : null 
     };
 };
+
 
 module.exports = mongoose.model('Comment', commentSchema);

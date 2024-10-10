@@ -39,6 +39,7 @@ const getCommentsFromOffert = asyncHandler(async (req, res) => {
 });
 
 // DELETE COMMENT
+// DELETE COMMENT
 const deleteComment = asyncHandler(async (req, res) => {
     const { slug, id } = req.params;
     const userId = req.userId;
@@ -49,14 +50,16 @@ const deleteComment = asyncHandler(async (req, res) => {
     if (!user || !offert || !comment) return res.status(404).json({ message: "Data Not Found" });
 
     if (comment.author.toString() === user._id.toString()) {
-        await comment.remove();
-        offert.comments.pull(comment._id);
+        // Cambia comment.remove() por deleteOne
+        await Comment.deleteOne({ _id: id });
+        offert.comments.pull(comment._id); // Esta línea es correcta
         await offert.save();
         return res.status(200).json({ message: "Comment deleted successfully" });
     } else {
         return res.status(403).json({ error: "You can only delete your own comments" });
     }
 });
+
 
 module.exports = {
     addCommentToOffert,

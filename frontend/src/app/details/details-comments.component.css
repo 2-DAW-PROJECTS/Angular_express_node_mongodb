@@ -1,0 +1,113 @@
+.comments-section {
+  max-width: 1200px;
+  margin: 30px auto 0;
+  background-color: #ffffff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.comment {
+  padding: 15px;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 15px;
+}
+
+.comment:last-child {
+  border-bottom: none;
+}
+
+.comment-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.comment-author {
+  display: flex;
+  align-items: center;
+}
+
+.comment-author-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.comment-author-name {
+  font-weight: bold;
+  color: #495057;
+}
+
+.comment-date {
+  font-size: 0.9em;
+  color: #6c757d;
+}
+
+.comment-content {
+  color: #212529;
+  line-height: 1.5;
+}
+
+.comment-form {
+  margin-top: 20px;
+}
+
+.comment-form textarea {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+button {
+  background-color: #ff6340;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #e74c3c;
+}
+
+button:disabled {
+  background-color: #ffa599;
+  cursor: not-allowed;
+}
+.delete-button {
+    background-color: #ff6340; /* Color de fondo */
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+    padding: 5px 10px; /* Espaciado interno */
+    cursor: pointer; /* Cambia el cursor al pasar por encima */
+    border-radius: 4px; /* Bordes redondeados */
+    font-weight: bold; /* Texto en negrita */
+    transition: background-color 0.3s ease; /* Transición suave */
+}
+
+.delete-button:hover {
+    background-color: #e74c3c; /* Cambia el color al pasar el mouse */
+}
+
+.delete-button:disabled {
+    background-color: #ffa599; /* Color cuando está deshabilitado */
+    cursor: not-allowed; /* Cursor de no permitido */
+}
+
+
+@media (max-width: 768px) {
+  .comments-section {
+    padding: 20px;
+  }
+}
