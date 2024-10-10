@@ -1,0 +1,76 @@
+
+  .hero {
+    position: relative;
+    height: 75vh;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    /* background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('background-image.jpg') center/cover; */
+    padding-left: 50px;
+  }
+  
+  .favicon-image {
+    width: 64px;
+    height: 64px;
+    background-image: url('../../../public/favicon.ico');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .inline-content {
+    display: flex;
+    align-items: center;
+  }
+  
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #fc8004;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: rgb(224, 154, 103);
+    color: black;
+  }
+  
+  .favicon-image {
+    margin-right: 10px;
+  }
+  
+
+
+  .hero .content {
+    max-width: 500px;
+  }
+  
+  .hero h1 {
+    font-size: 56px;
+    line-height: 1.2;
+    font-weight: bold;
+  }
+  
+  .hero p {
+    font-size: 18px;
+    margin: 20px 0;
+  }
+  
+
+  
+  /* Background Circular Effect */
+  .hero::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    box-shadow: 0 0 100px rgba(255, 255, 255, 0.5), 0 0 150px rgba(255, 255, 255, 0.2);
+    background-color: #f0f0f0;
+    z-index: -1;
+  }
+  
