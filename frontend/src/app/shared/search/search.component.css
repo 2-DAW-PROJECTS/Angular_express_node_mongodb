@@ -32,3 +32,33 @@
     }
     
   }
+  
+
+  /* .search-container {
+    position: relative;
+  } */
+  
+  .suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .suggestions li {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .suggestions li:hover {
+    background-color: #f0f0f0;
+  }
+  

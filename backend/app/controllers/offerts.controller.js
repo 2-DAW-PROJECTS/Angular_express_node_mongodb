@@ -91,46 +91,7 @@ const updateOffert = asyncHandler(async (req, res) => {
     return res.status(200).json(updatedOffert);
 });
 
-// FILTRAR OFERTAS POR CATEGORÍA, SLUG DE EMPRESA Y SALARIO
-const filterOffert = asyncHandler(async (req, res) => {
-    const { categorySlug, companySlug, salaryMin, salaryMax } = req.query;
 
-    let query = {};
-
-    // Si se proporciona categorySlug, buscaremos la categoría
-    if (categorySlug) {
-        const category = await Category.findOne({ slug: categorySlug }).exec();
-        if (category) {
-            query.category = category._id;
-        } else {
-            return res.status(400).json({ message: 'Categoría no encontrada.' });
-        }
-    }
-
-    // Si se proporciona companySlug, lo agregamos a la consulta
-    if (companySlug) {
-        query.company_slug = companySlug;
-    }
-
-    // Agregar el filtro de salario mínimo y máximo
-    if (salaryMin) {
-        query.salary = { $gte: Number(salaryMin) };
-    }
-    if (salaryMax) {
-        query.salary = { ...query.salary, $lte: Number(salaryMax) };
-    }
-
-    try {
-        // Devolver todas las ofertas filtradas sin paginación
-        const offerts = await Offert.find(query).exec();
-        const offertCount = await Offert.countDocuments(query); // Contar el número total de ofertas filtradas
-    
-        return res.status(200).json({ offerts, count: offertCount });
-    } catch (error) {
-        console.error('Error al buscar las ofertas:', error);
-        return res.status(500).json({ message: 'Error al buscar las ofertas' });
-    }
-});
 
 // FAVORITE OFFER
 const favoriteOffert = asyncHandler(async (req, res) => {
@@ -230,12 +191,72 @@ const getUserFavorites = asyncHandler(async (req, res) => {
     return res.status(200).json({ offerts: favorites });
 });
 
+// const filterAndSearchOfferts = asyncHandler(async (req, res) => {
+//     const { categorySlug, companySlug, salaryMin, salaryMax, searchTerm } = req.query;
+
+//     let query = {};
+
+//     if (categorySlug) {
+//         const category = await Category.findOne({ slug: categorySlug }).exec();
+//         if (category) {
+//             query.category = category._id;
+//         }
+//     }
+//     if (companySlug) {
+//         query.company_slug = companySlug;
+//     }
+
+//     if (salaryMin) {
+//         query.salary = { $gte: Number(salaryMin) };
+//     }
+//     if (salaryMax) {
+//         query.salary = { ...query.salary, $lte: Number(salaryMax) };
+//     }
+
+//     if (searchTerm) {
+//         query.title = { $regex: new RegExp(searchTerm, 'i') };
+//     }
+
+//     try {
+//         const offerts = await Offert.find(query).exec();
+//         const offertCount = await Offert.countDocuments(query);
+    
+//         return res.status(200).json({ offerts, count: offertCount });
+//     } catch (error) {
+//         console.error('Error al buscar las ofertas:', error);
+//         return res.status(500).json({ message: 'Error al buscar las ofertas' });
+//     }
+// });
+const filterAndSearchOfferts = asyncHandler(async (req, res) => {
+    const { categorySlug, companySlug, salaryMin, salaryMax, searchTerm, offset, limit } = req.query;
+  
+    let query = {};
+  
+    if (categorySlug) {
+      const category = await Category.findOne({ slug: categorySlug });
+      if (category) query.category = category._id;
+    }
+    if (companySlug) query.company_slug = companySlug;
+    if (salaryMin) query.salary = { $gte: Number(salaryMin) };
+    if (salaryMax) query.salary = { ...query.salary, $lte: Number(salaryMax) };
+    if (searchTerm) query.title = { $regex: new RegExp(searchTerm, 'i') };
+  
+    const offerts = await Offert.find(query)
+      .skip(Number(offset) || 0)
+      .limit(Number(limit) || 20);
+    const count = await Offert.countDocuments(query);
+  
+    res.json({ offerts, count });
+  });
+  
+
+
 // EXPORT MODULE
 module.exports = {
     createOffert,
     findAllOfferts,
     findOneOffert,
-    filterOffert,
+    filterAndSearchOfferts,
     deleteOneOffert,
     favoriteOffert,
     unfavoriteOffert,

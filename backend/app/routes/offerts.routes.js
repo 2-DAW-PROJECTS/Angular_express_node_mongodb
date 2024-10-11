@@ -10,7 +10,7 @@ module.exports = (app) => {
     app.get('/offerts', verifyJWTOptional, offertsController.findAllOfferts);  // Autenticación opcional
 
     // FIND OFFERTS BY FILTERS
-    app.get('/offerts/filter', verifyJWTOptional, offertsController.filterOffert);  // Autenticación opcional
+    app.get('/offerts/filter', verifyJWTOptional, offertsController.filterAndSearchOfferts);  // Autenticación opcional
 
     // FIND ONE OFFERT
     app.get('/offerts/:slug', verifyJWTOptional, offertsController.findOneOffert);  // Autenticación opcional
@@ -36,4 +36,8 @@ module.exports = (app) => {
 
     // FEED OFFERTS (ofertas de empresas seguidas)
     app.get('/offerts/feed', verifyJWT, offertsController.feedOfferts);  // Requiere autenticación para ver ofertas de empresas seguidas
+
+    app.get('/offerts/filter-and-search', verifyJWTOptional, offertsController.filterAndSearchOfferts);
+
+
 };

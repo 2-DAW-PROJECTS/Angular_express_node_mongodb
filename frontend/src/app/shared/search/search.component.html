@@ -1,3 +1,14 @@
-<div class="search-container">
+<!-- <div class="search-container">
     <input type="text" class="search-input" [(ngModel)]="searchValue" (input)="onSearch()" placeholder="Buscar...">
-</div>
+</div> -->
+
+
+<div class="search-container">
+    <input type="text" class="search-input" [(ngModel)]="searchValue" (input)="onInput()" placeholder="Buscar ofertas...">
+    <ul *ngIf="suggestions.length > 0" class="suggestions">
+      <li *ngFor="let suggestion of suggestions" (click)="selectSuggestion(suggestion)">
+        {{ suggestion }}
+      </li>
+    </ul>
+  </div>
+  

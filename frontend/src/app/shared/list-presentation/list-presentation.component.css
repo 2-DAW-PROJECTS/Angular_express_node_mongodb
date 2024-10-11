@@ -51,11 +51,15 @@
   .inline-content {
     display: flex;
     align-items: center;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 15px;
+    padding-left: 10px;
+    padding-right: 20px;
   }
   
   .favicon-image {
-    width: 64px;
-    height: 64px;
+    width: 92px;
+    height: 92px;
     background-image: url('../../../../public/favicon.ico');
     background-size: contain;
     background-repeat: no-repeat;
@@ -64,9 +68,16 @@
   }
   
   h1 {
-    font-size: 56px;
-    line-height: 1.2;
+    font-size: 64px;
+    line-height: 1.0;
     font-weight: bold;
+  }
+
+  .search-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 4;
   }
   
   .btn {
