@@ -1,4 +1,4 @@
-<section class="hero">
+<!-- <section class="hero">
     <div class="background-carousel">
       <img *ngFor="let image of images; let i = index" [src]="image" [class.active]="i === currentImageIndex" alt="Background Image">
     </div>
@@ -8,7 +8,29 @@
         <div class="favicon-image"></div>
         <h1>JobHunter</h1>
       </div>
-      <a href="/about-us" class="btn">Learn More</a>
+      <br>
+      <a href="/register" class="btn">Register</a>
+      
+    </div>
+  </section>
+   -->
+
+
+   <section class="hero">
+    <div class="background-carousel">
+      <img *ngFor="let image of images; let i = index" [src]="image" [class.active]="i === currentImageIndex" alt="Background Image">
+    </div>
+    <div class="overlay"></div>
+    <div class="search-container">
+      <app-search (searchEvent)="onSearch($event)"></app-search>
+    </div>
+    <div class="content">
+      <div class="inline-content">
+        <div class="favicon-image"></div>
+        <h1>JobHunter</h1>
+      </div>
+      <br>
+      <a href="/register" class="btn">Register</a>
     </div>
   </section>
   
