@@ -1,0 +1,14 @@
+<section class="hero">
+    <div class="background-carousel">
+      <img *ngFor="let image of images; let i = index" [src]="image" [class.active]="i === currentImageIndex" alt="Background Image">
+    </div>
+    <div class="overlay"></div>
+    <div class="content">
+      <div class="inline-content">
+        <div class="favicon-image"></div>
+        <h1>JobHunter</h1>
+      </div>
+      <a href="/about-us" class="btn">Learn More</a>
+    </div>
+  </section>
+  
