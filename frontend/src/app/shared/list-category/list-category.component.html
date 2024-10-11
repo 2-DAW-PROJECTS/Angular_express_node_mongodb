@@ -1,3 +1,4 @@
+<!-- <h2 class="section-title">Encuentra tu próximo reto profesional</h2>
 <p-carousel 
     [value]="categories" 
     [numVisible]="3" 
@@ -7,4 +8,22 @@
     <ng-template let-category pTemplate="item">
         <app-card-category [category]="category"></app-card-category>
     </ng-template>
-</p-carousel>
+</p-carousel> -->
+
+
+<div class="category-list">
+    <h2 class="section-title">Encuentra tu próximo reto profesional</h2>
+    <p-carousel 
+        [value]="categories" 
+        [numVisible]="3" 
+        [numScroll]="1" 
+        [circular]="true" 
+        [responsiveOptions]="responsiveOptions">
+        <ng-template let-category pTemplate="item">
+            <div class="carousel-item">
+                <app-card-category [category]="category"></app-card-category>
+            </div>
+        </ng-template>
+    </p-carousel>
+  </div>
+  
