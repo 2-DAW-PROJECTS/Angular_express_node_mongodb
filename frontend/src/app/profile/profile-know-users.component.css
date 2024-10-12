@@ -1,0 +1,160 @@
+.user-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.3s ease;
+}
+
+.user-item:hover {
+  background-color: #f9f9f9;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+}
+
+.user-info {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.city {
+  color: #666;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button {
+  background-color: #ff6340;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+button:hover {
+  background-color: #ff4f2a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-list {
+  max-width: 100%;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.user-list-header {
+  background-color: #ff6340;
+  color: white;
+  padding: 15px;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .user-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .avatar {
+    margin-bottom: 10px;
+  }
+
+  button {
+    margin-top: 10px;
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 400px) {
+  .user-item {
+    padding: 10px;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .username {
+    font-size: 14px;
+  }
+
+  .city {
+    font-size: 12px;
+  }
+
+  button {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+}
+
+.follow_btn{
+  background-color: rgb(124, 124, 234);
+}
+
+.unfollow_btn{
+  background-color: #ff6340;
+
+}
+
+.users-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.users-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.users-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.users-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.users-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

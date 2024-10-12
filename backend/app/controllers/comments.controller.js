@@ -39,7 +39,6 @@ const getCommentsFromOffert = asyncHandler(async (req, res) => {
 });
 
 // DELETE COMMENT
-// DELETE COMMENT
 const deleteComment = asyncHandler(async (req, res) => {
     const { slug, id } = req.params;
     const userId = req.userId;

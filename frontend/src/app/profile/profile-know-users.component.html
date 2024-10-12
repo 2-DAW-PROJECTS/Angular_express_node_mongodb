@@ -1,0 +1,21 @@
+<h2>Users You Might Know</h2>
+
+<div class="users-container">
+  <div *ngIf="allUsers.length === 0">
+    <p>No users available.</p>
+  </div>
+
+  <ul *ngIf="allUsers.length > 0">
+    <li *ngFor="let user of allUsers" class="user-item">
+      <img [src]="user.image" alt="{{ user.username }}'s avatar" class="avatar">
+      <div class="user-info">
+        <span class="username">{{ user.username }}</span>
+        <span class="city">{{ user.city }}</span>
+      </div>
+
+      <button class="follow_btn" *ngIf="!user.isFollowing" (click)="followUser(user.username)">Follow</button>
+      <button class="unfollow_btn" *ngIf="user.isFollowing" (click)="unfollowUser(user.username)">Unfollow</button>
+
+    </li>
+  </ul>
+</div>

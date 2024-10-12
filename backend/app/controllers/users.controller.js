@@ -309,6 +309,105 @@ const unfollowEnterprise = asyncHandler(async (req, res) => {
     return res.status(200).json({ profile: enterprise.toEnterpriseProfileJSON(user) });
 });
 
+// FOLLOW USER
+const followUser = asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    const currentUserId = req.userId; 
+
+    const userToFollow = await User.findOne({ username }).exec();
+    const currentUser = await User.findById(currentUserId).exec();
+
+    if (!userToFollow || !currentUser) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    if (currentUser.isFollowing(userToFollow._id)) {
+        return res.status(400).json({ message: "Already following this user" });
+    }
+
+    await currentUser.follow(userToFollow._id);
+    return res.status(200).json({ message: `You are now following ${userToFollow.username}` });
+});
+
+//  UNFOLLOW USER
+const unfollowUser = asyncHandler(async (req, res) => {
+    const { username } = req.params; 
+    const currentUserId = req.userId; 
+    const userToUnfollow = await User.findOne({ username }).exec();
+    const currentUser = await User.findById(currentUserId).exec();
+
+    if (!userToUnfollow || !currentUser) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!currentUser.isFollowing(userToUnfollow._id)) {
+        return res.status(400).json({ message: "You are not following this user" });
+    }
+
+    await currentUser.unfollow(userToUnfollow._id);
+    return res.status(200).json({ message: `You have unfollowed ${userToUnfollow.username}` });
+});
+
+// GET ALL USERS
+const getAllUsers = asyncHandler(async (req, res) => {
+    const currentUserId = req.userId; 
+
+    const users = await User.find({ _id: { $ne: currentUserId } }, 'username bio image').exec();
+
+    const currentUser = await User.findById(currentUserId).exec();
+
+    const usersWithFollowStatus = users.map(user => {
+        return {
+            ...user.toObject(),
+            isFollowing: currentUser.followingUsers.includes(user._id) 
+        };
+    });
+
+    res.status(200).json({ users: usersWithFollowStatus });
+});
+
+// GET MY Followers
+const getMyFollowers = asyncHandler(async (req, res) => {
+    const currentUserId = req.userId;  
+    const user = await User.findById(currentUserId).populate('followers', 'username bio image').exec();  
+
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+        followers: user.followers
+    });
+});
+
+// Remove MY Followers
+const removeFollower = asyncHandler(async (req, res) => {
+    const currentUserId = req.userId;  
+    const { followerId } = req.params;  
+
+    const currentUser = await User.findById(currentUserId).exec();
+    const follower = await User.findById(followerId).exec();
+
+    if (!currentUser || !follower) {
+        return res.status(404).json({ message: "User or follower not found" });
+    }
+
+    const followerIndex = currentUser.followers.indexOf(followerId);
+    if (followerIndex === -1) {
+        return res.status(400).json({ message: "This user is not your follower" });
+    }
+
+    currentUser.followers.splice(followerIndex, 1);
+    await currentUser.save();
+
+    if (follower.isFollowing(currentUserId)) {
+        await follower.unfollow(currentUserId);
+    }
+
+    res.status(200).json({ message: `Follower ${follower.username} removed and unfollowed` });
+});
+
+
 module.exports = {
     registerUser,
     getCurrentUser,
@@ -317,6 +416,11 @@ module.exports = {
     getProfile,
     followEnterprise,
     unfollowEnterprise,
+    followUser,
+    unfollowUser,
+    getAllUsers,
+    removeFollower,
+    getMyFollowers,
     refreshToken,
     logoutUser,
 }

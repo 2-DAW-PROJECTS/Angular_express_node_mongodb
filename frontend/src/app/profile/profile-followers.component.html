@@ -1,0 +1,108 @@
+<h2>Followers</h2>
+<div class="followers-container">
+  <div *ngIf="followers.length === 0" class="no-followers">
+      <p>No followers yet.</p>
+  </div>
+
+  <div *ngIf="followers.length > 0" class="followers-list">
+      <ul>
+          <li *ngFor="let user of followers" class="follower-item">
+              <img [src]="user.image" alt="{{ user.username }}'s avatar" class="avatar">
+              <div class="follower-info">
+                  <span class="username">{{ user.username }}</span>
+                  <span class="city">{{ user.city }}</span>
+              </div>
+              <button (click)="deleteFollow(user._id)" class="delete-button">Delete</button>
+          </li>
+      </ul>
+  </div>
+</div>
+
+<style>
+.followers-container {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 15px;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.no-followers {
+  text-align: center;
+  color: #666;
+}
+
+.followers-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.follower-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.follower-info {
+  flex-grow: 1;
+}
+
+.username {
+  display: block;
+  font-weight: bold;
+  color: #333;
+}
+
+.city {
+  display: block;
+  font-size: 14px;
+  color: #666;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+/* Estilos para la barra de desplazamiento */
+.followers-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.followers-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.followers-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.followers-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+</style>

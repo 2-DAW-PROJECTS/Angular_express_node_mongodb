@@ -1,0 +1,179 @@
+
+
+.follower-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f5f7fa;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.follower-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 20px;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.follower-info {
+  flex-grow: 1;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #333333;
+  margin-bottom: 5px;
+}
+
+.city {
+  display: block;
+  color: #666666;
+  font-size: 0.95em;
+}
+
+.follow-button {
+  background-color: #ff6340;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.follow-button:hover {
+  background-color: #e55a3a;
+}
+
+@media (max-width: 600px) {
+  .followers-container {
+    margin: 20px 10px;
+    padding: 15px;
+  }
+
+  .follower-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .avatar {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .follow-button {
+    margin-top: 10px;
+  }
+}
+.delete-button {
+  background-color: #f8726b;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #d0342b;
+}
+
+
+.followers-container {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 15px;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.no-followers {
+  text-align: center;
+  color: #666;
+}
+
+.followers-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.follower-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.follower-info {
+  flex-grow: 1;
+}
+
+.username {
+  display: block;
+  font-weight: bold;
+  color: #333;
+}
+
+.city {
+  display: block;
+  font-size: 14px;
+  color: #666;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+/* Estilos para la barra de desplazamiento */
+.followers-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.followers-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.followers-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.followers-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

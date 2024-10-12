@@ -76,7 +76,7 @@ export class UserService {
   private isTokenExpiringSoon(token: string, thresholdSeconds: number = 60): boolean {
     
     try {
-      console.log('Checking token expiration...');
+      // console.log('Checking token expiration...');
       const payload = JSON.parse(atob(token.split('.')[1]));
       const expirationTime = payload.exp * 1000;
       return Date.now() > expirationTime - thresholdSeconds * 1000;
@@ -252,7 +252,7 @@ export class UserService {
         const accessRemaining = Math.max(0, Math.round((accessExpiration - currentTime) / 1000));
         const refreshRemaining = Math.max(0, Math.round((refreshExpiration - currentTime) / 1000));
         
-        console.log(`Access token expires in ${accessRemaining}s,\n Refresh token expires in ${refreshRemaining}s`);
+        // console.log(`Access token expires in ${accessRemaining}s,\n Refresh token expires in ${refreshRemaining}s`);
         
         if (refreshRemaining <= 0) {
           // console.log('El usuario se va a deslogear');

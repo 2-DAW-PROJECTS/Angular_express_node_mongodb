@@ -49,11 +49,15 @@ const userSchema = new mongoose.Schema({
     },
     favouriteOfferts: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Offert'  // Se hace referencia a las ofertas de empleo
+        ref: 'Offert'
     }],
     followingUsers: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'  // Se sigue a otros usuarios
+        ref: 'User' 
+    }],
+    followers: [{  
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }]
 }, {
     timestamps: true
@@ -96,20 +100,37 @@ userSchema.methods.isFollowing = function(id) {
     return this.followingUsers.some(followingUser => followingUser.toString() === idStr);
 };
 
-userSchema.methods.follow = function(id) {
+userSchema.methods.follow = async function(id) {
     if (!this.isFollowing(id)) {
         this.followingUsers.push(id);
+        const followedUser = await mongoose.model('User').findById(id);
+        followedUser.followers.push(this._id); 
+        await followedUser.save();
     }
     return this.save();
 };
 
-userSchema.methods.unfollow = function(id) {
+userSchema.methods.unfollow = async function(id) {
     const index = this.followingUsers.indexOf(id);
+    
     if (index !== -1) {
         this.followingUsers.splice(index, 1);
+
+        const unfollowedUser = await mongoose.model('User').findById(id);
+        
+        if (unfollowedUser) {
+            const followerIndex = unfollowedUser.followers.indexOf(this._id);
+
+            if (followerIndex !== -1) {
+                unfollowedUser.followers.splice(followerIndex, 1);
+                await unfollowedUser.save();  
+            }
+        }
     }
+
     return this.save();
 };
+
 
 // Métodos para manejar el sistema de favoritos (likes a ofertas)
 userSchema.methods.isFavourite = function(offertId) {

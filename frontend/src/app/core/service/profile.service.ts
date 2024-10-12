@@ -1,15 +1,69 @@
 import { Injectable } from '@angular/core';
-import { UserService } from '../service/user.service';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { User } from '../models/user.model';
+import { environment } from '../../../environments/environment';
+
+const URL = `${environment.api_url}/users`;
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
-  constructor(private userService: UserService) {}
+  constructor(private http: HttpClient) {}
 
-  getUserProfile(): Observable<User | null> {
-    return this.userService.currentUser;
+  // Método para obtener los seguidores del usuario actual
+  getFollowers(): Observable<User[]> {
+    return this.http.get<{ followers: User[] }>(`${URL}/myfollowers`, this.getAuthHeaders()).pipe(
+      map(data => data.followers || []), // Asegúrate de que sea un array
+      catchError(this.handleError<User[]>('getFollowers', []))
+    );
+  }
+  
+  // Método para seguir a un usuario
+  followUser(username: string): Observable<any> {
+    return this.http.post(`${URL}/${username}/follow`, {}, this.getAuthHeaders()).pipe(
+      catchError(this.handleError<any>('followUser'))
+    );
+  }  
+
+  // Método para dejar de seguir a un usuario
+  unfollowUser(username: string): Observable<any> {
+    return this.http.delete(`${URL}/${username}/unfollow`, this.getAuthHeaders()).pipe(
+      catchError(this.handleError<any>('unfollowUser'))
+    );
+  }
+
+  // Método para obtener los encabezados de autorización
+  private getAuthHeaders() {
+    const token = localStorage.getItem('access_token');
+    return {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      })
+    };
+  }
+  // Método para obtener todos los usuarios
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<{ users: User[] }>(`${URL}/know_users`, this.getAuthHeaders()).pipe(
+      map(data => data.users || []), // Accede a la propiedad 'users'
+      catchError(this.handleError<User[]>('getAllUsers', []))
+    );
+  }
+  // Método para eliminar a un seguidor
+deleteFollower(followerId: string): Observable<any> {
+  return this.http.delete(`${URL}/follower/${followerId}`, this.getAuthHeaders()).pipe(
+    catchError(this.handleError<any>('deleteFollower'))
+  );
+}
+
+
+  // Método para manejar errores
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(`${operation} failed: ${error.message}`);
+      return of(result as T);
+    };
   }
 }
