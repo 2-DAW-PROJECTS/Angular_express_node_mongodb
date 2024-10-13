@@ -6,6 +6,8 @@ import { Subject } from 'rxjs';
 
 import { OffertService } from '../../core/service/offert.service';
 
+
+
 @Component({
   selector: 'app-search',
   standalone: true,
@@ -31,7 +33,8 @@ export class SearchComponent implements OnInit {
   @Output() searchEvent: EventEmitter<string> = new EventEmitter();
   
   searchValue: string = '';
-  suggestions: string[] = [];
+  suggestions: any[] = [];
+
   private searchTerms = new Subject<string>();
 
   constructor(private offertService: OffertService) {}

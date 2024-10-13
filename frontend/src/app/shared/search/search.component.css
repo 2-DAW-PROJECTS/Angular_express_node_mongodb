@@ -28,7 +28,7 @@
 .suggestions {
   position: absolute;
   top: 100%; 
-  left: 50%;  
+  left: 35%;  
   transform: translateX(-50%);
   background-color: white;
   border: 1px solid #ddd;
@@ -51,16 +51,15 @@
   background-color: #f0f0f0;
 }
 
-/* Responsive adjustments */
 @media screen and (max-width: 768px) {
   .search-input {
-    width: 100%; 
+    width: 50%; 
     margin-left: 0; 
   }
 
   .suggestions {
-    width: 100%;
-    left: 0; 
+    width: 50%;
+    left: 100; 
     transform: none; 
   }
 }

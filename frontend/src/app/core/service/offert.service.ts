@@ -119,20 +119,26 @@ getUserFavorites(): Observable<{ offerts: Offert[] }> {
 
   // Método para obtener sugerencias de búsqueda
   // getSearchSuggestions(term: string): Observable<string[]> {
-  //   console.log('Searching for suggestions:', term);
-
   //   return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params: { title: term } }).pipe(
-  //     map(response => response.offerts.map(offert => offert.title)),
+  //     map(response => response.offerts.map(offert => `${offert.title} | ${offert.company} | ${offert.location}`)),
   //     catchError(this.handleError<string[]>('getSearchSuggestions', []))
   //   );
   // }
-  
-  getSearchSuggestions(term: string): Observable<string[]> {
+
+
+  getSearchSuggestions(term: string): Observable<any[]> {
     return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params: { title: term } }).pipe(
-      map(response => response.offerts.map(offert => `${offert.title} | ${offert.company} | ${offert.location}`)),
-      catchError(this.handleError<string[]>('getSearchSuggestions', []))
+      map(response => response.offerts.map(offert => ({
+        title: offert.title,
+        company: offert.company,
+        location: offert.location,
+        slug: offert.slug
+      }))),
+      catchError(this.handleError<any[]>('getSearchSuggestions', []))
     );
   }
+  
+
   
   
 

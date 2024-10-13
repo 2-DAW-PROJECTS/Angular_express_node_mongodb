@@ -65,9 +65,9 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
       }
     );
   }
-  navigateToOffer(slug: string) {
-    console.log('Slug:', slug);
-    this.router.navigate(['/offert', slug]);
+  selectSuggestion(suggestion: any) {
+    console.log('Selected suggestion:', suggestion);
+    this.router.navigate(['/offert', suggestion.slug]);
   }
 //////  
 }

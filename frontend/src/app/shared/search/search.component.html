@@ -7,8 +7,9 @@
     <input type="text" class="search-input" [(ngModel)]="searchValue" (input)="onInput()" placeholder="Buscar ofertas...">
     <ul *ngIf="suggestions.length > 0" class="suggestions">
       <li *ngFor="let suggestion of suggestions" (click)="selectSuggestion(suggestion)">
-        {{ suggestion }}
+        {{ suggestion.title }} | {{ suggestion.company }} | {{ suggestion.location }}
       </li>
     </ul>
+
   </div>
   
