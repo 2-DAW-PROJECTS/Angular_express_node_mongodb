@@ -1,8 +1,9 @@
 import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { OffertService } from '../../core/service/offert.service';
 
@@ -20,15 +21,22 @@ import { OffertService } from '../../core/service/offert.service';
 export class SearchComponent implements OnInit {
   @Output() searchEvent: EventEmitter<string> = new EventEmitter();
   @Input() selectedLocation: string = '';
-
+  
   searchValue: string = '';
   suggestions: any[] = [];
+  isHome: boolean = false;
 
   private searchTerms = new Subject<string>();
 
-  constructor(private offertService: OffertService) {}
+  constructor(private offertService: OffertService, private route: ActivatedRoute) {}
+
+
 
   ngOnInit(): void {
+    this.route.url.subscribe(url => {
+      this.isHome = url.length === 0 || url[0].path === 'home';
+    });
+    
     this.searchTerms.pipe(
       debounceTime(300),
       distinctUntilChanged(),
