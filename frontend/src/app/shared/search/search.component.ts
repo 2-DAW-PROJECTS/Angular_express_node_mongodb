@@ -36,7 +36,7 @@ export class SearchComponent implements OnInit {
     this.route.url.subscribe(url => {
       this.isHome = url.length === 0 || url[0].path === 'home';
     });
-    
+
     this.searchTerms.pipe(
       debounceTime(300),
       distinctUntilChanged(),
@@ -52,7 +52,7 @@ export class SearchComponent implements OnInit {
   }
 
   selectSuggestion(suggestion: any) {
-    console.log('Selected suggestion:', suggestion);
+    // console.log('Selected suggestion:', suggestion);
 
     this.searchValue = suggestion.title;
     this.suggestions = [];

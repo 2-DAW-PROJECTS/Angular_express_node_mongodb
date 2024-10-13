@@ -176,7 +176,7 @@ const getFavoriteCount = asyncHandler(async (req, res) => {
 
 // OBTENER OFERTAS FAVORITAS DEL USUARIO
 const getUserFavorites = asyncHandler(async (req, res) => {
-    console.log("getUserFavorites called");
+    // console.log("getUserFavorites called");
 
     const userId = req.userId;
     // console.log("User ID:", userId); 
@@ -195,64 +195,44 @@ const getUserFavorites = asyncHandler(async (req, res) => {
     return res.status(200).json({ offerts: favorites });
 });
 
-// const filterAndSearchOfferts = asyncHandler(async (req, res) => {
-//     const { categorySlug, companySlug, salaryMin, salaryMax, searchTerm } = req.query;
-
-//     let query = {};
-
-//     if (categorySlug) {
-//         const category = await Category.findOne({ slug: categorySlug }).exec();
-//         if (category) {
-//             query.category = category._id;
-//         }
-//     }
-//     if (companySlug) {
-//         query.company_slug = companySlug;
-//     }
-
-//     if (salaryMin) {
-//         query.salary = { $gte: Number(salaryMin) };
-//     }
-//     if (salaryMax) {
-//         query.salary = { ...query.salary, $lte: Number(salaryMax) };
-//     }
-
-//     if (searchTerm) {
-//         query.title = { $regex: new RegExp(searchTerm, 'i') };
-//     }
-
-//     try {
-//         const offerts = await Offert.find(query).exec();
-//         const offertCount = await Offert.countDocuments(query);
-    
-//         return res.status(200).json({ offerts, count: offertCount });
-//     } catch (error) {
-//         console.error('Error al buscar las ofertas:', error);
-//         return res.status(500).json({ message: 'Error al buscar las ofertas' });
-//     }
-// });
+  
 const filterAndSearchOfferts = asyncHandler(async (req, res) => {
-    const { categorySlug, companySlug, salaryMin, salaryMax, searchTerm, offset, limit } = req.query;
-  
+    const { category, company, salaryMin, salaryMax, searchTerm, offset, limit } = req.query;
+
     let query = {};
-  
-    if (categorySlug) {
-      const category = await Category.findOne({ slug: categorySlug });
-      if (category) query.category = category._id;
+
+    if (category) {
+        query.categorySlug = category;
     }
-    if (companySlug) query.company_slug = companySlug;
-    if (salaryMin) query.salary = { $gte: Number(salaryMin) };
-    if (salaryMax) query.salary = { ...query.salary, $lte: Number(salaryMax) };
-    if (searchTerm) query.title = { $regex: new RegExp(searchTerm, 'i') };
-  
-    const offerts = await Offert.find(query)
-      .skip(Number(offset) || 0)
-      .limit(Number(limit) || 20);
-    const count = await Offert.countDocuments(query);
-  
-    res.json({ offerts, count });
-  });
-  
+    if (company) {
+        query.company_slug = company;
+    }
+    if (salaryMin || salaryMax) {
+        query.salary = {};
+        if (salaryMin) query.salary.$gte = Number(salaryMin);
+        if (salaryMax) query.salary.$lte = Number(salaryMax);
+    }
+    if (searchTerm) {
+        query.title = { $regex: new RegExp(searchTerm, 'i') };
+    }
+
+    // console.log('Query:', query);
+    // console.log('Query Parameters:', req.query);
+
+    try {
+        const offerts = await Offert.find(query)
+            .skip(Number(offset) || 0)
+            .limit(Number(limit) || 20)
+            .exec();
+        const count = await Offert.countDocuments(query);
+    
+        return res.status(200).json({ offerts, count });
+    } catch (error) {
+        console.error('Error al buscar las ofertas:', error);
+        return res.status(500).json({ message: 'Error al buscar las ofertas' });
+    }
+});
+
 
 
     const getSearchSuggestions = asyncHandler(async (req, res) => {
@@ -267,14 +247,6 @@ const filterAndSearchOfferts = asyncHandler(async (req, res) => {
         
         res.json(suggestions.map(s => s.title));
     });
-  
-    // const getUniqueLocations = asyncHandler(async (req, res) => {
-    //     console.log("getUniqueLocations called");
-    //     const locations = await Offert.distinct('location');
-    //     return res.status(200).json(locations);
-    // });
-  
-
 
     const getUniqueLocations = asyncHandler(async (req, res) => {
         const locations = await Offert.distinct('location');

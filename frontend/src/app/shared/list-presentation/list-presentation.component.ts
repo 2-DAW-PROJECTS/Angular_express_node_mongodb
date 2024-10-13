@@ -65,24 +65,6 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
   }
 
 /**////////////////////////////SEARCH COMPONENT//////////////////////////////// */
-  // onSearch(searchValue: any) {
-  //   if (typeof searchValue === 'string') {
-  //     const encodedSearch = btoa(encodeURIComponent(searchValue));
-  //     this.router.navigate([], {
-  //       relativeTo: this.route,
-  //       queryParams: { q: encodedSearch },
-  //       queryParamsHandling: 'merge'
-  //     });
-  //     this.offertService.getSearchSuggestions(searchValue).subscribe(
-  //       (results) => {
-  //         this.searchResults = results;
-  //         // console.log('Search results:', results);
-  //       }
-  //     );
-  //   } else {
-  //     this.navigateToOffer(searchValue.slug);
-  //   }
-  // }
 
   onSearch(searchValue: any) {
     if (typeof searchValue === 'string') {
@@ -96,7 +78,7 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
         (results) => {
           this.searchResults = results;
 
-          console.log('Search results:', results);
+          // console.log('Search results:', results);
 
         }
       );
@@ -112,13 +94,6 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
   }
 
 
-  // onLocationChange() {
-  //   this.offertService.getOffertsByLocation(this.selectedLocation).subscribe(
-  //     offerts => {
-  //       console.log('Filtered offerts:', offerts);
-  //     }
-  //   );
-  // }
   onLocationChange() {
     this.searchComponent.selectedLocation = this.selectedLocation;
     this.offertService.getOffertsByLocation(this.selectedLocation).subscribe(

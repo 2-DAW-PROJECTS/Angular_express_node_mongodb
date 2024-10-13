@@ -47,42 +47,7 @@ export class ListOffertsComponent implements OnInit {
     private router: Router // Inyectar Router aquí
   ) {}
 
-  // ngOnInit() {
-  //   // Cargar filtros y ofertas al iniciar
-  //   this.route.queryParams.subscribe(params => {
-  //     const encodedFilters = params['filters'];
-  //     if (encodedFilters) {
-  //       const decodedFilters = JSON.parse(atob(encodedFilters));
-  //       this.selectedFilters = {
-  //         category: decodedFilters.category || undefined,
-  //         company: decodedFilters.company || undefined,
-  //         salaryMin: decodedFilters.salaryMin ? Number(decodedFilters.salaryMin) : undefined,
-  //         salaryMax: decodedFilters.salaryMax ? Number(decodedFilters.salaryMax) : undefined,
-  //         offset: decodedFilters.offset || 0,
-  //         limit: decodedFilters.limit || this.limit
-  //       };
-  //       this.currentPage = 1;
-  //       this.loadOfferts(); 
-  //     } else {
-  //       this.currentPage = 1; 
-  //       this.loadAllOfferts(); 
-  //     }
-  //   });
-  
-  //   if (this.isUserAuthenticated()) {
-  //     this.loadUserFavorites();
-  //   }
-  
-  //   this.filtersChange.subscribe((newFilters: Filter) => {
-  //     this.selectedFilters = { 
-  //       ...newFilters, 
-  //       offset: 0, 
-  //       limit: this.limit 
-  //     };
-  //     this.currentPage = 1;
-  //     this.loadOfferts();
-  //   });
-  // }
+
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       const encodedFilters = params['filters'];
@@ -280,7 +245,8 @@ export class ListOffertsComponent implements OnInit {
   }
 
   onSearch(encodedSearch: string) {
-    this.offertService.find_product_name(encodedSearch).subscribe({
+    const encodedSearchenco = btoa(encodedSearch);
+    this.offertService.find_product_name(encodedSearchenco).subscribe({
       next: (data) => {
         this.offerts = data.offerts;
         // console.log('Ofertas encontradas:', this.offerts);
@@ -293,6 +259,7 @@ export class ListOffertsComponent implements OnInit {
       }
     });
   }
+  
 
   onSearchChange(searchTerm: string) {
     this.selectedFilters.searchTerm = searchTerm;
