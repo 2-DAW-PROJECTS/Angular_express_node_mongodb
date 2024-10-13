@@ -41,4 +41,7 @@ module.exports = (app) => {
 
     app.get('/offerts/search-suggestions', verifyJWTOptional, offertsController.getSearchSuggestions);//Sugerencias de Busqueda para los usuarios
 
+    app.get('/locations', verifyJWTOptional, offertsController.getUniqueLocations);
+//Ciudades de las ofertas
+
 };

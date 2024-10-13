@@ -1,8 +1,3 @@
-<!-- <div class="search-container">
-    <input type="text" class="search-input" [(ngModel)]="searchValue" (input)="onSearch()" placeholder="Buscar...">
-</div> -->
-
-
 <div class="search-container">
     <input type="text" class="search-input" [(ngModel)]="searchValue" (input)="onInput()" placeholder="Buscar ofertas...">
     <ul *ngIf="suggestions.length > 0" class="suggestions">
@@ -10,6 +5,5 @@
         {{ suggestion.title }} | {{ suggestion.company }}
       </li>
     </ul>
-
-  </div>
+</div>
   

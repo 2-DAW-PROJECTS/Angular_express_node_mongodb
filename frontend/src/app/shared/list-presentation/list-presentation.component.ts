@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../search/search.component';
 import { OffertService } from '../../core/service/offert.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 
 
 @Component({
   selector: 'app-list-presentation',
   standalone: true,
-  imports: [CommonModule, SearchComponent],
+  imports: [CommonModule, SearchComponent, FormsModule],
   templateUrl: './list-presentation.component.html',
   styleUrls: ['./list-presentation.component.css']
 })
@@ -25,6 +26,8 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
   currentImageIndex: number = 0;
   private carouselInterval: any;
   searchResults: string[] = [];
+  locations: string[] = [];
+  selectedLocation: string = '';
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -35,6 +38,7 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.loadLocations();
     this.startImageCarousel();
   }
 
@@ -60,6 +64,12 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
 /**////////////////////////////SEARCH COMPONENT//////////////////////////////// */
   // onSearch(searchValue: any) {
   //   if (typeof searchValue === 'string') {
+  //     const encodedSearch = btoa(encodeURIComponent(searchValue));
+  //     this.router.navigate([], {
+  //       relativeTo: this.route,
+  //       queryParams: { q: encodedSearch },
+  //       queryParamsHandling: 'merge'
+  //     });
   //     this.offertService.getSearchSuggestions(searchValue).subscribe(
   //       (results) => {
   //         this.searchResults = results;
@@ -76,7 +86,7 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
       const encodedSearch = btoa(encodeURIComponent(searchValue));
       this.router.navigate([], {
         relativeTo: this.route,
-        queryParams: { q: encodedSearch },
+        queryParams: { q: encodedSearch, location: this.selectedLocation },
         queryParamsHandling: 'merge'
       });
       this.offertService.getSearchSuggestions(searchValue).subscribe(
@@ -90,7 +100,22 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
     }
   }
   
-  
+  loadLocations() {
+    this.offertService.getUniqueLocations().subscribe(
+        locations => this.locations = locations
+    );
+  }
+
+
+  onLocationChange() {
+    this.offertService.getOffertsByLocation(this.selectedLocation).subscribe(
+      offerts => {
+        // Handle the filtered offerts
+        console.log('Filtered offerts:', offerts);
+        // Update your component state or trigger a search with the new location
+      }
+    );
+  }
   
   navigateToOffer(slug: string) {
     console.log('Slug:', slug);
@@ -98,9 +123,6 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
     this.router.navigate(['/details', slug]);
   }
   
-  // selectSuggestion(suggestion: any) {
-  //   console.log('Selected suggestion:', suggestion);
-  //   this.router.navigate(['/offert', suggestion.slug]);
-  // }
+
 //////  
 }

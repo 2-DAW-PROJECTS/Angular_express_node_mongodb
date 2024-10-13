@@ -42,10 +42,14 @@ const findAllOfferts = asyncHandler(async (req, res) => {
     const limit = parseInt(req.query.limit) || 20;
     const offset = parseInt(req.query.offset) || 0;
     const title = req.query.title || '';
+    const location = req.query.location|| '';
 
     if (title) {
         query.title = { $regex: new RegExp(title, 'i') };
     }
+    if (location) {
+        query.location = location;
+      }
 
     const offerts = await Offert.find(query).limit(limit).skip(offset);
     const offertCount = await Offert.countDocuments(query);
@@ -251,23 +255,36 @@ const filterAndSearchOfferts = asyncHandler(async (req, res) => {
   
 
 
-  const getSearchSuggestions = asyncHandler(async (req, res) => {
+    const getSearchSuggestions = asyncHandler(async (req, res) => {
 
-    const { term } = req.query;
-    const suggestions = await Offert.find(
-      { title: { $regex: new RegExp(term, 'i') } },
-      { title: 1, _id: 0 }
-    )
-      .limit(5)
-      .lean();
-    
-    res.json(suggestions.map(s => s.title));
-  });
+        const { term } = req.query;
+        const suggestions = await Offert.find(
+        { title: { $regex: new RegExp(term, 'i') } },
+        { title: 1, _id: 0 }
+        )
+        .limit(5)
+        .lean();
+        
+        res.json(suggestions.map(s => s.title));
+    });
+  
+    // const getUniqueLocations = asyncHandler(async (req, res) => {
+    //     console.log("getUniqueLocations called");
+    //     const locations = await Offert.distinct('location');
+    //     return res.status(200).json(locations);
+    // });
   
 
 
-    
-
+    const getUniqueLocations = asyncHandler(async (req, res) => {
+        const locations = await Offert.distinct('location');
+        if (locations.length > 0) {
+          return res.status(200).json(locations);
+        } else {
+          return res.status(404).json({ message: "No locations found" });
+        }
+      });
+      
   
 
 // EXPORT MODULE
@@ -284,5 +301,6 @@ module.exports = {
     feedOfferts,
     updateOffert,
     //
+    getUniqueLocations,
     getSearchSuggestions,
 };

@@ -118,17 +118,6 @@ getUserFavorites(): Observable<{ offerts: Offert[] }> {
   }
 
   // Método para obtener sugerencias de búsqueda
-  // getSearchSuggestions(term: string): Observable<any[]> {
-  //   return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params: { title: term } }).pipe(
-  //     map(response => response.offerts.map(offert => ({
-  //       title: offert.title,
-  //       company: offert.company,
-  //       location: offert.location,
-  //       slug: offert.slug
-  //     }))),
-  //     catchError(this.handleError<any[]>('getSearchSuggestions', []))
-  //   );
-  // }
   getSearchSuggestions(term: string): Observable<any[]> {
     return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params: { title: term } }).pipe(
       map(response => response.offerts.map(offert => ({
@@ -140,7 +129,23 @@ getUserFavorites(): Observable<{ offerts: Offert[] }> {
     );
   }
   
+  // getUniqueLocations(): Observable<string[]> {
+  //   return this.http.get<string[]>(`${URL}/location`);
+  // }
+  getUniqueLocations(): Observable<string[]> {
+    return this.http.get<{ offerts: any[] }>(`${URL}`, { params: { location: '' } })
+      .pipe(
+        map(response => [...new Set(response.offerts.map(offert => offert.location))] as string[])
+      );
+  }
   
+  getOffertsByLocation(location: string): Observable<{ offerts: Offert[], count: number }> {
+    return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params: { location } });
+  }
+
+  // getOffertsByLocation(location: string): Observable<Offert[]> {
+  //   return this.http.get<Offert[]>(`${URL}/offerts`, { params: { location } });
+  // }
 
   
   
