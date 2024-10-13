@@ -118,20 +118,50 @@ getUserFavorites(): Observable<{ offerts: Offert[] }> {
   }
 
   // Método para obtener sugerencias de búsqueda
-  getSearchSuggestions(term: string): Observable<any[]> {
-    return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params: { title: term } }).pipe(
-      map(response => response.offerts.map(offert => ({
-        title: offert.title,
-        company: offert.company,
-        slug: offert.slug
-      }))),
+
+  // getSearchSuggestions(term: string, location: string): Observable<any[]> {
+  //   let params = new HttpParams()
+  //     .set('title', term)
+  //     .set('location', location);
+  
+  //   return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params }).pipe(
+  //     map(response => response.offerts
+  //       .filter(offert => 
+  //         offert.title.toLowerCase().includes(term.toLowerCase()) &&
+  //         (location === '' || offert.location === location)
+  //       )
+  //       .map(offert => ({
+  //         title: offert.title,
+  //         company: offert.company,
+  //         slug: offert.slug
+  //       }))
+  //     ),
+  //     catchError(this.handleError<any[]>('getSearchSuggestions', []))
+  //   );
+  // }
+  getSearchSuggestions(term: string, location: string): Observable<any[]> {
+    let params = new HttpParams()
+      .set('title', term)
+      .set('location', location);
+  
+    return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params }).pipe(
+      map(response => response.offerts
+        .filter(offert => 
+          offert.title.toLowerCase().includes(term.toLowerCase()) &&
+          (location === '' || offert.location === location)
+        )
+        .map(offert => ({
+          title: offert.title,
+          company: offert.company,
+          slug: offert.slug
+        }))
+      ),
       catchError(this.handleError<any[]>('getSearchSuggestions', []))
     );
   }
   
-  // getUniqueLocations(): Observable<string[]> {
-  //   return this.http.get<string[]>(`${URL}/location`);
-  // }
+  
+  
   getUniqueLocations(): Observable<string[]> {
     return this.http.get<{ offerts: any[] }>(`${URL}`, { params: { location: '' } })
       .pipe(

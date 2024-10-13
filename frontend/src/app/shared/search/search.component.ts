@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -15,35 +15,26 @@ import { OffertService } from '../../core/service/offert.service';
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
-// export class SearchComponent implements OnInit {
-//   @Output() searchEvent: EventEmitter<string> = new EventEmitter();
-//   searchValue: string | undefined = '';
 
-//   constructor(private offertService: OffertService) {}
-
-//   ngOnInit(): void {}
-
-//   onSearch() {
-//     const encodedSearch = btoa(this.searchValue ?? '');
-//     this.searchEvent.emit(encodedSearch);
-//   }
-// }
 
 export class SearchComponent implements OnInit {
   @Output() searchEvent: EventEmitter<string> = new EventEmitter();
-  
+  @Input() selectedLocation: string = '';
+
   searchValue: string = '';
   suggestions: any[] = [];
+  
 
   private searchTerms = new Subject<string>();
 
   constructor(private offertService: OffertService) {}
 
+
   ngOnInit(): void {
     this.searchTerms.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap((term: string) => this.offertService.getSearchSuggestions(term))
+      switchMap((term: string) => this.offertService.getSearchSuggestions(term, this.selectedLocation))
     ).subscribe(suggestions => {
       this.suggestions = suggestions;
     });
@@ -54,17 +45,9 @@ export class SearchComponent implements OnInit {
     this.searchEvent.emit(this.searchValue);
   }
 
-  // selectSuggestion(suggestion: string) {
-  //   console.log('Selected suggestion:', suggestion);
-
-  //   this.searchValue = suggestion;
-  //   this.suggestions = [];
-  //   this.searchEvent.emit(this.searchValue);
-  // }
-
   selectSuggestion(suggestion: any) {
-    // console.log('Selected suggestion:', suggestion);
-    
+    console.log('Selected suggestion:', suggestion);
+
     this.searchValue = suggestion.title;
     this.suggestions = [];
     this.searchEvent.emit(suggestion);

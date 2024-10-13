@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { SearchComponent } from '../search/search.component';
 import { OffertService } from '../../core/service/offert.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -15,6 +16,8 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./list-presentation.component.css']
 })
 export class ListPresentationComponent implements OnInit, OnDestroy {
+  @ViewChild(SearchComponent) searchComponent!: SearchComponent;
+  
   images: string[] = [
     '/carousel_presentation/Presentation1.png',
     '/carousel_presentation/Presentation6.png',
@@ -89,10 +92,12 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
         queryParams: { q: encodedSearch, location: this.selectedLocation },
         queryParamsHandling: 'merge'
       });
-      this.offertService.getSearchSuggestions(searchValue).subscribe(
+      this.offertService.getSearchSuggestions(searchValue, this.selectedLocation).subscribe(
         (results) => {
           this.searchResults = results;
-          // console.log('Search results:', results);
+
+          console.log('Search results:', results);
+
         }
       );
     } else {
@@ -107,15 +112,22 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
   }
 
 
+  // onLocationChange() {
+  //   this.offertService.getOffertsByLocation(this.selectedLocation).subscribe(
+  //     offerts => {
+  //       console.log('Filtered offerts:', offerts);
+  //     }
+  //   );
+  // }
   onLocationChange() {
+    this.searchComponent.selectedLocation = this.selectedLocation;
     this.offertService.getOffertsByLocation(this.selectedLocation).subscribe(
       offerts => {
-        // Handle the filtered offerts
         console.log('Filtered offerts:', offerts);
-        // Update your component state or trigger a search with the new location
       }
     );
   }
+  
   
   navigateToOffer(slug: string) {
     console.log('Slug:', slug);
