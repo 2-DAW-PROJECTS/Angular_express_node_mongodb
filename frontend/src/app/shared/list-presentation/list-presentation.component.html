@@ -10,11 +10,12 @@
       <app-search (searchEvent)="onSearch($event)"></app-search>
     </div> -->
     <div class="search-container">
+      
       <select [(ngModel)]="selectedLocation" (change)="onLocationChange()">
         <option value="">All Locations</option>
         <option *ngFor="let location of locations" [value]="location">{{location}}</option>
       </select>
-      
+
       <app-search (searchEvent)="onSearch($event)"></app-search>
     </div>
     

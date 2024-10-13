@@ -23,12 +23,10 @@ export class SearchComponent implements OnInit {
 
   searchValue: string = '';
   suggestions: any[] = [];
-  
 
   private searchTerms = new Subject<string>();
 
   constructor(private offertService: OffertService) {}
-
 
   ngOnInit(): void {
     this.searchTerms.pipe(

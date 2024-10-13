@@ -1,34 +1,43 @@
 .search-container {
   position: relative;
-  width: 500px;
-  margin: 20px auto;
-}
-
-.suggestions {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-top: none;
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  max-height: 300px;
-  overflow-y: auto;
   width: 100%;
-  z-index: 1000;
+  max-width: 700px; 
+  margin: 20px auto;
+  display: flex;
+  align-items: center;
+  gap: 40px; 
 }
 
-.suggestions li {
+select {
   padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: white;
   cursor: pointer;
+  flex-shrink: 0; 
+  width: 150px; 
 }
 
-.suggestions li:hover {
-  background-color: #f0f0f0;
+app-search {
+  flex-grow: 1; 
+  max-width: calc(100% - 160px); 
 }
+
+@media (max-width: 768px) {
+  .search-container {
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 10px; 
+  }
+
+  select {
+    width: 150px; 
+    margin-left: 40px;
+  }
+}
+
+
 
 .company-name {
   color: rgba(0, 0, 0, 0.6);
@@ -159,3 +168,6 @@ h1 {
     font-size: 36px;
   }
 }
+
+
+
