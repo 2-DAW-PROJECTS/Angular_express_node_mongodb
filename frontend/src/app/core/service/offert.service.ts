@@ -3,6 +3,8 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
 import { Offert } from '../models/offert.model';
 import { environment } from '../../../environments/environment';
+import { map } from 'rxjs/operators';
+
 
 const URL = `${environment.api_url}/offerts`;
 
@@ -22,6 +24,7 @@ export class OffertService {
   // Método para buscar ofertas por nombre
   find_product_name(encodedSearch?: string): Observable<{ offerts: Offert[], count: number }> {
     if (encodedSearch) {
+      // console.log('Encoded search:', encodedSearch);
       const decodedSearch = atob(encodedSearch).trim();
       return this.http.get<{ offerts: Offert[], count: number }>(`${URL}?title=${decodedSearch}`);
     } else {
@@ -37,26 +40,29 @@ export class OffertService {
   }
   
   // Método para filtrar ofertas con múltiples parámetros
-  filterOfferts(filters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number }): Observable<{ offerts: Offert[], count: number }> {
+
+  filterAndSearchOfferts(filters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number; searchTerm?: string; offset?: number; limit?: number }): Observable<{ offerts: Offert[], count: number }> {
     let params = new HttpParams();
 
-    if (filters.category) {
-      params = params.append('categorySlug', filters.category);
-    }
-    if (filters.company) {
-      params = params.append('companySlug', filters.company);
-    }
-    if (filters.salaryMin !== undefined) {
-      params = params.append('salaryMin', filters.salaryMin.toString());
-    }
-    if (filters.salaryMax !== undefined) {
-      params = params.append('salaryMax', filters.salaryMax.toString());
-    }
+    // console.log(filters);
 
+    Object.keys(filters).forEach(key => {
+
+      // console.log(key, filters[key as keyof typeof filters]);
+
+      if (filters[key as keyof typeof filters] !== undefined && filters[key as keyof typeof filters] !== null) {
+        params = params.append(key, filters[key as keyof typeof filters]!.toString());
+      }
+    });
+
+    // console.log(params);
+  
     return this.http.get<{ offerts: Offert[], count: number }>(`${URL}/filter`, { params }).pipe(
-      catchError(this.handleError<{ offerts: Offert[], count: 0 }>('filterOfferts', { offerts: [], count: 0 }))
+      catchError(this.handleError<{ offerts: Offert[], count: number }>('filterAndSearchOfferts', { offerts: [], count: 0 }))
     );
   }
+  
+  
 
   // Método para agregar a favoritos
   favoriteOffert(slug: string): Observable<Offert> {
@@ -96,4 +102,41 @@ getUserFavorites(): Observable<{ offerts: Offert[] }> {
       return of(result as T);
     };
   }
+
+  // Método para obtener sugerencias de búsqueda
+  getSearchSuggestions(term: string, location: string): Observable<any[]> {
+    let params = new HttpParams()
+      .set('title', term)
+      .set('location', location);
+  
+    return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params }).pipe(
+      map(response => response.offerts
+        .filter(offert => 
+          offert.title.toLowerCase().includes(term.toLowerCase()) &&
+          (location === '' || offert.location === location)
+        )
+        .map(offert => ({
+          title: offert.title,
+          company: offert.company,
+          slug: offert.slug
+        }))
+      ),
+      catchError(this.handleError<any[]>('getSearchSuggestions', []))
+    );
+  }
+  
+  
+  
+  getUniqueLocations(): Observable<string[]> {
+    return this.http.get<{ offerts: any[] }>(`${URL}`, { params: { location: '' } })
+      .pipe(
+        map(response => [...new Set(response.offerts.map(offert => offert.location))] as string[])
+      );
+  }
+  
+  getOffertsByLocation(location: string): Observable<{ offerts: Offert[], count: number }> {
+    return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params: { location } });
+  }
+
+ ///// 
 }

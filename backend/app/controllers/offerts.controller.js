@@ -42,10 +42,14 @@ const findAllOfferts = asyncHandler(async (req, res) => {
     const limit = parseInt(req.query.limit) || 20;
     const offset = parseInt(req.query.offset) || 0;
     const title = req.query.title || '';
+    const location = req.query.location|| '';
 
     if (title) {
         query.title = { $regex: new RegExp(title, 'i') };
     }
+    if (location) {
+        query.location = location;
+      }
 
     const offerts = await Offert.find(query).limit(limit).skip(offset);
     const offertCount = await Offert.countDocuments(query);
@@ -91,46 +95,7 @@ const updateOffert = asyncHandler(async (req, res) => {
     return res.status(200).json(updatedOffert);
 });
 
-// FILTRAR OFERTAS POR CATEGORÍA, SLUG DE EMPRESA Y SALARIO
-const filterOffert = asyncHandler(async (req, res) => {
-    const { categorySlug, companySlug, salaryMin, salaryMax } = req.query;
 
-    let query = {};
-
-    // Si se proporciona categorySlug, buscaremos la categoría
-    if (categorySlug) {
-        const category = await Category.findOne({ slug: categorySlug }).exec();
-        if (category) {
-            query.category = category._id;
-        } else {
-            return res.status(400).json({ message: 'Categoría no encontrada.' });
-        }
-    }
-
-    // Si se proporciona companySlug, lo agregamos a la consulta
-    if (companySlug) {
-        query.company_slug = companySlug;
-    }
-
-    // Agregar el filtro de salario mínimo y máximo
-    if (salaryMin) {
-        query.salary = { $gte: Number(salaryMin) };
-    }
-    if (salaryMax) {
-        query.salary = { ...query.salary, $lte: Number(salaryMax) };
-    }
-
-    try {
-        // Devolver todas las ofertas filtradas sin paginación
-        const offerts = await Offert.find(query).exec();
-        const offertCount = await Offert.countDocuments(query); // Contar el número total de ofertas filtradas
-    
-        return res.status(200).json({ offerts, count: offertCount });
-    } catch (error) {
-        console.error('Error al buscar las ofertas:', error);
-        return res.status(500).json({ message: 'Error al buscar las ofertas' });
-    }
-});
 
 // FAVORITE OFFER
 const favoriteOffert = asyncHandler(async (req, res) => {
@@ -211,7 +176,7 @@ const getFavoriteCount = asyncHandler(async (req, res) => {
 
 // OBTENER OFERTAS FAVORITAS DEL USUARIO
 const getUserFavorites = asyncHandler(async (req, res) => {
-    console.log("getUserFavorites called");
+    // console.log("getUserFavorites called");
 
     const userId = req.userId;
     // console.log("User ID:", userId); 
@@ -230,12 +195,76 @@ const getUserFavorites = asyncHandler(async (req, res) => {
     return res.status(200).json({ offerts: favorites });
 });
 
+  
+const filterAndSearchOfferts = asyncHandler(async (req, res) => {
+    const { category, company, salaryMin, salaryMax, searchTerm, offset, limit } = req.query;
+
+    let query = {};
+
+    if (category) {
+        query.categorySlug = category;
+    }
+    if (company) {
+        query.company_slug = company;
+    }
+    if (salaryMin || salaryMax) {
+        query.salary = {};
+        if (salaryMin) query.salary.$gte = Number(salaryMin);
+        if (salaryMax) query.salary.$lte = Number(salaryMax);
+    }
+    if (searchTerm) {
+        query.title = { $regex: new RegExp(searchTerm, 'i') };
+    }
+
+    // console.log('Query:', query);
+    // console.log('Query Parameters:', req.query);
+
+    try {
+        const offerts = await Offert.find(query)
+            .skip(Number(offset) || 0)
+            .limit(Number(limit) || 20)
+            .exec();
+        const count = await Offert.countDocuments(query);
+    
+        return res.status(200).json({ offerts, count });
+    } catch (error) {
+        console.error('Error al buscar las ofertas:', error);
+        return res.status(500).json({ message: 'Error al buscar las ofertas' });
+    }
+});
+
+
+
+    const getSearchSuggestions = asyncHandler(async (req, res) => {
+
+        const { term } = req.query;
+        const suggestions = await Offert.find(
+        { title: { $regex: new RegExp(term, 'i') } },
+        { title: 1, _id: 0 }
+        )
+        .limit(5)
+        .lean();
+        
+        res.json(suggestions.map(s => s.title));
+    });
+
+    const getUniqueLocations = asyncHandler(async (req, res) => {
+        const locations = await Offert.distinct('location');
+        if (locations.length > 0) {
+          return res.status(200).json(locations);
+        } else {
+          return res.status(404).json({ message: "No locations found" });
+        }
+      });
+      
+  
+
 // EXPORT MODULE
 module.exports = {
     createOffert,
     findAllOfferts,
     findOneOffert,
-    filterOffert,
+    filterAndSearchOfferts,
     deleteOneOffert,
     favoriteOffert,
     unfavoriteOffert,
@@ -243,4 +272,7 @@ module.exports = {
     getUserFavorites,
     feedOfferts,
     updateOffert,
+    //
+    getUniqueLocations,
+    getSearchSuggestions,
 };

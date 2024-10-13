@@ -94,7 +94,7 @@ export class FiltersComponent implements OnInit {
     this.selectedFilters.offset = (this.currentPage - 1) * this.limit;
     this.selectedFilters.limit = this.limit; // Set the limit
 
-    this.offertService.filterOfferts(this.selectedFilters).subscribe({
+    this.offertService.filterAndSearchOfferts(this.selectedFilters).subscribe({
       next: (data) => {
         this.offerts = data.offerts;
         this.offerCount = data.count; // Total offers to calculate number of pages

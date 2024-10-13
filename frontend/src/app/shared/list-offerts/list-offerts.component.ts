@@ -11,6 +11,7 @@ interface Filter {
   company?: string;
   salaryMin?: number;
   salaryMax?: number;
+  searchTerm?: string;
   offset?: number;
   limit?: number;  
 }
@@ -23,8 +24,15 @@ interface Filter {
   styleUrls: ['./list-offerts.component.css']
 })
 export class ListOffertsComponent implements OnInit {
+  // offerts: Offert[] = [];
+  // selectedFilters: Filter = { offset: 0, limit: 2 }; 
+  // currentPage: number = 1;
+  // totalPages: number[] = [];
+  // limit: number = 2;
+  // private filtersChangeSubject: Subject<Filter> = new Subject();
+  // filtersChange: Observable<Filter> = this.filtersChangeSubject.asObservable();
   offerts: Offert[] = [];
-  selectedFilters: Filter = { offset: 0, limit: 2 }; 
+  selectedFilters: Filter = {};
   currentPage: number = 1;
   totalPages: number[] = [];
   limit: number = 2;
@@ -39,8 +47,8 @@ export class ListOffertsComponent implements OnInit {
     private router: Router // Inyectar Router aquí
   ) {}
 
+
   ngOnInit() {
-    // Cargar filtros y ofertas al iniciar
     this.route.queryParams.subscribe(params => {
       const encodedFilters = params['filters'];
       if (encodedFilters) {
@@ -50,6 +58,7 @@ export class ListOffertsComponent implements OnInit {
           company: decodedFilters.company || undefined,
           salaryMin: decodedFilters.salaryMin ? Number(decodedFilters.salaryMin) : undefined,
           salaryMax: decodedFilters.salaryMax ? Number(decodedFilters.salaryMax) : undefined,
+          searchTerm: decodedFilters.searchTerm || undefined,
           offset: decodedFilters.offset || 0,
           limit: decodedFilters.limit || this.limit
         };
@@ -75,6 +84,7 @@ export class ListOffertsComponent implements OnInit {
       this.loadOfferts();
     });
   }
+
 
   toggleFavorite(offert: Offert) {
     if (!this.isUserAuthenticated()) {
@@ -139,18 +149,35 @@ export class ListOffertsComponent implements OnInit {
     return false;
   }
 
-  loadOfferts() {
-    const offset = this.selectedFilters.offset || 0; 
-    this.selectedFilters.offset = (this.currentPage - 1) * this.limit;
+  // loadOfferts() {
+  //   const offset = this.selectedFilters.offset || 0; 
+  //   this.selectedFilters.offset = (this.currentPage - 1) * this.limit;
 
-    if (this.selectedFilters.category || this.selectedFilters.company || this.selectedFilters.salaryMin || this.selectedFilters.salaryMax) {
-      this.loadOffertsByFilters();
-    } else {
-      this.loadAllOfferts();
-    }
+  //   if (this.selectedFilters.category || this.selectedFilters.company || this.selectedFilters.salaryMin || this.selectedFilters.salaryMax) {
+  //     this.loadOffertsByFilters();
+  //   } else {
+  //     this.loadAllOfferts();
+  //   }
+  // }
+  loadOfferts() {
+    this.selectedFilters.offset = (this.currentPage - 1) * this.limit;
+    this.selectedFilters.limit = this.limit;
+
+    this.offertService.filterAndSearchOfferts(this.selectedFilters).subscribe({
+      next: (data) => {
+        this.offerts = data.offerts.map(offert => ({
+          ...offert,
+          isFavorited: this.favoriteSlugs.includes(offert.slug)
+        }));
+        this.totalPages = Array(Math.ceil(data.count / this.limit)).fill(0).map((x, i) => i + 1);
+      },
+      error: (err) => console.error('Error loading offers', err)
+    });
   }
+
+
   loadOffertsByFilters() {
-    this.offertService.filterOfferts(this.selectedFilters).subscribe({
+    this.offertService.filterAndSearchOfferts(this.selectedFilters).subscribe({
       next: (data) => {
         if (data && data.offerts && data.count) {
           const currentFavoriteSlugs = this.offerts
@@ -205,16 +232,21 @@ export class ListOffertsComponent implements OnInit {
     this.loadOfferts(); 
   }
 
-  updateFilters(newFilters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number }) {
-    this.filtersChangeSubject.next({
-      ...newFilters,
-      offset: this.selectedFilters.offset || 0, 
-      limit: this.selectedFilters.limit || this.limit 
-    });
+  // updateFilters(newFilters: { category?: string; company?: string; salaryMin?: number; salaryMax?: number }) {
+  //   this.filtersChangeSubject.next({
+  //     ...newFilters,
+  //     offset: this.selectedFilters.offset || 0, 
+  //     limit: this.selectedFilters.limit || this.limit 
+  //   });
+  // }
+  updateFilters(filters: Filter) {
+    this.selectedFilters = { ...this.selectedFilters, ...filters };
+    this.loadOfferts();
   }
 
   onSearch(encodedSearch: string) {
-    this.offertService.find_product_name(encodedSearch).subscribe({
+    const encodedSearchenco = btoa(encodedSearch);
+    this.offertService.find_product_name(encodedSearchenco).subscribe({
       next: (data) => {
         this.offerts = data.offerts;
         // console.log('Ofertas encontradas:', this.offerts);
@@ -227,6 +259,13 @@ export class ListOffertsComponent implements OnInit {
       }
     });
   }
+  
+
+  onSearchChange(searchTerm: string) {
+    this.selectedFilters.searchTerm = searchTerm;
+    this.updateFilters(this.selectedFilters);
+  }
+
 
   onCategoryChange(categorySlug: string | null) {
     this.selectedFilters.category = categorySlug || undefined;
