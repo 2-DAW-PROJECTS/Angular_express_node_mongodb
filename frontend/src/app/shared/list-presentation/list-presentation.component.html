@@ -21,9 +21,17 @@
       <img *ngFor="let image of images; let i = index" [src]="image" [class.active]="i === currentImageIndex" alt="Background Image">
     </div>
     <div class="overlay"></div>
+    <!-- // -->
+    <!-- // -->
     <div class="search-container">
       <app-search (searchEvent)="onSearch($event)"></app-search>
+      <!-- <ul *ngIf="searchResults.length > 0">
+        <li *ngFor="let result of searchResults">{{ result }}</li>
+      </ul> -->
+      <!-- <app-search (searchEvent)="onSearch($event)"></app-search> -->
     </div>
+    <!-- // -->
+    <!-- // -->
     <div class="content">
       <div class="inline-content">
         <div class="favicon-image"></div>

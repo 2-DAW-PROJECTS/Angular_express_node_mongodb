@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../search/search.component';
+import { OffertService } from '../../core/service/offert.service';
+import { Router } from '@angular/router';
 
 
 
@@ -22,8 +24,14 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
   ];
   currentImageIndex: number = 0;
   private carouselInterval: any;
+  searchResults: string[] = [];
 
-  constructor(private cdr: ChangeDetectorRef, private ngZone: NgZone) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone, 
+    private offertService: OffertService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.startImageCarousel();
@@ -50,9 +58,16 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
 
 /**////////////////////////////SEARCH COMPONENT//////////////////////////////// */
   onSearch(searchValue: string) {
-    // Handle the search event
-    console.log('Search value:', searchValue);
-    // Implement your search logic here
+    this.offertService.getSearchSuggestions(searchValue).subscribe(
+      (results) => {
+        this.searchResults = results;
+        // console.log('Search results:', results);
+      }
+    );
+  }
+  navigateToOffer(slug: string) {
+    console.log('Slug:', slug);
+    this.router.navigate(['/offert', slug]);
   }
 //////  
 }

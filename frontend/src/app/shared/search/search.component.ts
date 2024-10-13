@@ -29,6 +29,7 @@ import { OffertService } from '../../core/service/offert.service';
 
 export class SearchComponent implements OnInit {
   @Output() searchEvent: EventEmitter<string> = new EventEmitter();
+  
   searchValue: string = '';
   suggestions: string[] = [];
   private searchTerms = new Subject<string>();

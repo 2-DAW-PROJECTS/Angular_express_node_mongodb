@@ -251,6 +251,25 @@ const filterAndSearchOfferts = asyncHandler(async (req, res) => {
   
 
 
+  const getSearchSuggestions = asyncHandler(async (req, res) => {
+
+    const { term } = req.query;
+    const suggestions = await Offert.find(
+      { title: { $regex: new RegExp(term, 'i') } },
+      { title: 1, _id: 0 }
+    )
+      .limit(5)
+      .lean();
+    
+    res.json(suggestions.map(s => s.title));
+  });
+  
+
+
+    
+
+  
+
 // EXPORT MODULE
 module.exports = {
     createOffert,
@@ -264,4 +283,6 @@ module.exports = {
     getUserFavorites,
     feedOfferts,
     updateOffert,
+    //
+    getSearchSuggestions,
 };

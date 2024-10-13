@@ -117,15 +117,23 @@ getUserFavorites(): Observable<{ offerts: Offert[] }> {
     };
   }
 
+  // Método para obtener sugerencias de búsqueda
+  // getSearchSuggestions(term: string): Observable<string[]> {
+  //   console.log('Searching for suggestions:', term);
 
+  //   return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params: { title: term } }).pipe(
+  //     map(response => response.offerts.map(offert => offert.title)),
+  //     catchError(this.handleError<string[]>('getSearchSuggestions', []))
+  //   );
+  // }
+  
   getSearchSuggestions(term: string): Observable<string[]> {
-    console.log('Searching for suggestions:', term);
-    console.log('getSerachSuggestions');
-    
-    return this.http.get<string[]>(`${URL}/search-suggestions?term=${term}`).pipe(
+    return this.http.get<{ offerts: Offert[], count: number }>(`${URL}`, { params: { title: term } }).pipe(
+      map(response => response.offerts.map(offert => `${offert.title} | ${offert.company} | ${offert.location}`)),
       catchError(this.handleError<string[]>('getSearchSuggestions', []))
     );
   }
+  
   
 
  ///// 

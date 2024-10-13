@@ -39,5 +39,7 @@ module.exports = (app) => {
 
     app.get('/offerts/filter-and-search', verifyJWTOptional, offertsController.filterAndSearchOfferts);
 
+    app.get('/offerts/search-suggestions', verifyJWTOptional, offertsController.getSearchSuggestions);//Sugerencias de Busqueda para los usuarios
+
 
 };

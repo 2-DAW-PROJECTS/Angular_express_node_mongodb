@@ -1,64 +1,77 @@
 .search-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-  }
-  
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  position: relative; 
+}
+
+.search-input {
+  width: 400px;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 25px;
+  margin-left: -150px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%; 
+  left: 50%;  
+  transform: translateX(-50%);
+  background-color: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 400px; 
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 999; 
+}
+
+.suggestions li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.suggestions li:hover {
+  background-color: #f0f0f0;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
   .search-input {
-    width: 400px;
+    width: 100%; 
+    margin-left: 0; 
+  }
 
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 2px solid #ddd;
-    border-radius: 25px;
-    margin-left: -150px;
-    outline: none;
-    transition: border-color 0.3s ease;
-  }
-  
-  .search-input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  }
-  
-  .search-input::placeholder {
-    color: #999;
-  }
-  
-  @media screen and (max-width: 768px) {
-    .search-input {
-      width: 100%;
-      margin-left: 0;
-    }
-    
-  }
-  
-
-  /* .search-container {
-    position: relative;
-  } */
-  
   .suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-top: none;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    max-height: 200px;
-    overflow-y: auto;
+    width: 100%;
+    left: 0; 
+    transform: none; 
   }
-  
+}
+
+@media screen and (max-width: 480px) {
+  .search-input {
+    font-size: 14px; 
+    padding: 8px 10px; 
+  }
+
   .suggestions li {
-    padding: 10px;
-    cursor: pointer;
+    padding: 8px; 
   }
-  
-  .suggestions li:hover {
-    background-color: #f0f0f0;
-  }
-  
+}
