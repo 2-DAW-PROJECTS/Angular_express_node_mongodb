@@ -54,14 +54,21 @@ export class SearchComponent implements OnInit {
     this.searchEvent.emit(this.searchValue);
   }
 
-  selectSuggestion(suggestion: string) {
-    console.log('Selected suggestion:', suggestion);
+  // selectSuggestion(suggestion: string) {
+  //   console.log('Selected suggestion:', suggestion);
 
-    this.searchValue = suggestion;
+  //   this.searchValue = suggestion;
+  //   this.suggestions = [];
+  //   this.searchEvent.emit(this.searchValue);
+  // }
+
+  selectSuggestion(suggestion: any) {
+    // console.log('Selected suggestion:', suggestion);
+    
+    this.searchValue = suggestion.title;
     this.suggestions = [];
-    this.searchEvent.emit(this.searchValue);
+    this.searchEvent.emit(suggestion);
   }
-
-
+  
 
 }

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angula
 import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../search/search.component';
 import { OffertService } from '../../core/service/offert.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 
@@ -30,7 +30,8 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone, 
     private offertService: OffertService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -57,17 +58,49 @@ export class ListPresentationComponent implements OnInit, OnDestroy {
   }
 
 /**////////////////////////////SEARCH COMPONENT//////////////////////////////// */
-  onSearch(searchValue: string) {
-    this.offertService.getSearchSuggestions(searchValue).subscribe(
-      (results) => {
-        this.searchResults = results;
-        // console.log('Search results:', results);
-      }
-    );
+  // onSearch(searchValue: any) {
+  //   if (typeof searchValue === 'string') {
+  //     this.offertService.getSearchSuggestions(searchValue).subscribe(
+  //       (results) => {
+  //         this.searchResults = results;
+  //         // console.log('Search results:', results);
+  //       }
+  //     );
+  //   } else {
+  //     this.navigateToOffer(searchValue.slug);
+  //   }
+  // }
+
+  onSearch(searchValue: any) {
+    if (typeof searchValue === 'string') {
+      const encodedSearch = btoa(encodeURIComponent(searchValue));
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { q: encodedSearch },
+        queryParamsHandling: 'merge'
+      });
+      this.offertService.getSearchSuggestions(searchValue).subscribe(
+        (results) => {
+          this.searchResults = results;
+          // console.log('Search results:', results);
+        }
+      );
+    } else {
+      this.navigateToOffer(searchValue.slug);
+    }
   }
-  selectSuggestion(suggestion: any) {
-    console.log('Selected suggestion:', suggestion);
-    this.router.navigate(['/offert', suggestion.slug]);
+  
+  
+  
+  navigateToOffer(slug: string) {
+    console.log('Slug:', slug);
+    // this.router.navigate(['/offert', slug]);
+    this.router.navigate(['/details', slug]);
   }
+  
+  // selectSuggestion(suggestion: any) {
+  //   console.log('Selected suggestion:', suggestion);
+  //   this.router.navigate(['/offert', suggestion.slug]);
+  // }
 //////  
 }
