@@ -58,7 +58,6 @@
   transition: all 0.3s ease;
 }
 
-
 .header-icons .nav-link[routerLink="/login"] {
   background-color: #f39c12;
 }
@@ -110,27 +109,47 @@
 }
 
 @media (max-width: 768px) {
+  .header-content {
+    flex-wrap: wrap;
+  }
+
+  .header-logo {
+    order: 1;
+  }
+
+  .menu-toggle {
+    display: flex;
+    order: 3;
+    margin-left: auto;
+  }
+
   .header-nav {
     display: none;
     flex-direction: column;
+    width: 100%;
+    order: 4;
     position: absolute;
-    top: 60px;
+    top: 90px;
     left: 0;
     right: 0;
     background-color: #ffffff;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
+    z-index: 999;
   }
 
   .header-nav.active {
     display: flex;
   }
 
-  .menu-toggle {
+  .header-icons {
     display: flex;
+    order: 2;
+    margin-left: auto;
   }
 
-  .header-icons {
-    display: none;
+  .header-icons a {
+    padding: 5px 10px;
+    font-size: 14px;
   }
 }
