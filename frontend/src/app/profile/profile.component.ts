@@ -4,15 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { UserService } from '../core/service/user.service';
 import { User } from '../core/models/user.model';
 import { RouterModule } from '@angular/router'; 
-import { ProfileFollowersComponent } from './profile-followers.component'; // Asegúrate de que esta importación es correcta
-import { ProfileKnowUsersComponent } from './profile-know-users.component'; // Importa el componente de usuarios que podrías conocer
+import { ProfileFollowersComponent } from './profile-followers.component'; 
+import { ProfileKnowUsersComponent } from './profile-know-users.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
-  imports: [CommonModule, RouterModule, FormsModule, ProfileFollowersComponent,ProfileKnowUsersComponent] // Aquí se agrega el componente de seguidores
+  imports: [CommonModule, RouterModule, FormsModule, ProfileFollowersComponent,ProfileKnowUsersComponent] 
 })
 export class ProfileComponent implements OnInit {
   user: User | null = null;
