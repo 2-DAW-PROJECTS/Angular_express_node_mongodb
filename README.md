@@ -3,6 +3,18 @@
 
 ¡Bienvenido a **JobHunter**! 🎯 Este es un proyecto súper emocionante para crear una plataforma de búsqueda de empleo usando tecnología full-stack. Si te encanta el desarrollo web moderno y quieres ayudar a los usuarios a encontrar el trabajo de sus sueños (o simplemente ganar un poco de dinerillo), ¡este proyecto es para ti!
 
+
+> [!NOTE]
+> Este proyecto ha sido creado en colaboración con:
+
+> [!TIP]
+> - [Javier Tomás Tormo](https://github.com/JavierTomasTormo)  
+> - [alfonsan](https://github.com/alfonsan)  
+
+> [!IMPORTANT]
+> Para cualquier consulta, no dudes en contactarnos.
+
+
 ## 🌟 Tecnologías Utilizadas
 
 Para darle vida a esta maravilla, estamos usando un combo poderoso:
