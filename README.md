@@ -9,7 +9,7 @@
 
 > [!TIP]
 > - [Javier Tomás Tormo](https://github.com/JavierTomasTormo)  
-> - [alfonsan](https://github.com/alfonsan)  
+> - [Llorenç Alfonso Sanchis](https://github.com/alfosan)  
 
 > [!IMPORTANT]
 > Para cualquier consulta, no dudes en contactarnos.
