@@ -15,8 +15,20 @@ module.exports = (app) => {
     // Get current user details at /user
     app.get('/user', checkTokenBlacklist, verifyJWT, userController.getCurrentUser);
 
+    // Ruta para seguir a un usuario
+    app.post('/users/:username/follow', checkTokenBlacklist, verifyJWT, userController.followUser);
+
+    // Ruta para dejar de seguir a un usuario
+    app.delete('/users/:username/unfollow', checkTokenBlacklist, verifyJWT, userController.unfollowUser);
+
     // Update user profile
     app.put('/user', checkTokenBlacklist, verifyJWT, userController.updateUser);
+
+    app.get('/users/know_users', checkTokenBlacklist, verifyJWT, userController.getAllUsers);
+
+    app.get('/users/myfollowers', checkTokenBlacklist, verifyJWT, userController.getMyFollowers);
+
+    app.delete('/users/follower/:followerId', checkTokenBlacklist, verifyJWT, userController.removeFollower);
 
     // Refresh token
     app.post('/refresh-token', userController.refreshToken);

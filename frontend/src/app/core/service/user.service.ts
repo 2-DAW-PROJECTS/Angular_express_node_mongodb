@@ -252,7 +252,7 @@ export class UserService {
         const accessRemaining = Math.max(0, Math.round((accessExpiration - currentTime) / 1000));
         const refreshRemaining = Math.max(0, Math.round((refreshExpiration - currentTime) / 1000));
         
-        console.log(`Access token expires in ${accessRemaining}s,\n Refresh token expires in ${refreshRemaining}s`);
+        // console.log(`Access token expires in ${accessRemaining}s,\n Refresh token expires in ${refreshRemaining}s`);
         
         if( currentTime >= accessExpiration && currentTime < refreshExpiration) {
           // console.log('El usuario se va a deslogear');

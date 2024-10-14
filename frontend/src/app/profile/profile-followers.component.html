@@ -1,0 +1,19 @@
+<h2>Followers</h2>
+<div class="followers-container">
+  <div *ngIf="followers.length === 0" class="no-followers">
+      <p>No followers yet.</p>
+  </div>
+
+  <div *ngIf="followers.length > 0" class="followers-list">
+      <ul>
+          <li *ngFor="let user of followers" class="follower-item">
+              <img [src]="user.image" alt="{{ user.username }}'s avatar" class="avatar">
+              <div class="follower-info">
+                  <span class="username">{{ user.username }}</span>
+                  <span class="city">{{ user.city }}</span>
+              </div>
+              <button (click)="deleteFollow(user._id)" class="delete-button">Delete</button>
+          </li>
+      </ul>
+  </div>
+</div>

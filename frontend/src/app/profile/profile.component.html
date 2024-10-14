@@ -1,47 +1,61 @@
-<div class="profile-container" *ngIf="user; else noUser">
-  <div class="profile-card">
-    <div class="profile-header">
-      <img [src]="user.image || 'assets/default-avatar.png'" alt="User profile picture" class="profile-picture">
-      <div class="profile-info">
-        <h2 class="profile-name">{{ user.username }}</h2>
-        <p class="profile-email">{{ user.email }}</p>
+<div class="profile-page-container">
+  <!-- Componente de seguidores -->
+  <app-profile-followers *ngIf="user" [followers]="user.followers" class="profile-sidebar"></app-profile-followers>
+
+  <div class="profile-main-content">
+    <div class="profile-container" *ngIf="user; else noUser">
+      <div class="profile-card">
+        <div class="profile-header">
+          <img [src]="user.image || 'assets/default-avatar.png'" alt="User profile picture" class="profile-picture">
+          <div class="profile-info">
+            <h2 class="profile-name">{{ user.username }}</h2>
+            <p class="profile-email">{{ user.email }}</p>
+          </div>
+        </div>
+
+        <div class="profile-details">
+          <div class="detail-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span class="city-badge">{{ user.city || 'No city provided' }}</span>
+          </div>
+        </div>
+
+        <div class="profile-bio">
+          <h3>About Me</h3>
+          <p>{{ user.aboutMe || 'No about me information' }}</p>
+        </div>
+
+        <div class="profile-skills">
+          <h3>Skills</h3>
+          <ul>
+            <li *ngFor="let skill of user.skills">{{ skill }}</li>
+          </ul>
+        </div>
+
+        <button class="toggle-form-button" (click)="toggleEditForm()">
+          {{ showEditForm ? 'Hide Edit Form' : 'Show Edit Form' }}
+        </button>
+
+        <!-- Formulario para editar campos -->
+        <div class="edit-form" *ngIf="showEditForm">
+          <input [(ngModel)]="user.city" placeholder="Update City">
+          <input [(ngModel)]="user.aboutMe" placeholder="Update About Me">
+          <input [(ngModel)]="user.skills" placeholder="Update Skills" (ngModelChange)="user.skills = $event.split(',')">
+          <button (click)="updateProfile({ city: user.city, aboutMe: user.aboutMe, skills: user.skills })">
+            Update
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="profile-details">
-      <div class="detail-item">
-        <i class="fas fa-map-marker-alt"></i>
-        <span class="city-badge">{{ user.city || 'No city provided' }}</span> <!-- Campo de ciudad -->
+    <ng-template #noUser>
+      <div class="no-user-container">
+        <i class="fas fa-user-slash"></i>
+        <p>No user data available.</p>
       </div>
-    </div>
-
-    <div class="profile-bio">
-      <h3>About Me</h3>
-      <p>{{ user.aboutMe || 'No about me information' }}</p> <!-- Campo sobre mí -->
-    </div>
-
-    <div class="profile-skills">
-      <h3>Skills</h3>
-      <ul>
-        <li *ngFor="let skill of user.skills">{{ skill }}</li> <!-- Lista de habilidades -->
-      </ul>
-    </div>
-
-    <button class="toggle-form-button" (click)="toggleEditForm()">{{ showEditForm ? 'Hide Edit Form' : 'Show Edit Form' }}</button>
-
-    <!-- Formulario para editar campos -->
-    <div class="edit-form" *ngIf="showEditForm">
-      <input [(ngModel)]="user.city" placeholder="Update City">
-      <input [(ngModel)]="user.aboutMe" placeholder="Update About Me">
-      <input [(ngModel)]="user.skills" placeholder="Update Skills" (ngModelChange)="user.skills = $event.split(',')"> <!-- Permitir varias habilidades separadas por comas -->
-      <button (click)="updateProfile({ city: user.city, aboutMe: user.aboutMe, skills: user.skills })">Update</button>
-    </div>
+    </ng-template>
   </div>
+
+  <app-profile-know-users class="profile-sidebar right-sidebar"></app-profile-know-users>
 </div>
 
-<ng-template #noUser>
-  <div class="no-user-container">
-    <i class="fas fa-user-slash"></i>
-    <p>No user data available.</p>
-  </div>
-</ng-template>
