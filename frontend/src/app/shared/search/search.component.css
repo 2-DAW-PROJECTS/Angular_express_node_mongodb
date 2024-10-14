@@ -7,70 +7,123 @@
 
 .search-input {
   width: 400px;
-  padding: 10px 15px;
+  padding: 12px 20px;
   font-size: 16px;
   border: 2px solid #ddd;
-  border-radius: 25px;
+  border-radius: 30px;
   margin-left: -150px;
   outline: none;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 2;
 }
 
 .search-input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: #4a90e2;
+  box-shadow: 0 0 15px rgba(74, 144, 226, 0.5);
+  background-color: #fff;
 }
 
 .search-input::placeholder {
   color: #999;
+  font-style: italic;
 }
 
 .suggestions {
   position: absolute;
-  top: 100%; 
+  top: calc(100% + 5px);
   left: 35%;  
   transform: translateX(-50%);
   background-color: white;
-  border: 1px solid #ddd;
-  border-top: none;
+  border: none;
   list-style-type: none;
-  padding: 0;
+  padding: 10px 0;
   margin: 0;
-  width: 400px; 
-  max-height: 200px;
+  width: 420px; 
+  max-height: 300px;
   overflow-y: auto;
   z-index: 999; 
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.suggestions::-webkit-scrollbar {
+  width: 8px;
+}
+
+.suggestions::-webkit-scrollbar-thumb {
+  background-color: #4a90e2;
+  border-radius: 4px;
+}
+
+.suggestions::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 4px;
 }
 
 .suggestions li {
-  padding: 10px;
+  padding: 12px 20px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
 }
 
 .suggestions li:hover {
-  background-color: #f0f0f0;
+  background-color: #f8f9fa;
+  border-left-color: #4a90e2;
+}
+
+.suggestions li:nth-child(4n+1):hover {
+  background-color: #fff8e1;
+  color: #ff6f00;
+  border-left-color: #ff6f00;
+}
+
+.suggestions li:nth-child(4n+2):hover {
+  background-color: #fce4ec;
+  color: #c2185b;
+  border-left-color: #c2185b;
+}
+
+.suggestions li:nth-child(4n+3):hover {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border-left-color: #1565c0;
+}
+
+.suggestions li:nth-child(4n):hover {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-left-color: #2e7d32;
 }
 
 @media screen and (max-width: 768px) {
   .search-input {
-    width: 50%; 
+    width: 80%; 
     margin-left: 0; 
   }
 
   .suggestions {
-    width: 50%;
-    left: 100; 
-    transform: none; 
+    width: 85%;
+    left: 50%; 
+    transform: translateX(-50%); 
   }
 }
 
 @media screen and (max-width: 480px) {
   .search-input {
     font-size: 14px; 
-    padding: 8px 10px; 
+    padding: 10px 15px; 
+    width: 90%;
+  }
+
+  .suggestions {
+    width: 95%;
   }
 
   .suggestions li {
-    padding: 8px; 
+    padding: 10px 15px; 
   }
 }
