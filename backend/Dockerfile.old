@@ -1,0 +1,19 @@
+FROM node:18
+
+WORKDIR ./
+
+COPY package*.json ./
+RUN echo "hola"
+RUN npm install --production
+
+COPY app/ ./ 
+
+COPY wait-for-it.sh ./ 
+
+RUN chmod +x wait-for-it.sh 
+
+RUN pwd
+RUN ls -la
+
+# CMD ["./wait-for-it.sh", "mongo:27017", "--", "node", "./app/api/index.js"]
+CMD ["node", "./app/api/index.js"]

@@ -1,0 +1,55 @@
+services:
+  mongo:
+    image: mongo:5.0.0
+    container_name: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'admin'
+      MONGO_INITDB_ROOT_PASSWORD: 'admin123'
+      MONGO_INITDB_DATABASE: 'infojobs'
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    image: backend
+    #build:
+     # context: .
+      #dockerfile: backend/Dockerfile
+    container_name: backend
+    restart: always
+    environment:
+      NODE_ENV: 'development'
+      PORT: 3001
+      MONGO_URI: mongodb://admin:admin123@mongo:27017/infojobs
+      CORSURL: http://localhost:4200
+      DUMMY_PRODUCTS: 50
+      ACCESS_TOKEN_SECRET: 'AndIfWeDieWeWillBeAbleToSay_ItWasFun'
+      REFRESH_TOKEN_SECRET: 'GYMaster69_ComeBackPlease'
+      ACCESS_TOKEN_INTERVAL: '10m'
+      REFRESH_TOKEN_INTERVAL: '7d'
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo
+    volumes:
+      - ./backend:/app
+      - ./wait-for-it.sh:/app/wait-for-it.sh
+    # entrypoint: ["./wait-for-it.sh", "mongo:27017", "--", "npm", "start"]
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: frontend
+    restart: always
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+
+volumes:
+  mongo-data:

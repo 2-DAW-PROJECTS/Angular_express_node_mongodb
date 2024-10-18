@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:5.0.0
+    container_name: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    ports:
+      - "27017:27017"  
+    volumes:
+      - mongo-data:/data/db  
+
+  backend:
+    build:  
+      context: .  
+      dockerfile: backend/Dockerfile 
+    container_name: backend
+    restart: always
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${NODE_PORT}
+      MONGO_URI: mongodb://host.docker.internal:${MONGO_PORT}/${MONGO_DB}
+      CORSURL: http://localhost:${ANGULAR_PORT}
+      DUMMY_PRODUCTS: 50
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+      ACCESS_TOKEN_INTERVAL: ${ACCESS_TOKEN_INTERVAL}
+      REFRESH_TOKEN_INTERVAL: ${REFRESH_TOKEN_INTERVAL}
+    ports:
+      - "3001:3001" 
+    depends_on:
+      - mongo  
+    volumes:
+      - ./backend:/home/node/app 
+      - ./wait-for-it.sh:/app/wait-for-it.sh  
+
+  frontend:
+    build:
+      context: ./frontend  
+      dockerfile: Dockerfile  
+    container_name: frontend
+    restart: always
+    ports:
+      - "${ANGULAR_PORT}:4200"
+
+volumes:
+  mongo-data:
