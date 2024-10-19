@@ -1,29 +1,30 @@
 import { Request, Response } from 'express';
 import prisma from '../services/prismaService';
 
-export const createUser = async (req: Request, res: Response) => {
-  const { email, name } = req.body;
-
-  console.log('email', email);
-  console.log('name', name);
-
+export const createUserEnterprise = async (req: Request, res: Response) => {
+  const { username, email, password, telefon, permissions } = req.body;
   try {
-    const user = await prisma.user.create({
-      data: { email, name },
+    const userEnterprise = await prisma.userEnterprise.create({
+      data: { 
+        username, 
+        email, 
+        password, 
+        telefon, 
+        permissions,
+        followers: [],
+      },
     });
-    res.status(201).json(user);
+    res.status(201).json(userEnterprise);
   } catch (error) {
-    res.status(500).json({ error: 'Error creating user' + error });
-    }
-  };
+    res.status(500).json({ error: 'Error creating user enterprise' + error });
+  }
+};
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getUserEnterprises = async (req: Request, res: Response) => {
   try {
-    const users = await prisma.user.findMany({
-      include: { posts: true, comments: true },
-    });
-    res.json(users);
+    const userEnterprises = await prisma.userEnterprise.findMany();
+    res.json(userEnterprises);
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching users' });
+    res.status(500).json({ error: 'Error fetching user enterprises' });
   }
 };

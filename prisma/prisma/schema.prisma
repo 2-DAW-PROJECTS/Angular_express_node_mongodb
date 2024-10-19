@@ -14,29 +14,32 @@ datasource db {
   relationMode = "prisma"
 }
 
-
-model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  name      String
-  posts     Post[]
-  comments  Comment[]
+model UserEnterprise {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userType    String   @default("Enterprise")
+  isActive    Boolean  @default(true)
+  username    String
+  email       String   @unique
+  password    String
+  timestamp   DateTime @default(now())
+  permissions String[]
+  telefon     String
+  followers   String[]
+  offerts     Offert[] // This establishes the relation with Offert model
 }
 
-model Post {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  content   String
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String   @db.ObjectId
-  comments  Comment[]
+model Offert {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userEnterprise  UserEnterprise @relation(fields: [userEnterpriseId], references: [id])
+  userEnterpriseId String   @db.ObjectId
+  applications    Application[]
 }
 
-model Comment {
+model Application {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  content   String
-  post      Post     @relation(fields: [postId], references: [id])
-  postId    String   @db.ObjectId
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String   @db.ObjectId
+  offert    Offert   @relation(fields: [offertId], references: [id])
+  offertId  String   @db.ObjectId
+  userId    String
+  timestamp DateTime @default(now())
+  status    String
 }
