@@ -1,42 +1,39 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider      = "mongodb"
+  url           = env("DATABASE_URL")
+  relationMode  = "prisma"
 }
 
-
-model User {
+model UserEnterprise {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
   name      String
-  posts     Post[]
-  comments  Comment[]
+  posts     Post[]   @relation("UserEnterprisePosts")
+  comments  Comment[] @relation("UserEnterpriseComments")
 }
 
 model Post {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   content   String
-  author    User     @relation(fields: [authorId], references: [id])
+  author    UserEnterprise @relation(fields: [authorId], references: [id], name: "UserEnterprisePosts")
   authorId  String   @db.ObjectId
-  comments  Comment[]
+  comments  Comment[] @relation("PostComments")
 }
 
 model Comment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   content   String
-  post      Post     @relation(fields: [postId], references: [id])
-  postId    String   @db.ObjectId
-  author    User     @relation(fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], name: "PostComments") 
+  postId    String   @db.ObjectId 
+  author    UserEnterprise @relation(fields: [authorId], references: [id], name: "UserEnterpriseComments")
   authorId  String   @db.ObjectId
 }

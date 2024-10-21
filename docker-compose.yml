@@ -7,9 +7,10 @@ services:
     environment:
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     ports:
-      - "27017:27017"  
+      - "27017:27017"
     volumes:
-      - mongo-data:/data/db  
+      - mongo-data:/data/db
+    command: ["mongod", "--bind_ip_all", "--replSet", "rs0"]
 
   backend:
     build:  
@@ -20,7 +21,7 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV}
       PORT: ${NODE_PORT}
-      MONGO_URI: mongodb://host.docker.internal:${MONGO_PORT}/${MONGO_DB}
+      MONGO_URI: mongodb://mongo:27017/${MONGO_DB}?replicaSet=rs0
       CORSURL: http://localhost:${ANGULAR_PORT}
       DUMMY_PRODUCTS: 50
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
@@ -43,6 +44,21 @@ services:
     restart: always
     ports:
       - "${ANGULAR_PORT}:4200"
+
+  prisma:
+    build:
+      context: ./prisma  
+      dockerfile: Dockerfile 
+    container_name: prisma
+    restart: always
+    environment:
+      DATABASE_URL: mongodb://mongo:27017/infojobs?replicaSet=rs0
+      DOCKER_ENV: "true"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    command: ["npm", "start"]
 
 volumes:
   mongo-data:
