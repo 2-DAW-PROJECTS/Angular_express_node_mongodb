@@ -1,20 +1,15 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import userEnterpriseRoutes from './routes/userEnterpriseRoutes';
-import postRoutes from './routes/postRoutes';
-import commentRoutes from './routes/commentRoutes';
+import userEnterpriseRoutes from './routes/userEnterpriseRoutes';  
 import { PrismaClient } from '@prisma/client';
 
-dotenv.config();
+dotenv.config();  
 
 const app = express();
 
 app.use(express.json());
 
-app.use('/userEnterprises', userEnterpriseRoutes);
-app.use('/posts', postRoutes);
-app.use('/comments', commentRoutes);
-
+app.use('/userEnterprises', userEnterpriseRoutes);  
 
 const prisma = new PrismaClient();
 
