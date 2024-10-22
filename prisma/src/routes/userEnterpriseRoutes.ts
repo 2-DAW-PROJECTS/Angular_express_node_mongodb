@@ -3,11 +3,11 @@ import { createUserEnterprise, getUserEnterprises } from '../controllers/userEnt
 
 const router = Router();
 
-router.post('/', (req: Request, res: Response, next: NextFunction) => {
+router.post('/register', (req: Request, res: Response, next: NextFunction) => {
   createUserEnterprise(req, res).catch(next);
 });
 
-router.get('/', (req: Request, res: Response, next: NextFunction) => {
+router.get('/get_allusers', (req: Request, res: Response, next: NextFunction) => {
   getUserEnterprises(req, res).catch(next);
 });
 

@@ -1,4 +1,5 @@
-version: '3.8'
+version: '3.8'  
+
 services:
   mongo:
     image: mongo:5.0.0
@@ -10,7 +11,10 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
     command: ["mongod", "--bind_ip_all", "--replSet", "rs0"]
+    networks:
+      - app-network
 
   backend:
     build:  
@@ -35,30 +39,40 @@ services:
     volumes:
       - ./backend:/home/node/app 
       - ./wait-for-it.sh:/app/wait-for-it.sh  
+    networks:
+      - app-network
 
   frontend:
     build:
-      context: ./frontend  
-      dockerfile: Dockerfile  
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: frontend
     restart: always
     ports:
       - "${ANGULAR_PORT}:4200"
+    networks:
+      - app-network
 
   prisma:
     build:
-      context: ./prisma  
-      dockerfile: Dockerfile 
+      context: ./prisma
+      dockerfile: Dockerfile
     container_name: prisma
     restart: always
     environment:
-      DATABASE_URL: mongodb://mongo:27017/infojobs?replicaSet=rs0
+      DATABASE_URL: mongodb://mongo:27017/${MONGO_INITDB_DATABASE}?replicaSet=rs0
       DOCKER_ENV: "true"
     ports:
       - "3000:3000"
     depends_on:
       - mongo
-    command: ["npm", "start"]
+    command: ["npm", "start"]  
+    networks:
+      - app-network
 
 volumes:
   mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
