@@ -13,11 +13,35 @@ datasource db {
 }
 
 model UserEnterprise {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  username    String    @unique
+  email       String    @unique
+  password    String
+  usertype    String    @default("enterprise")
+  isActive    Boolean   @default(true)
+  timestamp   DateTime  @default(now())
+  permissions String[]
+  telephone   String?
+  followers   Int       @default(0)
+  offerts     Offert[]
+  posts       Post[]    @relation("UserEnterprisePosts")
+  comments    Comment[] @relation("UserEnterpriseComments")
+}
+
+model Offert {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  name      String
-  posts     Post[]   @relation("UserEnterprisePosts")
-  comments  Comment[] @relation("UserEnterpriseComments")
+  user      UserEnterprise @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  applicants Applicant[]
+}
+
+model Applicant {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  offert    Offert   @relation(fields: [offertId], references: [id])
+  offertId  String   @db.ObjectId
+  userId    String   @db.ObjectId
+  timestamp DateTime @default(now())
+  status    String   @default("Pending")
 }
 
 model Post {
@@ -37,3 +61,4 @@ model Comment {
   author    UserEnterprise @relation(fields: [authorId], references: [id], name: "UserEnterpriseComments")
   authorId  String   @db.ObjectId
 }
+

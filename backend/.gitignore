@@ -13,7 +13,3 @@ logs
 # MongoDB
 /data/
 
-
-# JSON Packages
-
-*.json
