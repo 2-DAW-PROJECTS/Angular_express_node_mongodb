@@ -17,9 +17,9 @@ model UserEnterprise {
   username    String    @unique
   email       String    @unique
   password    String
+  name        String    // Add this line if it's not present
   usertype    String    @default("enterprise")
   isActive    Boolean   @default(true)
-  timestamp   DateTime  @default(now())
   permissions String[]
   telephone   String?
   followers   Int       @default(0)
@@ -27,6 +27,7 @@ model UserEnterprise {
   posts       Post[]    @relation("UserEnterprisePosts")
   comments    Comment[] @relation("UserEnterpriseComments")
 }
+
 
 model Offert {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
