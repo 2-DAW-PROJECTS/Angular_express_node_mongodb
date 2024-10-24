@@ -16,30 +16,39 @@ async function migrate() {
     for (const enterprise of enterprisesData) {
         await prisma.userEnterprise.upsert({
             where: {
-              email: enterprise.contact_email,
+              email: enterprise.contact_email || `${enterprise.name}@jobhunter.com`,
               username: enterprise.name
             },
             update: {
+              description: enterprise.description,
+              industry: enterprise.industry,
+              location: enterprise.location,
+              logo: enterprise.logo,
+              website: enterprise.website,
               telephone: enterprise.contact_phone,
-              usertype: "enterprise",
-              isActive: true,
-              permissions: ["read", "write"],
-              followers: 0
+              image: enterprise.image,
+              slug: enterprise.slug,
+              category: enterprise.category
             },
             create: {
               username: enterprise.name,
-              email: enterprise.contact_email,
+              email: enterprise.contact_email || `${enterprise.name}@jobhunter.com`,
               password: "defaultPassword123",
+              description: enterprise.description,
+              industry: enterprise.industry,
+              location: enterprise.location,
+              logo: enterprise.logo,
+              website: enterprise.website,
               telephone: enterprise.contact_phone,
+              image: enterprise.image,
+              slug: enterprise.slug,
+              category: enterprise.category,
               usertype: "enterprise",
               isActive: true,
               permissions: ["read", "write"],
               followers: 0
             }
           });
-          
-          
-          
     }
     console.log('Migration completed successfully');
   } catch (error) {

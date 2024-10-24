@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../services/prismaService';
 import argon2 from 'argon2';
-import jwt, { JwtPayload } from 'jsonwebtoken'; 
+import jwt from 'jsonwebtoken'; 
 
 const SECRET_KEY = process.env.ACCESS_TOKEN_SECRET || 'AndIfWeDieWeWillBeAbleToSay_ItWasFun';  
 
@@ -10,7 +10,24 @@ const generateAccessToken = (userId: string) => {
 };
 
 export const createUserEnterprise = async (req: Request, res: Response) => {
-  const { username, email, password, usertype, isActive, permissions, telephone, followers } = req.body;
+  const {
+    username,
+    email,
+    password,
+    usertype,
+    isActive,
+    permissions,
+    telephone,
+    followers,
+    description,
+    industry,
+    location,
+    logo,
+    website,
+    image,
+    slug,
+    category
+  } = req.body;
 
   if (!username || !email || !password) {
     return res.status(400).json({ error: 'Username, email, and password are required' });
@@ -26,9 +43,17 @@ export const createUserEnterprise = async (req: Request, res: Response) => {
         password: hashedPassword,
         usertype: usertype || 'enterprise',
         isActive: isActive !== undefined ? isActive : true,
-        permissions: permissions || [],
+        permissions: permissions || ['read', 'write'],
         telephone,
         followers: followers || 0,
+        description,
+        industry,
+        location,
+        logo,
+        website,
+        image,
+        slug,
+        category
       },
     });
 
@@ -43,6 +68,7 @@ export const createUserEnterprise = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error creating user enterprise' });
   }
 };
+
 
 // Login de usuario de empresa
 export const loginUserEnterprise = async (req: Request, res: Response) => {
