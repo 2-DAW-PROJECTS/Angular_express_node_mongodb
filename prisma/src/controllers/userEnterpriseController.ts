@@ -3,10 +3,10 @@ import prisma from '../services/prismaService';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken'; 
 
-const SECRET_KEY = process.env.ACCESS_TOKEN_SECRET || 'AndIfWeDieWeWillBeAbleToSay_ItWasFun';  
+const SECRET_KEY = process.env.ACCESS_TOKEN_SECRET || 'AndIfWeDieWeWillBeAbleToSay_ItWasFun';
 
 const generateAccessToken = (userId: string) => {
-  return jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });  
+  return jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
 };
 
 export const createUserEnterprise = async (req: Request, res: Response) => {
@@ -56,7 +56,7 @@ export const createUserEnterprise = async (req: Request, res: Response) => {
         category
       },
     });
-
+    
     const createdUser = await prisma.userEnterprise.findUnique({
       where: { id: userEnterprise.id },
       include: { offerts: true },

@@ -33,6 +33,7 @@ model UserEnterprise {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   offerts     Offert[]
+
 }
 
 
