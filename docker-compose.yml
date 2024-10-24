@@ -36,9 +36,12 @@ services:
       - "3001:3001" 
     depends_on:
       - mongo  
+    # volumes:
+    #   - ./backend:/home/node/app 
+    #   - ./wait-for-it.sh:/app/wait-for-it.sh  
     volumes:
       - ./backend:/home/node/app 
-      - ./wait-for-it.sh:/app/wait-for-it.sh  
+      - ./prisma:/home/node/prisma 
     networks:
       - app-network
 
