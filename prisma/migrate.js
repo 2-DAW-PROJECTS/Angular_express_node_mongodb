@@ -33,7 +33,7 @@ async function migrate() {
             create: {
               username: enterprise.name,
               email: enterprise.contact_email || `${enterprise.name}@jobhunter.com`,
-              password: "defaultPassword123",
+              password: "$argon2id$v=19$m=65536,t=3,p=4$BYkXITxt5eb6/Dgcum3QlQ$rX2ulS2ba8Y6qb65dfqdf1IdUcaeMeFiuF+c4yIM3z8",
               description: enterprise.description,
               industry: enterprise.industry,
               location: enterprise.location,
