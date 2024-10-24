@@ -42,21 +42,20 @@ export const createUserEnterprise = async (req: Request, res: Response) => {
         email,
         password: hashedPassword,
         usertype: usertype || 'enterprise',
-        isActive: isActive !== undefined ? isActive : true,
-        permissions: permissions || ['read', 'write'],
-        telephone,
+        isActive: isActive !== undefined ? isActive : false,
+        permissions: permissions || [],
+        telephone: telephone || "",
         followers: followers || 0,
-        description,
-        industry,
-        location,
-        logo,
-        website,
-        image,
-        slug,
-        category
-      },
+        description: description || "",
+        industry: industry || "",
+        location: location || "",
+        logo: logo || "",
+        website: website || "",
+        category: category || "",
+        slug: slug || "",
+        image: image || ""
+      },    
     });
-    
     const createdUser = await prisma.userEnterprise.findUnique({
       where: { id: userEnterprise.id },
       include: { offerts: true },
