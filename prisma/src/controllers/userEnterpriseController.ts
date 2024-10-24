@@ -11,8 +11,22 @@ const generateAccessToken = (userId: string) => {
 
 export const createUserEnterprise = async (req: Request, res: Response) => {
   const {
-    username, email, password, usertype, isActive, permissions, telephone, followers,
-    name, description, industry, location, logo, website, category, slug, image
+    username,
+    email,
+    password,
+    usertype,
+    isActive,
+    permissions,
+    telephone,
+    followers,
+    description,
+    industry,
+    location,
+    logo,
+    website,
+    image,
+    slug,
+    category
   } = req.body;
 
   if (!username || !email || !password) {
@@ -28,19 +42,19 @@ export const createUserEnterprise = async (req: Request, res: Response) => {
         email,
         password: hashedPassword,
         usertype: usertype || 'enterprise',
-        isActive: isActive !== undefined ? isActive : false,
-        permissions: permissions || [],
-        telephone: telephone || "",
+        isActive: isActive !== undefined ? isActive : true,
+        permissions: permissions || ['read', 'write'],
+        telephone,
         followers: followers || 0,
-        name: name || "",
-        description: description || "",
-        industry: industry || "",
-        location: location || "",
-        logo: logo || "",
-        website: website || "",
-        category: category || "",
-        slug: slug || "",
-        image: image || ""      },
+        description,
+        industry,
+        location,
+        logo,
+        website,
+        image,
+        slug,
+        category
+      },
     });
     
     const createdUser = await prisma.userEnterprise.findUnique({
@@ -54,6 +68,7 @@ export const createUserEnterprise = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error creating user enterprise' });
   }
 };
+
 
 // Login de usuario de empresa
 export const loginUserEnterprise = async (req: Request, res: Response) => {

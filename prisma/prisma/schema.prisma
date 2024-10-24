@@ -17,22 +17,25 @@ model UserEnterprise {
   username    String    @unique
   email       String    @unique
   password    String
-  usertype    String    @default("enterprise") // Ensure usertype is present
+  usertype    String    @default("enterprise")
   isActive    Boolean   @default(true)
   permissions String[]
   telephone   String?
   followers   Int       @default(0)
-  offerts     Offert[]  // Relation to Offert model
-  name        String?   // Name of the enterprise
-  description String?   // Description of the enterprise
-  industry    String?   // Industry sector
-  location    String?   // Location of the enterprise
-  logo        String?   // URL to the logo image
-  website     String?   // URL to the website
-  category    String?   // Category of the enterprise
-  slug        String?   @unique  // Unique slug for URL
-  image       String?   // URL to an additional image
+  description String?
+  industry    String?
+  location    String?
+  logo        String?
+  website     String?
+  image       String?
+  slug        String?
+  category    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  offerts     Offert[]
+
 }
+
 
 model Offert {
   id        String         @id @default(auto()) @map("_id") @db.ObjectId
