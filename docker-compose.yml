@@ -67,9 +67,9 @@ services:
       DOCKER_ENV: "true"
     ports:
       - "3000:3000"
+      - "5555:5555"
     depends_on:
       - mongo
-    command: ["npm", "start"]  
     networks:
       - app-network
 
