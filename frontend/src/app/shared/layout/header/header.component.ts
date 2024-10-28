@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';  
-import { UserService } from '../../../core/service/user.service';  
-import { ChangeDetectorRef } from '@angular/core'; 
-import { User } from '../../../core/models/user.model'; 
+import { Component, OnInit } from '@angular/core';
+import { UserService } from '../../../core/service/user.service';
+import { UserEnterpriseService } from '../../../core/service_prisma/userEnterprise.service';
+import { ChangeDetectorRef } from '@angular/core';
+import { User } from '../../../core/models/user.model';
+import { UserEnterprise } from '../../../core/models_prisma/userEnterprise.model';
 
 @Component({
   selector: 'app-header',
@@ -10,10 +12,11 @@ import { User } from '../../../core/models/user.model';
 })
 export class HeaderComponent implements OnInit {
   isMenuOpen = false;
-  currentUser: User | null = null;
+  currentUser: User | UserEnterprise | null = null;
 
   constructor(
     private userService: UserService,
+    private userEnterpriseService: UserEnterpriseService,
     private cd: ChangeDetectorRef
   ) {}
 
@@ -22,13 +25,27 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.populate();
-    this.userService.currentUser.subscribe(userData => {
-      this.currentUser = userData;
+    this.userEnterpriseService.currentUser.subscribe(userEnterpriseData => {
+      if (userEnterpriseData) {
+        this.currentUser = userEnterpriseData;
+      } else {
+        this.userService.currentUser.subscribe(userData => {
+          if (userData) {
+            this.currentUser = userData;
+          }
+          this.cd.markForCheck();
+        });
+      }
+      this.cd.markForCheck();
     });
-}
+  }
 
   logout() {
-    this.userService.purgeAuth();
+    if (this.currentUser?.usertype === 'user') {
+      this.userService.purgeAuth();
+    } else if (this.currentUser?.usertype === 'enterprise') {
+      this.userEnterpriseService.purgeAuth();
+    }
+    this.currentUser = null;
   }
 }

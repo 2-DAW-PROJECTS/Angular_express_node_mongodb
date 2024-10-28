@@ -7,6 +7,8 @@ import { DetailsComponent } from './details/details.component';
 import { DetailsResolver } from './core/service/details.service';
 import { AuthComponent } from './auth/auth.component';
 import { ProfileComponent } from './profile/profile.component';
+import { UserTypeGuard } from './guards/user-type.guard'; 
+import { EnterpriseDashboardComponent } from './enterprise-dashboard/enterprise-dashboard.component';
 
 const routes: Routes = [
   {
@@ -38,12 +40,17 @@ const routes: Routes = [
     component: AuthComponent
   },
   {
-    path: 'register', 
+    path: 'register',
     component: AuthComponent
   },
   {
     path: 'profile',
     component: ProfileComponent
+  },
+  {
+    path: 'enterprise-dashboard',
+    component: EnterpriseDashboardComponent,
+    canActivate: [UserTypeGuard] // Solo permite acceso a usuarios de tipo 'enterprise'
   },
   {
     path: '**',

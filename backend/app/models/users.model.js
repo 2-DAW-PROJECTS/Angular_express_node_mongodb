@@ -55,6 +55,12 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User' 
     }],
+    usertype: { 
+        type: String, 
+        enum: ['user'], 
+        default: 'user',
+        required: true 
+    },
     followers: [{  
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
@@ -76,6 +82,7 @@ userSchema.methods.toUserResponse = function() {
         city: this.city,
         aboutMe: this.aboutMe,
         skills: this.skills,
+        usertype: this.usertype,
         refreshToken: this.refreshToken
     };
 };
@@ -91,6 +98,7 @@ userSchema.methods.toProfileJSON = function() {
         city: this.city,
         aboutMe: this.aboutMe,
         skills: this.skills,
+        usertype: this.usertype
     };
 };
 

@@ -86,45 +86,36 @@ export class UserService {
   }
 
 
-  private fetchUserData() {
-    const accessToken = this.jwtService.getAccessToken();
+  fetchUserData() {
+    const accessToken = this.jwtService.getAccessToken() ?? ''; 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${accessToken}`);
   
     this.http.get<{ user: User }>(`${this.apiUrl}/user`, { headers }).subscribe(
-      (data) => {
+      data => {
         if (data && data.user) {
-          const refreshToken = this.jwtService.getRefreshToken();
-          if (refreshToken && accessToken) {
-            const user: User = {
-              ...data.user,
-              token: accessToken,
-              refreshToken: refreshToken
-            };
-            this.setAuth(user, accessToken);
-          } else {
-            this.purgeAuth();
-          }
+          const refreshToken = this.jwtService.getRefreshToken() ?? '';
+          const user = { ...data.user, usertype: 'user' as const, token: accessToken, refreshToken };
+          this.setAuth(user, accessToken);
         } else {
           this.purgeAuth();
         }
       },
-      (error) => {
+      error => {
         console.error('Error fetching user data:', error);
         this.purgeAuth();
       }
     );
   }
+  
 
   setAuth(user: User, accessToken: string) {
-    // console.log('User setAuth:', user);
-    // console.log(accessToken);
-    // console.log(user.refreshToken);
     this.startTokenExpirationCheck();
-    this.jwtService.saveTokens(accessToken, user.refreshToken);  
+    this.jwtService.saveTokens(accessToken ?? '', user.refreshToken ?? '');  
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
-    this.startTokenExpirationTimer(accessToken, user.refreshToken);//debugging
+    this.startTokenExpirationTimer(accessToken ?? '', user.refreshToken ?? ''); //debugging
   }
+  
 
   purgeAuth() {
     this.jwtService.destroyTokens(); 

@@ -1,10 +1,11 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { UserService } from '../../app/core/service/user.service';
 import { RouterModule } from '@angular/router';
-import { ListErrorsComponent } from '../shared/list-errors/list-errors.component'; 
+import { UserService } from '../../app/core/service/user.service';
+import { UserEnterpriseService } from '../../app/core/service_prisma/userEnterprise.service';
+import { ListErrorsComponent } from '../shared/list-errors/list-errors.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-auth',
@@ -20,11 +21,13 @@ export class AuthComponent implements OnInit {
   errors: any = { errors: {} };
   isSubmitting = false;
   authForm: FormGroup;
+  isAuthenticated: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private userService: UserService,
+    private userEnterpriseService: UserEnterpriseService,
     private fb: FormBuilder,
     private cd: ChangeDetectorRef
   ) {
@@ -44,22 +47,49 @@ export class AuthComponent implements OnInit {
       }
       this.cd.markForCheck();
     });
+
+    this.userEnterpriseService.isAuthenticated.subscribe(auth => {
+      this.isAuthenticated = auth;
+      this.cd.markForCheck();
+    });
   }
+
   submitForm() {
     this.isSubmitting = true;
     this.errors = { errors: {} };
-
+  
     const credentials = this.authForm.value;
-    this.userService.attemptAuth(this.authType, credentials).subscribe(
-      (user) => {
-        this.router.navigateByUrl('/');
+  
+    this.userEnterpriseService.login(this.authType, credentials).subscribe({
+      next: () => {
+        this.router.navigateByUrl('/enterprise-dashboard');
       },
-      (err) => {
-        this.errors = err;
-        this.isSubmitting = false;
-        this.cd.markForCheck();
+      error: (err) => {
+        console.error('Enterprise login failed:', err); 
+        if (err.status === 404) { 
+          this.userService.attemptAuth(this.authType, credentials).subscribe({
+            next: () => {
+              this.router.navigateByUrl('/user-dashboard');
+            },
+            error: (userErr) => {
+              console.error('User login failed:', userErr);
+              this.errors = userErr;
+              this.isSubmitting = false;
+              this.cd.markForCheck();
+            }
+          });
+        } else {
+          this.errors = err;
+          this.isSubmitting = false;
+          this.cd.markForCheck();
+        }
       }
-    );
+    });
   }
+  
 
+  logout() {
+    this.userEnterpriseService.logout();
+    this.router.navigateByUrl('/');
+  }
 }

@@ -13,9 +13,10 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY) as JwtPayload; 
-    req.user = decoded; 
+    req.user = { userId: decoded.userId };
     next(); 
   } catch (error) {
     return next({ status: 403, message: 'Invalid token' });
   }
 };
+

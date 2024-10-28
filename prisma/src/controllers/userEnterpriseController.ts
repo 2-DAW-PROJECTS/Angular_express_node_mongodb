@@ -29,6 +29,7 @@ export const createUserEnterprise = async (req: Request, res: Response) => {
     category
   } = req.body;
 
+  // Comprobar los campos obligatorios
   if (!username || !email || !password) {
     return res.status(400).json({ error: 'Username, email, and password are required' });
   }
@@ -56,20 +57,14 @@ export const createUserEnterprise = async (req: Request, res: Response) => {
         image: image || ""
       },    
     });
-    const createdUser = await prisma.userEnterprise.findUnique({
-      where: { id: userEnterprise.id },
-      include: { offerts: true },
-    });
-
-    res.status(201).json(createdUser);
+    
+    res.status(201).json(userEnterprise); 
   } catch (error) {
     console.error('Error creating user enterprise:', error);
     res.status(500).json({ error: 'Error creating user enterprise' });
   }
 };
 
-
-// Login de usuario de empresa
 export const loginUserEnterprise = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -94,12 +89,30 @@ export const loginUserEnterprise = async (req: Request, res: Response) => {
 
     const access_token = generateAccessToken(user.id);  
 
-    return res.json({ access_token });  
+    return res.json({
+      access_token,
+      usertype: user.usertype,  
+      username: user.username,
+      email: user.email,
+      isActive: user.isActive,
+      permissions: user.permissions,
+      telephone: user.telephone,
+      followers: user.followers,
+      description: user.description,
+      industry: user.industry,
+      location: user.location,
+      logo: user.logo,
+      website: user.website,
+      slug: user.slug,
+      image: user.image,
+      category: user.category,
+    });  
   } catch (error) {
     console.error('Error logging in:', error);
     return res.status(500).json({ error: 'Error logging in' });
   }
 };
+
 
 export const getUserEnterprises = async (req: Request, res: Response) => {
   try {
@@ -110,3 +123,30 @@ export const getUserEnterprises = async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'Error fetching user enterprises' });
   }
 };
+
+export const getCurrentUser = async (req: Request, res: Response) => {
+  const user = req.user; 
+  console.log('User from token:', req.user);
+  
+  if (!user || !user.userId) { 
+    return res.status(400).json({ error: 'User information not provided' });
+  }
+
+  try {
+    const userEnterprise = await prisma.userEnterprise.findUnique({
+      where: { id: user.userId }, 
+    });
+
+    if (!userEnterprise) {
+      return res.status(404).json({ message: 'User Enterprise Not Found' });
+    }
+
+    return res.status(200).json({
+      userEnterprise, 
+    });
+  } catch (error) {
+    console.error('Error fetching current user enterprise:', error);
+    return res.status(500).json({ error: 'Error fetching current user enterprise' });
+  }
+};
+

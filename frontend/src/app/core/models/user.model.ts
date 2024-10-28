@@ -1,15 +1,17 @@
 export interface User {
   _id: string;
   email: string;
-  token: string;
+  token: string | null;
+  accessToken?: string;
   username: string;
+  usertype: 'user' | 'enterprise'; 
   bio: string;
   image: string;
-  refreshToken: string;
-  city: string;  
-  aboutMe: string; 
-  skills: string[]; 
-  followers: User[]; 
+  refreshToken: string | null; 
+  city: string;
+  aboutMe: string;
+  skills: string[];
+  followers: User[];
   followingUsers: User[];
-  isFollowing?: boolean; // Nueva propiedad para indicar si se sigue al usuario
+  isFollowing?: boolean;
 }

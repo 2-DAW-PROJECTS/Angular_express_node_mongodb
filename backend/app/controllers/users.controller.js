@@ -31,6 +31,7 @@ const registerUser = asyncHandler(async (req, res) => {
         username: user.username,
         password: hashedPwd,
         email: user.email,
+        usertype: 'user', 
         city: "", 
         aboutMe: "",
         skills: []
@@ -42,7 +43,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // Generar token JWT
     if (createdUser) {
         const token = jwt.sign(
-            { user: { id: createdUser._id, email: createdUser.email } },
+            { user: { id: createdUser._id, email: createdUser.email, usertype: createdUser.usertype } },
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: '1h' }
         );
@@ -95,16 +96,18 @@ const userLogin = asyncHandler(async (req, res) => {
     const match = await argon2.verify(loginUser.password, user.password);
     if (!match) return res.status(401).json({ message: 'Unauthorized: Wrong password' });
 
-    // Generar tokens
+    // Generar tokens, incluyendo el usertype
     const accessToken = jwt.sign(
-        { user: { id: loginUser._id, email: loginUser.email } },
+        { user: { id: loginUser._id, email: loginUser.email, usertype: loginUser.usertype } }, // Incluye usertype
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: process.env.ACCESS_TOKEN_INTERVAL }
     );
 
-    if (!loginUser.refreshToken || isRefreshTokenExpired(loginUser.refreshToken)) {
-        const refreshToken = jwt.sign(
-            { user: { id: loginUser._id } },
+    // Generar o validar el refresh token
+    let refreshToken = loginUser.refreshToken;
+    if (!refreshToken || isRefreshTokenExpired(refreshToken)) {
+        refreshToken = jwt.sign(
+            { user: { id: loginUser._id, usertype: loginUser.usertype } }, // Incluye usertype
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: process.env.REFRESH_TOKEN_INTERVAL }
         );
@@ -113,29 +116,15 @@ const userLogin = asyncHandler(async (req, res) => {
         await loginUser.save();
     }
 
-    const refreshToken = loginUser.refreshToken;
-
-    loginUser.refreshToken = refreshToken;
-    loginUser.usedRefreshTokens = [];
-    await loginUser.save();
-
     res.status(200).json({
         user: {
             ...loginUser.toUserResponse(),
             accessToken,
             refreshToken
         }
-        // debug: {
-        //     userId: loginUser._id,
-        //     email: loginUser.email,
-        //     tokenInfo: {
-        //         accessTokenExpiry: process.env.ACCESS_TOKEN_INTERVAL,
-        //         refreshTokenExpiry: process.env.REFRESH_TOKEN_INTERVAL
-        //     },
-        //     timestamp: new Date().toISOString()
-        // }
     });
 });
+
 
 function isRefreshTokenExpired(token) {
     try {
