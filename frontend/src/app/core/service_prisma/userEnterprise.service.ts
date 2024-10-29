@@ -23,15 +23,13 @@ export class UserEnterpriseService {
     return this.http.post<{ access_token: string, usertype: string, username: string, email: string }>(`${this.baseUrl}${endpoint}`, credentials).pipe(
       tap(response => {
         this.jwtService.saveToken(response.access_token);
-  
-        const usertype: 'enterprise' = response.usertype as 'enterprise'; 
         const userEnterprise: UserEnterprise = {
-          usertype,
+          usertype: 'enterprise',
           username: response.username,  
           email: response.email,        
         };
         this.setAuth(userEnterprise);
-        this.populate();
+        this.populate(); 
       }),
       catchError(error => {
         console.error('Error during authentication', error);
@@ -39,21 +37,17 @@ export class UserEnterpriseService {
       })
     );
   }
-  
-  getCurrentUser(): UserEnterprise | null {
-    return this.currentUserSubject.value;
-  }
-  
+
   populate() {
-    const token = this.jwtService.getToken();
-    if (token) {
+    const token = this.getAccessToken();
+    if (token && !this.isTokenExpired(token)) { 
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
       this.http.get<{ userEnterprise: UserEnterprise }>(`${this.baseUrl}/current_user`, { headers }).subscribe(
         data => {
           if (data && data.userEnterprise) {
             this.setAuth(data.userEnterprise);
           } else {
-            this.purgeAuth();
+            this.purgeAuth();  
           }
         },
         err => {
@@ -62,11 +56,30 @@ export class UserEnterpriseService {
         }
       );
     } else {
-      this.purgeAuth();
+      this.purgeAuth(); 
     }
   }
-  
-  
+
+  // Método para obtener el token de acceso
+  getAccessToken(): string | null {
+    return this.jwtService.getToken();
+  }
+
+  // Verificar si el token está expirado
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expirationTime = payload.exp * 1000;
+      return Date.now() >= expirationTime;
+    } catch (e) {
+      console.error('Error decoding token:', e);
+      return true; 
+    }
+  }
+
+  getCurrentUser(): UserEnterprise | null {
+    return this.currentUserSubject.value;
+  }
 
   private setAuth(userEnterprise: UserEnterprise) {
     this.currentUserSubject.next(userEnterprise);

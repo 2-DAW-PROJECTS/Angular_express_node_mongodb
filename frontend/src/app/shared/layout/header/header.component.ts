@@ -32,6 +32,8 @@ export class HeaderComponent implements OnInit {
         this.userService.currentUser.subscribe(userData => {
           if (userData) {
             this.currentUser = userData;
+          } else {
+            this.currentUser = null;
           }
           this.cd.markForCheck();
         });

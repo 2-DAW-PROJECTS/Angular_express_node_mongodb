@@ -1,1 +1,53 @@
-<p>enterprise-dashboard works!</p>
+<link rel="stylesheet" href="enterprise-dashboard.component.css">
+<div class="enterprise-dashboard">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- ...contenido sidebar existente... -->
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="top-bar">
+      <!-- ...contenido de la barra superior existente... -->
+    </div>
+
+    <div class="dashboard-stats">
+      <!-- ...contenido del dashboard existente... -->
+    </div>
+
+    <div class="content-section">
+      <div class="section-header">
+        <h2>Gestión de Ofertas</h2>
+        <!-- Botón redirige a la creación de ofertas -->
+        <button class="add-offer-btn" (click)="redirectToCreateOffer()">
+          <i class="fas fa-plus"></i> Nueva Oferta
+        </button>
+      </div>
+
+<div class="offers-table">
+  <table>
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Ubicación</th>
+        <th>Categoría</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let offer of offers">
+        <td>{{ offer.title }}</td>
+        <td>{{ offer.location }}</td>
+        <td>{{ offer.category }}</td>
+        <td>
+          <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+          <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+    </div>
+  </div>
+</div>

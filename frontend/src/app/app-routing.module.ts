@@ -9,6 +9,7 @@ import { AuthComponent } from './auth/auth.component';
 import { ProfileComponent } from './profile/profile.component';
 import { UserTypeGuard } from './guards/user-type.guard'; 
 import { EnterpriseDashboardComponent } from './enterprise-dashboard/enterprise-dashboard.component';
+import { EnterpriseCreateOffertsComponent } from './enterprise-dashboard/enterprise-create-offerts/enterprise-create-offerts.component';
 
 const routes: Routes = [
   {
@@ -48,9 +49,13 @@ const routes: Routes = [
     component: ProfileComponent
   },
   {
+    path: 'enterprise-create-offerts',
+    component: EnterpriseCreateOffertsComponent
+  },
+  {
     path: 'enterprise-dashboard',
     component: EnterpriseDashboardComponent,
-    canActivate: [UserTypeGuard] // Solo permite acceso a usuarios de tipo 'enterprise'
+    canActivate: [UserTypeGuard] 
   },
   {
     path: '**',

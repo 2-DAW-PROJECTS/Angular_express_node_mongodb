@@ -1,0 +1,55 @@
+<link rel="stylesheet" href="enterprise-create-offerts.component.css">
+<div class="create-offer-container">
+  <h2>Crear Nueva Oferta</h2>
+  <form (ngSubmit)="onSubmit()" class="offer-form">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="title">Título de la Oferta</label>
+        <input type="text" id="title" [(ngModel)]="offer.title" name="title" required placeholder="Ej: Desarrollador Full Stack">
+      </div>
+
+      <div class="form-group">
+        <label for="location">Ubicación</label>
+        <input type="text" id="location" [(ngModel)]="offer.location" name="location" required placeholder="Ej: Madrid, España">
+      </div>
+
+      <div class="form-group full-width">
+        <label for="description">Descripción</label>
+        <textarea id="description" [(ngModel)]="offer.description" name="description" required placeholder="Describe detalladamente el puesto de trabajo..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="requirements">Requisitos</label>
+        <input type="text" id="requirements" [(ngModel)]="requirementsString" name="requirements" required placeholder="Ej: JavaScript, React, Node.js">
+      </div>
+
+      <div class="form-group">
+        <label for="salary">Salario</label>
+        <input type="number" id="salary" [(ngModel)]="offer.salary" name="salary" required placeholder="Ej: 30000">
+      </div>
+
+      <div class="form-group">
+        <label for="category">Categoría</label>
+        <input type="text" id="category" [(ngModel)]="offer.category" name="category" required placeholder="Ej: Tecnología">
+      </div>
+
+      <div class="form-group">
+        <label for="image">Logo</label>
+        <input type="text" id="image" [(ngModel)]="offer.image" name="image" placeholder="URL de la imagen">
+      </div>
+
+      <div class="form-group">
+        <label for="contractType">Tipo de Contrato</label>
+        <input type="text" id="contractType" [(ngModel)]="offer.contractType" name="contractType" placeholder="Ej: Indefinido">
+      </div>
+
+      <div class="form-group">
+        <label for="experience">Experiencia</label>
+        <input type="text" id="experience" [(ngModel)]="offer.experience" name="experience" placeholder="Ej: 2 años">
+      </div>
+    </div>
+
+    <button type="submit">Publicar Oferta</button>
+  </form>
+</div>
+
