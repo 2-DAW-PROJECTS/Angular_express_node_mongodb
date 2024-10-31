@@ -13,6 +13,7 @@ import { Offert } from '../../core/models_prisma/offertEnterprise.model';
 })
 export class EnterpriseCreateOffertsComponent {
   offer: Offert = {
+    id: '', 
     _id: '', 
     title: '',
     company: '',            

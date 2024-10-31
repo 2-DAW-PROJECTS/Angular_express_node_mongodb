@@ -57,6 +57,7 @@ model Offert {
   experience    String?        // Nuevo campo opcional
   applicants     Applicant[]
   createdAt     DateTime       @default(now())
+  isActive      Boolean        @default(true) // Nuevo campo isActive
 }
 
 

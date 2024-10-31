@@ -10,6 +10,8 @@ import { ProfileComponent } from './profile/profile.component';
 import { UserTypeGuard } from './guards/user-type.guard'; 
 import { EnterpriseDashboardComponent } from './enterprise-dashboard/enterprise-dashboard.component';
 import { EnterpriseCreateOffertsComponent } from './enterprise-dashboard/enterprise-create-offerts/enterprise-create-offerts.component';
+import { EnterpriseEditOffertsComponent } from './enterprise-dashboard/enterprise-edit-offerts/enterprise-edit-offerts.component';
+
 
 const routes: Routes = [
   {
@@ -57,6 +59,11 @@ const routes: Routes = [
     component: EnterpriseDashboardComponent,
     canActivate: [UserTypeGuard] 
   },
+  {
+    path: 'enterprise-edit-offerts/:id',
+    component: EnterpriseEditOffertsComponent,
+    canActivate: [UserTypeGuard] 
+  }, 
   {
     path: '**',
     redirectTo: 'home'

@@ -242,3 +242,33 @@ th {
         grid-template-columns: 1fr;
     }
 }
+
+.status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .status.active {
+    color: #1a8754;
+    background-color: #d1e7dd;
+    border: 1px solid #badbcc;
+  }
+  
+  .status.inactive {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+  }
+  .action-btn.toggle.enabled {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .action-btn.toggle.disabled {
+    background-color: #1a8754;
+    color: white;
+  }

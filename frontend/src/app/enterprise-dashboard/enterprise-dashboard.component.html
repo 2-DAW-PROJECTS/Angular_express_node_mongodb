@@ -32,6 +32,7 @@
         <th>Ubicación</th>
         <th>Categoría</th>
         <th>Acciones</th>
+        <th>Estado</th>
       </tr>
     </thead>
     <tbody>
@@ -40,8 +41,19 @@
         <td>{{ offer.location }}</td>
         <td>{{ offer.category }}</td>
         <td>
-          <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-          <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+          <span class="status" [class.active]="offer.isActive" [class.inactive]="!offer.isActive">
+            {{ offer.isActive ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
+        
+        <td>
+          <button class="action-btn edit" (click)="editOffer(offer)"><i class="fas fa-edit"></i> Editar</button>
+          <button class="action-btn toggle" 
+                  (click)="toggleOfferStatus(offer)"
+                  [class.enabled]="offer.isActive"
+                  [class.disabled]="!offer.isActive">
+            <i class="fas fa-toggle-off">{{ offer.isActive ? 'Deshabilitar' : 'Habilitar' }}</i>
+          </button>
         </td>
       </tr>
     </tbody>

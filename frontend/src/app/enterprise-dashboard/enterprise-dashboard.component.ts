@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { OfferService } from '../core/service_prisma/offerts.service';
 import { Router } from '@angular/router';
 import { UserEnterpriseService } from '../core/service_prisma/userEnterprise.service';
+import { Offert } from '../core/models_prisma/offertEnterprise.model';
 
 @Component({
   selector: 'app-enterprise-dashboard',
@@ -33,14 +34,20 @@ export class EnterpriseDashboardComponent implements OnInit {
 
   loadOffers() {
     this.offerService.getOffers().subscribe(
-      (data: any) => {
-        this.offers = data;
-      },
-      error => {
-        console.error('Error al cargar las ofertas', error);
-      }
+        (data: Offert[]) => { 
+            this.offers = data.map(offer => ({
+                ...offer,
+                isActive: offer.isActive ?? true 
+            }));
+        },
+        error => {
+            console.error('Error al cargar las ofertas', error);
+        }
     );
-  }
+}
+
+
+  
 
   redirectToCreateOffer() {
     this.router.navigate(['/enterprise-create-offerts']);
@@ -60,4 +67,26 @@ export class EnterpriseDashboardComponent implements OnInit {
       }
     );
   }
+
+  toggleOfferStatus(offer: Offert) {
+    console.log('Offer ID:', offer.id);  // Cambia _id a id
+    const updatedStatus = !offer.isActive;
+    this.offerService.updateOfferStatus(offer.id, updatedStatus).subscribe(
+        response => {
+            offer.isActive = updatedStatus;
+        },
+        error => {
+            console.error('Error updating offer status:', error);
+        }
+    );
+}
+
+editOffer(offer: Offert) {
+  this.router.navigate(['/enterprise-edit-offerts', offer.id]);
+}
+
+
+
+  
+
 }

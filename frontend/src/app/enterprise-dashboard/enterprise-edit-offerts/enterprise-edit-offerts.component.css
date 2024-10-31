@@ -1,0 +1,138 @@
+  .create-offer-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 40px 20px;
+  }
+
+  h2 {
+    color: #2c3e50;
+    text-align: center;
+    margin: 0 0 40px;
+    font-size: 2.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .offer-form {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+  }
+
+  .form-group {
+    position: relative;
+  }
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: #34495e;
+    font-weight: 600;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1.1em;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+  }
+
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 15px rgba(52,152,219,0.2);
+    transform: translateY(-2px);
+  }
+
+  textarea {
+    min-height: 200px;
+    resize: vertical;
+  }
+
+  button {
+    width: 100%;
+    padding: 18px;
+    margin-top: 30px;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+  }
+
+  button:hover {
+    background: linear-gradient(135deg, #2980b9 0%, #2c3e50 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(52,152,219,0.4);
+  }
+
+  button:active {
+    transform: translateY(-1px);
+  }
+
+  input[type="number"] {
+    appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .create-offer-container {
+      padding: 20px 10px;
+    }
+
+    h2 {
+      font-size: 2.2em;
+      margin-bottom: 30px;
+    }
+
+    .offer-form {
+      padding: 25px;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    input, textarea, button {
+      padding: 12px;
+    }
+  }
+
+  @media (min-width: 1400px) {
+    .offer-form {
+      max-width: 1400px;
+    }
+  }
