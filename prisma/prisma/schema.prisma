@@ -49,18 +49,34 @@ model Offert {
   slug          String
   category      String?
   categorySlug  String?        // Nuevo campo
-  company_slug  String?        // Nuevo campo
+  company       String?        // Cambiado de company_slug a company
   postedDate    DateTime?      // Nuevo campo
   image         String?
   images        String[]       // Asegúrate de que este también esté definido
   contractType  String?        // Nuevo campo opcional
   experience    String?        // Nuevo campo opcional
-  applicants     Applicant[]
+  applicants    Applicant[]
   createdAt     DateTime       @default(now())
   isActive      Boolean        @default(true) // Nuevo campo isActive
+
+  @@map("offerts") // Mapea el modelo a la colección "offerts" en minúsculas
 }
 
 
+model Category {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  description   String?
+  isActive      Boolean  @default(true)
+  jobCount      Int      @default(0)
+  slug          String   @unique
+  image         String?
+  subcategories String[]  // Puedes mantener esto si es necesario
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("categorys") // Asegúrate de que el nombre de la colección sea "categorys"
+}
 
 model Applicant {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId

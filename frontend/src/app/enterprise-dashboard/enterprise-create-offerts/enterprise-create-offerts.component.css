@@ -48,6 +48,15 @@
     transition: color 0.3s ease;
   }
 
+  select {
+    display: block;
+    margin-bottom: 8px;
+    color: #34495e;
+    font-weight: 600;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+  }
+
   input, textarea {
     width: 100%;
     padding: 15px;

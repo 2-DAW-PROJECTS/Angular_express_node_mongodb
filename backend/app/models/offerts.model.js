@@ -63,7 +63,11 @@ const offertSchema = new Schema({
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'
-    }]
+    }],
+    isActive: { 
+        type: Boolean,
+        default: true 
+    }
 }, {
     timestamps: true // Agrega timestamps (createdAt y updatedAt)
 });

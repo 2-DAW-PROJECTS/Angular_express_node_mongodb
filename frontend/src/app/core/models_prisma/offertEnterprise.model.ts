@@ -1,6 +1,6 @@
 export interface Offert {
-    _id: string; // Añadir esta línea
-    id: string; // O mantener esta línea si la necesitas
+    _id: string; 
+    id: string; 
     title: string;
     company: string;
     location: string;

@@ -54,7 +54,9 @@
                   [class.disabled]="!offer.isActive">
             <i class="fas fa-toggle-off">{{ offer.isActive ? 'Deshabilitar' : 'Habilitar' }}</i>
           </button>
+          <button class="action-btn delete" (click)="deleteOffer(offer.id)"><i class="fas fa-trash"></i>X</button>
         </td>
+        
       </tr>
     </tbody>
   </table>

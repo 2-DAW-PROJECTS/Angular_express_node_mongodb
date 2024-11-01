@@ -1,5 +1,6 @@
 # Dockerfile / frontend
 FROM node:20 
+LABEL author="Llorenç Alfonso 2ºDAW"
 
 WORKDIR /home/node/app
 

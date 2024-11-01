@@ -3,13 +3,21 @@ import prisma from '../services/prismaService';
 
 export const createOffer = async (req: Request, res: Response) => {
   const userId = req.user?.userId;
-  const { title, location, description, requirements, salary, slug, category, categorySlug, company_slug, postedDate, image, images, contractType, experience, isActive } = req.body;
+  const { title, location, description, requirements, salary, slug, category, categorySlug, postedDate, image, images, contractType, experience, isActive } = req.body;
 
   if (!userId) {
     return res.status(400).json({ error: 'User ID is required' });
   }
 
   try {
+    const user = await prisma.userEnterprise.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
     const newOffer = await prisma.offert.create({
       data: {
         userId,
@@ -18,10 +26,10 @@ export const createOffer = async (req: Request, res: Response) => {
         description,
         requirements,
         salary,
-        slug,
-        category,
+          slug,
+          category,
         categorySlug,
-        company_slug,
+        company: user.username, 
         postedDate: postedDate ? new Date(postedDate) : null,
         image,
         images,
@@ -30,9 +38,11 @@ export const createOffer = async (req: Request, res: Response) => {
         isActive,
       },
     });
+
+    console.log('Registro creado en la colección `offerts`:', newOffer);
     return res.status(201).json(newOffer);
   } catch (error) {
-    console.error('Error creating offer:', error);
+    console.error('Error creating offer in `offerts`:', error);
     return res.status(500).json({ error: 'Error creating offer' });
   }
 };
@@ -65,8 +75,6 @@ export const getAllOffersByUser = async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'Error fetching offers' });
   }
 };
-
-
 
 export const updateOfferStatus = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -126,3 +134,31 @@ export const updateOffer = async (req: Request, res: Response) => {
 };
 
 
+export const deleteOffer = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: 'Offer ID is required' });
+  }
+
+  try {
+    const deletedOffer = await prisma.offert.delete({
+      where: { id },
+    });
+    return res.json({ message: 'Offer deleted successfully', deletedOffer });
+  } catch (error) {
+    console.error('Error deleting offer:', error);
+    return res.status(500).json({ error: 'Error deleting offer' });
+  }
+};
+
+export const getCategories = async (req: Request, res: Response) => {
+  try {
+    const categories = await prisma.category.findMany(); 
+    console.log('Categories fetched:', categories);
+    res.json(categories);
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    res.status(500).json({ error: 'Error fetching categories' });
+  }
+};

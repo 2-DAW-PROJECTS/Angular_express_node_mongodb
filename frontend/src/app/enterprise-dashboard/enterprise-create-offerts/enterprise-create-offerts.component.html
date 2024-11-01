@@ -30,7 +30,10 @@
 
       <div class="form-group">
         <label for="category">Categoría</label>
-        <input type="text" id="category" [(ngModel)]="offer.category" name="category" required placeholder="Ej: Tecnología">
+        <select id="category" [(ngModel)]="offer.categorySlug" name="categorySlug" required>
+          <option value="" disabled selected>Seleccione categoría</option>
+          <option *ngFor="let category of categories" [value]="category.slug">{{ category.name }}</option>
+        </select>
       </div>
 
       <div class="form-group">
@@ -40,16 +43,15 @@
 
       <div class="form-group">
         <label for="contractType">Tipo de Contrato</label>
-        <input type="text" id="contractType" [(ngModel)]="offer.contractType" name="contractType" placeholder="Ej: Indefinido">
+        <input type="text" id="contractType" [(ngModel)]="offer.contractType" name="contractType" required placeholder="Ej: Indefinido">
       </div>
 
       <div class="form-group">
         <label for="experience">Experiencia</label>
-        <input type="text" id="experience" [(ngModel)]="offer.experience" name="experience" placeholder="Ej: 2 años">
+        <input type="text" id="experience" [(ngModel)]="offer.experience" name="experience" required placeholder="Ej: 2 años">
       </div>
     </div>
 
-    <button type="submit">Publicar Oferta</button>
+    <button type="submit" [disabled]="!offer.title || !offer.location || !offer.description || !requirementsString || !offer.salary || !offer.categorySlug || !offer.contractType || !offer.experience">Publicar Oferta</button>
   </form>
 </div>
-

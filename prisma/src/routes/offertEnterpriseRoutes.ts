@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { createOffer, getAllOffersByUser, updateOfferStatus, getOfferById, updateOffer } from '../controllers/offertController';
+import { createOffer, getAllOffersByUser, updateOfferStatus, getOfferById, updateOffer, deleteOffer, getCategories } from '../controllers/offertController';
 import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
@@ -31,5 +31,14 @@ router.put('/update/:id', authenticateToken, (req: Request, res: Response, next:
   updateOffer(req, res).catch(next);
 });
 
+// Ruta para eliminar una oferta
+router.delete('/delete/:id', authenticateToken, (req: Request, res: Response, next: NextFunction) => {
+  deleteOffer(req, res).catch(next);
+});
+
+// router.get('/categories', authenticateToken, (req: Request, res: Response, next: NextFunction) => {
+  router.get('/categories', (req: Request, res: Response, next: NextFunction) => {
+    getCategories(req, res).catch(next);
+});
 
 export default router;

@@ -86,6 +86,20 @@ editOffer(offer: Offert) {
 }
 
 
+deleteOffer(offerId: string) {
+  if (confirm('¿Estás seguro de que deseas eliminar esta oferta?')) {
+    this.offerService.deleteOffer(offerId).subscribe(
+      response => {
+        console.log('Oferta eliminada:', response);
+        // Actualizar la lista de ofertas después de eliminar
+        this.offers = this.offers.filter(offer => offer.id !== offerId);
+      },
+      error => {
+        console.error('Error eliminando la oferta:', error);
+      }
+    );
+  }
+}
 
   
 

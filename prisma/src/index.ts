@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import userEnterpriseRoutes from './routes/userEnterpriseRoutes';
 import offertEnterpriseRoutes from './routes/offertEnterpriseRoutes';
+import categorysEnterpriseRoutes from './routes/categorysEnterpriseRoutes';
 import { PrismaClient } from '@prisma/client';
 import cors from 'cors'; 
 
@@ -17,11 +18,11 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions)); 
-
 app.use(express.json());
 
 app.use('/userEnterprises', userEnterpriseRoutes);
 app.use('/offertEnterprise', offertEnterpriseRoutes);
+app.use('/categories', categorysEnterpriseRoutes); 
 
 const prisma = new PrismaClient();
 
