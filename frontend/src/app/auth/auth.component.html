@@ -2,23 +2,34 @@
   <div class="container">
     <h1>{{ title }}</h1>
     <p class="text-xs-center">
-      <a [routerLink]="['/login']" *ngIf="authType === 'register'">Have an account?</a>
-      <a [routerLink]="['/register']" *ngIf="authType === 'login'">Need an account?</a>
+      <a [routerLink]="['/login']" *ngIf="authType === 'register'">¿Tienes una cuenta?</a>
+      <a [routerLink]="['/register']" *ngIf="authType === 'login'">¿Necesitas una cuenta?</a>
     </p>
-    
+
     <app-list-errors [errors]="errors.errors"></app-list-errors>
-    
+
     <form [formGroup]="authForm" (ngSubmit)="submitForm()">
       <fieldset [disabled]="isSubmitting">
         <div class="form-group" *ngIf="authType === 'register'">
-          <input formControlName="username" placeholder="Username" class="form-control" type="text" />
+          <input formControlName="username" placeholder="Nombre de usuario" class="form-control" type="text" />
         </div>
+
         <div class="form-group">
           <input formControlName="email" placeholder="Email" class="form-control" type="text" />
         </div>
+
         <div class="form-group">
-          <input formControlName="password" placeholder="Password" class="form-control" type="password" />
+          <input formControlName="password" placeholder="Contraseña" class="form-control" type="password" />
         </div>
+
+        <!-- registro de empresas -->
+        <div class="form-group" *ngIf="authType === 'register'">
+          <label>
+            <input type="checkbox" formControlName="isEnterprise" />
+            ¿Quieres unirte como empresa?
+          </label>
+        </div>
+
         <button class="btn" [disabled]="!authForm.valid" type="submit">{{ title }}</button>
       </fieldset>
     </form>

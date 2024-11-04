@@ -1,16 +1,16 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
 import { UserService } from '../../app/core/service/user.service';
 import { UserEnterpriseService } from '../../app/core/service_prisma/userEnterprise.service';
 import { ListErrorsComponent } from '../shared/list-errors/list-errors.component';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router'; 
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, ListErrorsComponent], 
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ListErrorsComponent],  
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -33,23 +33,19 @@ export class AuthComponent implements OnInit {
   ) {
     this.authForm = this.fb.group({
       'email': ['', Validators.required],
-      'password': ['', Validators.required]
+      'password': ['', Validators.required],
+      'isEnterprise': [false]
     });
   }
 
   ngOnInit() {
     this.route.url.subscribe(data => {
       this.authType = data[data.length - 1].path;
-      this.title = (this.authType === 'login') ? 'Sign in' : 'Sign up';
+      this.title = (this.authType === 'login') ? 'Iniciar sesión' : 'Registrarse';
 
       if (this.authType === 'register') {
         this.authForm.addControl('username', new FormControl('', Validators.required));
       }
-      this.cd.markForCheck();
-    });
-
-    this.userEnterpriseService.isAuthenticated.subscribe(auth => {
-      this.isAuthenticated = auth;
       this.cd.markForCheck();
     });
   }
@@ -89,7 +85,11 @@ export class AuthComponent implements OnInit {
   
 
   logout() {
-    this.userEnterpriseService.logout();
+    if (this.authForm.value.isEnterprise) {
+      this.userEnterpriseService.logout();
+    } else {
+      this.userService.logout();
+    }
     this.router.navigateByUrl('/');
   }
 }
