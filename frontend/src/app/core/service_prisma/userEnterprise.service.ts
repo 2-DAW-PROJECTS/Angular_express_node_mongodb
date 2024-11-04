@@ -17,7 +17,7 @@ export class UserEnterpriseService {
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
   constructor(private http: HttpClient, private jwtService: JwtEnterpriseService) {}
-
+  
   attemptAuth(authType: string, credentials: { email: string; password: string }): Observable<{ access_token: string, usertype: string }> {
     const endpoint = authType === 'register' ? '/register' : '/login';
     return this.http.post<{ access_token: string, usertype: string, username: string, email: string }>(`${this.baseUrl}${endpoint}`, credentials).pipe(
@@ -60,12 +60,10 @@ export class UserEnterpriseService {
     }
   }
 
-  // Método para obtener el token de acceso
   getAccessToken(): string | null {
     return this.jwtService.getToken();
   }
 
-  // Verificar si el token está expirado
   private isTokenExpired(token: string): boolean {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));

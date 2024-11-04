@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { OfferService } from '../../core/service_prisma/offerts.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Offert } from '../../core/models_prisma/offertEnterprise.model'; 
-import { CategoryService } from '../../core/service_prisma/categorys.service'; 
+import { Offert } from '../../core/models_prisma/offertEnterprise.model';
+import { CategoryService } from '../../core/service/category.service';
 import { CommonModule } from '@angular/common';
+import { UserEnterpriseService } from '../../core/service_prisma/userEnterprise.service';
 
 @Component({
   selector: 'app-enterprise-create-offerts',
@@ -15,14 +16,14 @@ import { CommonModule } from '@angular/common';
 })
 export class EnterpriseCreateOffertsComponent implements OnInit {
   offer: Offert = {
-    id: '', 
-    _id: '', 
+    id: '',
+    _id: '',
     title: '',
-    company: '',            
+    company: '',
     location: '',
     description: '',
     requirements: [],
-    salary: 0,              
+    salary: 0,
     slug: '',
     category: '',
     categorySlug: '',
@@ -32,23 +33,34 @@ export class EnterpriseCreateOffertsComponent implements OnInit {
     images: [],
     contractType: '',
     experience: '',
-    __v: 0 
+    __v: 0
   };
 
-  categories: any[] = []; 
-
-  constructor(private offerService: OfferService, private categoryService: CategoryService, private router: Router) {}
-
+  categories: any[] = [];
   requirementsString: string = '';
 
+  constructor(
+    private offerService: OfferService,
+    private categoryService: CategoryService,
+    private router: Router,
+    private userEnterpriseService: UserEnterpriseService
+  ) {}
+
   ngOnInit(): void {
-    this.loadCategories();
+    // Suscribirse a la propiedad isAuthenticated sin paréntesis y con tipo explícito
+    this.userEnterpriseService.isAuthenticated.subscribe((isAuthenticated: boolean) => {
+      if (!isAuthenticated) {
+        this.router.navigate(['/login']);
+        return;
+      }
+      this.loadCategories();
+    });
   }
 
   loadCategories(): void {
-    this.categoryService.getAllCategories().subscribe(
-      (categories) => {
-        this.categories = categories;
+    this.categoryService.all_categories({}).subscribe(
+      (response) => {
+        this.categories = response.categorys;
       },
       (error) => {
         console.error('Error al cargar categorías', error);
@@ -59,8 +71,10 @@ export class EnterpriseCreateOffertsComponent implements OnInit {
   onSubmit() {
     this.offer.slug = this.offer.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
     this.offer.postedDate = new Date().toISOString();
-
     this.offer.requirements = this.requirementsString.split(',').map(req => req.trim());
+
+    const selectedCategory = this.categories.find(category => category.slug === this.offer.categorySlug);
+    this.offer.category = selectedCategory ? selectedCategory.name : '';
 
     this.offerService.createOffer(this.offer).subscribe(
       (response) => {

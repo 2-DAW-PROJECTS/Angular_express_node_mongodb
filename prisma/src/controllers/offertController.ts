@@ -18,6 +18,14 @@ export const createOffer = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    const defaultImages = [
+      "carrousel_details/1.png",
+      "carrousel_details/2.png",
+      "carrousel_details/3.png",
+      "carrousel_details/4.png",
+      "carrousel_details/5.png"
+    ];
+
     const newOffer = await prisma.offert.create({
       data: {
         userId,
@@ -26,24 +34,26 @@ export const createOffer = async (req: Request, res: Response) => {
         description,
         requirements,
         salary,
-          slug,
-          category,
+        slug,
+        category,
         categorySlug,
-        company: user.username, 
+        company: user.username,
         postedDate: postedDate ? new Date(postedDate) : null,
         image,
-        images,
+        images: images && images.length > 0 ? images : defaultImages,
         contractType,
         experience,
         isActive,
+        // If comments are not being created at this point, leave it out or handle as needed
+        comments: [], // This line may need to be revised based on your requirements
       },
     });
+    
 
-    console.log('Registro creado en la colección `offerts`:', newOffer);
-    return res.status(201).json(newOffer);
+    res.status(201).json(newOffer);
   } catch (error) {
-    console.error('Error creating offer in `offerts`:', error);
-    return res.status(500).json({ error: 'Error creating offer' });
+    console.error('Error al crear la oferta:', error);
+    res.status(500).json({ error: 'Failed to create offer' });
   }
 };
 
@@ -108,7 +118,7 @@ export const getOfferById = async (id: string) => {
 
 export const updateOffer = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { title, location, description, requirements, salary, slug, category, image, contractType, experience } = req.body;
+  const { title, location, description, requirements, salary, slug, category, categorySlug, image, contractType, experience } = req.body;
 
   try {
     const updatedOffer = await prisma.offert.update({
@@ -121,6 +131,7 @@ export const updateOffer = async (req: Request, res: Response) => {
         salary,
         slug,
         category,
+        categorySlug,
         image,
         contractType,
         experience
@@ -132,6 +143,7 @@ export const updateOffer = async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'Error updating offer' });
   }
 };
+
 
 
 export const deleteOffer = async (req: Request, res: Response) => {
@@ -162,3 +174,24 @@ export const getCategories = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error fetching categories' });
   }
 };
+
+export const updateOfferComments = async (req: Request, res: Response) => {
+  const { id } = req.params; // Assuming you're passing id as parameter
+  const { commentId } = req.body;
+
+  try {
+    const updatedOffer = await prisma.offert.update({
+      where: { id }, // Use id to identify the offer
+      data: {
+        comments: {
+          push: commentId // Ensure that commentId is a valid ObjectId
+        }
+      }
+    });
+    res.json(updatedOffer);
+  } catch (error) {
+    console.error('Error updating comments:', error);
+    res.status(500).json({ message: 'Error al actualizar los comentarios de la oferta' });
+  }
+};
+

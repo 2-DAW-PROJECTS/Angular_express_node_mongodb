@@ -66,5 +66,11 @@ export class OfferService {
     
     return this.http.get<CategoryService[]>(`${this.baseUrl}/categories`, { headers });
   }
+  updateCommentsInOffer(offerId: string, commentId: string): Observable<any> {
+    console.log("Intentando actualizar comentarios en la oferta");
+    console.log("Offer ID:", offerId);
+    console.log("Comment ID:", commentId);
+    return this.http.patch<any>(`${this.baseUrl}/${offerId}/update_comments`, { commentId });
+  }
   
 }

@@ -1,19 +1,65 @@
 <link rel="stylesheet" href="enterprise-dashboard.component.css">
 <div class="enterprise-dashboard">
   <!-- Sidebar -->
-  <div class="sidebar">
-    <!-- ...contenido sidebar existente... -->
-  </div>
-
+  <!-- <div class="sidebar">
+  </div> -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>Panel Enterprise</h3>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-briefcase"></i> Ofertas</a></li>
+                <li><a href="#"><i class="fas fa-users"></i> Candidatos</a></li>
+                <li><a href="#"><i class="fas fa-chart-bar"></i> Estadísticas</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
+            </ul>
+        </nav>
+    </div>
   <!-- Main Content -->
-  <div class="main-content">
+  <!-- <div class="main-content">
     <div class="top-bar">
-      <!-- ...contenido de la barra superior existente... -->
     </div>
 
     <div class="dashboard-stats">
-      <!-- ...contenido del dashboard existente... -->
-    </div>
+    </div> -->
+    <div class="main-content">
+      <div class="top-bar">
+          <div class="search-bar">
+              <input type="search" placeholder="Buscar...">
+              <i class="fas fa-search"></i>
+          </div>
+          <div class="user-menu">
+              <span>Enterprise</span>
+              <img src="avatar.jpg" alt="Enterprise" class="avatar">
+          </div>
+      </div>
+
+      <div class="dashboard-stats">
+          <div class="stat-card">
+              <i class="fas fa-briefcase"></i>
+              <div class="stat-info">
+                  <h4>Total Ofertas</h4>
+                  <p>125</p>
+              </div>
+          </div>
+          <div class="stat-card">
+              <i class="fas fa-users"></i>
+              <div class="stat-info">
+                  <h4>Candidatos</h4>
+                  <p>1,234</p>
+              </div>
+          </div>
+          <div class="stat-card">
+              <i class="fas fa-check-circle"></i>
+              <div class="stat-info">
+                  <h4>Contrataciones</h4>
+                  <p>45</p>
+              </div>
+          </div>
+      </div>
+
 
     <div class="content-section">
       <div class="section-header">

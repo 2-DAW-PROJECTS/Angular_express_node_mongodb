@@ -29,8 +29,13 @@
 
       <div class="form-group">
         <label for="category">Categoría</label>
-        <input type="text" id="category" [(ngModel)]="offer.category" name="category" required placeholder="Ej: Tecnología">
-      </div>
+        <select id="category" [(ngModel)]="offer.categorySlug" name="categorySlug" required>
+          <option value="" disabled>Seleccione categoría</option>
+          <option *ngFor="let category of categories" [value]="category.slug">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>      
 
       <div class="form-group">
         <label for="image">Logo</label>

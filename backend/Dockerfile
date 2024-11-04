@@ -1,4 +1,3 @@
-# Dockerfile / backend
 FROM node:20
 LABEL author="Llorenç Alfonso 2ºDAW"
 

@@ -1,3 +1,4 @@
+
 const Offert = require('../models/offerts.model');
 const User = require('../models/users.model');
 const Comment = require('../models/comments.model');
@@ -8,16 +9,15 @@ const addCommentToOffert = asyncHandler(async (req, res) => {
     const userId = req.userId;
     const { slug } = req.params;
     const user = await User.findById(userId).exec();
-    const offert = await Offert.findOne({ slug }).exec();
 
-    if (!user || !offert) return res.status(404).json({ message: "User or Offert Not Found" });
+    if (!user) return res.status(404).json({ message: "User Not Found" });
 
     const { body } = req.body.comment;
-    const newComment = new Comment({ body, author: user._id, offert: offert._id });
-    await newComment.save();
 
-    offert.comments.push(newComment._id);
-    await offert.save();
+    if (!body) return res.status(400).json({ message: "Comment body is required" });
+
+    const newComment = new Comment({ body, author: user._id });
+    await newComment.save();
 
     return res.status(201).json({ comment: await newComment.toCommentResponse(user) });
 });
@@ -32,8 +32,10 @@ const getCommentsFromOffert = asyncHandler(async (req, res) => {
     const user = req.loggedin ? await User.findById(req.userId).exec() : null;
     const comments = await Promise.all(offert.comments.map(async (commentId) => {
         const comment = await Comment.findById(commentId).exec();
+        console.log('Loaded Comment:', comment);
         return comment ? await comment.toCommentResponse(user) : null;
     }));
+    
 
     return res.status(200).json({ comments: comments.filter(c => c) });
 });
@@ -49,9 +51,8 @@ const deleteComment = asyncHandler(async (req, res) => {
     if (!user || !offert || !comment) return res.status(404).json({ message: "Data Not Found" });
 
     if (comment.author.toString() === user._id.toString()) {
-        // Cambia comment.remove() por deleteOne
         await Comment.deleteOne({ _id: id });
-        offert.comments.pull(comment._id); // Esta línea es correcta
+        offert.comments.pull(comment._id); 
         await offert.save();
         return res.status(200).json({ message: "Comment deleted successfully" });
     } else {

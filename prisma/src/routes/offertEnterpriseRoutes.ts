@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { createOffer, getAllOffersByUser, updateOfferStatus, getOfferById, updateOffer, deleteOffer, getCategories } from '../controllers/offertController';
+import { createOffer, getAllOffersByUser, updateOfferStatus, getOfferById, updateOffer, deleteOffer, getCategories, updateOfferComments } from '../controllers/offertController';
 import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
@@ -39,6 +39,11 @@ router.delete('/delete/:id', authenticateToken, (req: Request, res: Response, ne
 // router.get('/categories', authenticateToken, (req: Request, res: Response, next: NextFunction) => {
   router.get('/categories', (req: Request, res: Response, next: NextFunction) => {
     getCategories(req, res).catch(next);
+});
+
+// Cambia esta línea para que use id en lugar de slug
+router.patch('/:id/update_comments', (req: Request, res: Response, next: NextFunction) => {
+  updateOfferComments(req, res).catch(next);
 });
 
 export default router;

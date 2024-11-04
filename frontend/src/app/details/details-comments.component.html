@@ -2,18 +2,18 @@
     <h3>Comentarios</h3>
 
     <div *ngFor="let comment of comments" class="comment">
-        <p>{{ comment.body }}</p>
+        <p *ngIf="comment?.body">{{ comment.body }}</p> <!-- Added safe navigation operator -->
         <div class="comment-meta">
             <span *ngIf="isLoggedIn">
-                <a [routerLink]="['/profile', comment.author.username]">
+                <a *ngIf="comment?.author" [routerLink]="['/profile', comment.author.username]">
                     <img [src]="comment.author.image || 'https://via.placeholder.com/30'" alt="author image" class="comment-author-img" />
                 </a>
-                {{ comment.author.username }} ({{ comment.author.city }}) <!-- Mostrar ciudad -->
+                <span *ngIf="comment?.author">{{ comment.author.username }} ({{ comment.author.city }})</span> <!-- Show city safely -->
             </span>
             <span *ngIf="!isLoggedIn">Usuario anónimo</span>
-            <span>{{ comment.createdAt | date: 'longDate' }}</span>
+            <span *ngIf="comment?.createdAt">{{ comment.createdAt | date: 'longDate' }}</span>
 
-            <span class="mod-options" *ngIf="isLoggedIn && comment.author.username === currentUsername">
+            <span class="mod-options" *ngIf="isLoggedIn && comment?.author?.username === currentUsername">
                 <button class="delete-button" (click)="deleteComment(comment.id)">Eliminar</button>
             </span>
         </div>

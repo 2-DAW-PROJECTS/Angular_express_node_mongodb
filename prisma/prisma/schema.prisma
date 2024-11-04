@@ -44,22 +44,23 @@ model Offert {
   title         String
   location      String
   description   String?
-  requirements  String[]       // Este campo debe estar aquí
-  salary        Float?         // Nuevo campo, debe ser Float para salarios
-  slug          String
+  requirements  String[]       
+  salary        Float?         
+  slug          String  @unique // Add this line
   category      String?
-  categorySlug  String?        // Nuevo campo
-  company       String?        // Cambiado de company_slug a company
-  postedDate    DateTime?      // Nuevo campo
+  categorySlug  String?        
+  company       String?        
+  postedDate    DateTime?      
   image         String?
-  images        String[]       // Asegúrate de que este también esté definido
-  contractType  String?        // Nuevo campo opcional
-  experience    String?        // Nuevo campo opcional
+  images        String[]       
+  contractType  String?        
+  experience    String?        
   applicants    Applicant[]
+  comments      String[]       @db.ObjectId // Array of ObjectId to store comment IDs
   createdAt     DateTime       @default(now())
-  isActive      Boolean        @default(true) // Nuevo campo isActive
+  isActive      Boolean        @default(true) 
 
-  @@map("offerts") // Mapea el modelo a la colección "offerts" en minúsculas
+  @@map("offerts") 
 }
 
 

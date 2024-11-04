@@ -14,7 +14,7 @@ import { Offert } from '../core/models_prisma/offertEnterprise.model';
   providers: [OfferService]
 })
 export class EnterpriseDashboardComponent implements OnInit {
-  offers: any[] = [];
+  offers: Offert[] = [];
   isAuthenticated: boolean = false;
 
   constructor(
@@ -24,38 +24,41 @@ export class EnterpriseDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.isAuthenticated = this.userEnterpriseService.getCurrentUser() !== null;
-    if (this.isAuthenticated) {
-      this.loadOffers();
-    } else {
-      this.router.navigate(['/login']);
-    }
+    this.userEnterpriseService.isAuthenticated.subscribe((isAuthenticated: boolean) => {
+      this.isAuthenticated = isAuthenticated;
+      if (this.isAuthenticated) {
+        this.loadOffers();
+      } else {
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
   loadOffers() {
     this.offerService.getOffers().subscribe(
-        (data: Offert[]) => { 
-            this.offers = data.map(offer => ({
-                ...offer,
-                isActive: offer.isActive ?? true 
-            }));
-        },
-        error => {
-            console.error('Error al cargar las ofertas', error);
-        }
+      (data: Offert[]) => { 
+        this.offers = data.map(offer => ({
+          ...offer,
+          isActive: offer.isActive ?? true 
+        }));
+      },
+      error => {
+        console.error('Error al cargar las ofertas', error);
+      }
     );
-}
-
-
-  
+  }
 
   redirectToCreateOffer() {
     this.router.navigate(['/enterprise-create-offerts']);
   }
 
   createOffer(offerData: any) {
-    const userId = this.userEnterpriseService.getCurrentUser();
-    offerData.userId = userId;
+    const user = this.userEnterpriseService.getCurrentUser();
+    if (!user) {
+      console.error('User not authenticated');
+      return;
+    }
+    offerData.userId = user.email; // Asegúrate de asignar correctamente el ID de usuario.
 
     this.offerService.createOffer(offerData).subscribe(
       (response) => {
@@ -69,38 +72,32 @@ export class EnterpriseDashboardComponent implements OnInit {
   }
 
   toggleOfferStatus(offer: Offert) {
-    console.log('Offer ID:', offer.id);  // Cambia _id a id
     const updatedStatus = !offer.isActive;
     this.offerService.updateOfferStatus(offer.id, updatedStatus).subscribe(
-        response => {
-            offer.isActive = updatedStatus;
-        },
-        error => {
-            console.error('Error updating offer status:', error);
-        }
-    );
-}
-
-editOffer(offer: Offert) {
-  this.router.navigate(['/enterprise-edit-offerts', offer.id]);
-}
-
-
-deleteOffer(offerId: string) {
-  if (confirm('¿Estás seguro de que deseas eliminar esta oferta?')) {
-    this.offerService.deleteOffer(offerId).subscribe(
       response => {
-        console.log('Oferta eliminada:', response);
-        // Actualizar la lista de ofertas después de eliminar
-        this.offers = this.offers.filter(offer => offer.id !== offerId);
+        offer.isActive = updatedStatus;
       },
       error => {
-        console.error('Error eliminando la oferta:', error);
+        console.error('Error updating offer status:', error);
       }
     );
   }
-}
 
-  
+  editOffer(offer: Offert) {
+    this.router.navigate(['/enterprise-edit-offerts', offer.id]);
+  }
 
+  deleteOffer(offerId: string) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta oferta?')) {
+      this.offerService.deleteOffer(offerId).subscribe(
+        response => {
+          console.log('Oferta eliminada:', response);
+          this.offers = this.offers.filter(offer => offer.id !== offerId);
+        },
+        error => {
+          console.error('Error eliminando la oferta:', error);
+        }
+      );
+    }
+  }
 }
