@@ -1,6 +1,5 @@
 # Dockerfile / typeorm
 FROM node:20
-LABEL author="Ta mare cuan pixa fa clotet ☻"
 
 WORKDIR /home/node/app
 

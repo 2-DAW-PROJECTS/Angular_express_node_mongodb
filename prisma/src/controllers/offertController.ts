@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../services/prismaService';
+import slugify from 'slugify'; // Importa slugify
 
 export const createOffer = async (req: Request, res: Response) => {
   const userId = req.user?.userId;
@@ -38,17 +39,18 @@ export const createOffer = async (req: Request, res: Response) => {
         category,
         categorySlug,
         company: user.username,
+        company_slug: slugify(user.username, { lower: true }),
         postedDate: postedDate ? new Date(postedDate) : null,
         image,
         images: images && images.length > 0 ? images : defaultImages,
         contractType,
         experience,
         isActive,
-        // If comments are not being created at this point, leave it out or handle as needed
-        comments: [], // This line may need to be revised based on your requirements
+        favouritesCount: 0,
+        favorites: [],
+        comments: [],
       },
     });
-    
 
     res.status(201).json(newOffer);
   } catch (error) {
@@ -56,6 +58,8 @@ export const createOffer = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to create offer' });
   }
 };
+
+
 
 
 export const getAllOffersByUser = async (req: Request, res: Response) => {

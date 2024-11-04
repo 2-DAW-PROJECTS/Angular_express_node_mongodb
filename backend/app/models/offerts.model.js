@@ -12,10 +12,6 @@ const offertSchema = new Schema({
         type: String,
         required: true
     },
-    company_slug: {
-        type: String, // Campo para almacenar el slug de la empresa
-        required: true
-    },
     location: {
         type: String,
         required: true
@@ -39,8 +35,7 @@ const offertSchema = new Schema({
         unique: true
     },
     category: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Categorys', // Asegúrate de que este modelo exista
+        type: String, // Cambiado a String para almacenar el nombre de la categoría
         required: true
     },
     image: {

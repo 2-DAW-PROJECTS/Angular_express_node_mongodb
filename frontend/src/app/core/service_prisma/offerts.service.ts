@@ -72,5 +72,35 @@ export class OfferService {
     console.log("Comment ID:", commentId);
     return this.http.patch<any>(`${this.baseUrl}/${offerId}/update_comments`, { commentId });
   }
+
+    // Método para agregar una oferta a favoritos
+    favoriteOffert(offertId: string): Observable<Offert> {
+      return this.http.post<Offert>(
+        `${this.baseUrl}/${offertId}/favorite`,
+        {},
+        { headers: this.getAuthHeaders() }
+      );
+    }
+  
+    // Método para eliminar una oferta de favoritos
+    unfavoriteOffert(offertId: string): Observable<Offert> {
+      return this.http.delete<Offert>(
+        `${this.baseUrl}/${offertId}/favorite`,
+        { headers: this.getAuthHeaders() }
+      );
+    }
+  
+    private getAuthHeaders() {
+      const token = this.userEnterpriseService.getAccessToken();
+      return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    }
+    
+    // Método para obtener las ofertas favoritas del usuario
+    getUserFavorites(): Observable<{ offerts: Offert[] }> {
+      return this.http.get<{ offerts: Offert[] }>(
+        `${this.baseUrl}/favorites`,
+        { headers: this.getAuthHeaders() }
+      );
+    }
   
 }

@@ -44,24 +44,30 @@ model Offert {
   title         String
   location      String
   description   String?
-  requirements  String[]       
-  salary        Float?         
-  slug          String  @unique // Add this line
+  requirements  String[]
+  salary        Float?
+  slug          String         @unique
   category      String?
-  categorySlug  String?        
-  company       String?        
-  postedDate    DateTime?      
+  categorySlug  String?
+  company       String?
+  company_slug  String?
+  postedDate    DateTime?
   image         String?
-  images        String[]       
-  contractType  String?        
-  experience    String?        
+  images        String[]
+  contractType  String?
+  experience    String?
   applicants    Applicant[]
-  comments      String[]       @db.ObjectId // Array of ObjectId to store comment IDs
+  comments      String[]       @db.ObjectId
   createdAt     DateTime       @default(now())
-  isActive      Boolean        @default(true) 
+  isActive      Boolean        @default(true)
 
-  @@map("offerts") 
+  // Nuevos campos
+  favouritesCount Int          @default(0)        // Para contar favoritos
+  favorites       String[]     @db.ObjectId       // Array de IDs de usuarios que han dado like
+
+  @@map("offerts")
 }
+
 
 
 model Category {
