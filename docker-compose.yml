@@ -15,7 +15,8 @@ services:
     command: ["mongod", "--bind_ip_all", "--replSet", "rs0"]
     networks:
       - app-network
-
+      
+# -------
   backend:
     build:  
       context: .  
@@ -42,6 +43,7 @@ services:
     networks:
       - app-network
 
+# -------
   frontend:
     build:
       context: ./frontend
@@ -53,6 +55,7 @@ services:
     networks:
       - app-network
 
+# -------
   prisma:
     build:
       context: ./prisma
@@ -65,6 +68,28 @@ services:
     ports:
       - "3000:3000"
       - "5555:5555"
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+# -------
+  typeorm:
+    build:
+      context: ./typeorm
+      dockerfile: Dockerfile
+    container_name: typeorm
+    restart: always
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 3002
+      DATABASE_URL: ${DATABASE_URL}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+      ACCESS_TOKEN_INTERVAL: ${ACCESS_TOKEN_INTERVAL}
+      REFRESH_TOKEN_INTERVAL: ${REFRESH_TOKEN_INTERVAL}
+    ports:
+      - "3002:3002"
     depends_on:
       - mongo
     networks:
