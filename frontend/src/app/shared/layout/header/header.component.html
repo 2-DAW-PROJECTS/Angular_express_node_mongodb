@@ -13,12 +13,12 @@
       <a routerLink="/shop" routerLinkActive="active">Jobs</a>
       <a href="#">About</a>
       <a href="#">Contact</a>
-      <ng-container *ngIf="currentUser?.usertype === 'enterprise'; else notEnterprise">
+      <!-- <ng-container *ngIf="currentUser?.usertype === 'enterprise'; else notEnterprise">
         <a routerLink="/enterprise-dashboard" routerLinkActive="active">Dashboard</a>
-      </ng-container>      
-      <ng-template #notEnterprise>
-        <p>User type: {{ currentUser?.usertype }}</p> <!-- Para depurar -->
-      </ng-template>
+      </ng-container>       -->
+      <!-- <ng-template #notEnterprise>
+        <p>User type: {{ currentUser?.usertype }}</p> 
+      </ng-template> -->
     </nav>
 
     <div class="header-icons">
@@ -29,9 +29,15 @@
       </ng-container>
 
       <ng-template #authenticated>
-        <a class="nav-link" routerLink="/profile" routerLinkActive="active">
-          Profile
-        </a>
+
+        <ng-container *ngIf="currentUser?.usertype === 'enterprise'; else notEnterprise">
+          <a class="nav-link" routerLink="/enterprise-dashboard" routerLinkActive="active">Dashboard</a>
+        </ng-container>      
+        <ng-template #notEnterprise>
+          <a class="nav-link" routerLink="/profile" routerLinkActive="active">Profile</a>
+        </ng-template>
+
+
         <a class="nav-link logout" (click)="logout()">
           Log out
         </a>

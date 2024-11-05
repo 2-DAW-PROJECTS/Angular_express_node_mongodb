@@ -82,6 +82,14 @@
   background-color: #8e44ad;
 }
 
+.header-icons .nav-link[routerLink="/enterprise-dashboard"] {
+  background-color: #9b59b6;
+}
+
+.header-icons .nav-link[routerLink="/enterprise-dashboard"]:hover {
+  background-color: #8e44ad;
+}
+
 .header-icons .nav-link.logout {
   background-color: #e74c3c;
 }
