@@ -1,38 +1,18 @@
-// src/userAdmin/userAdmin.routes.ts
 import { Router } from 'express';
-import { createUserAdmin, loginUser, updateUserAdmin, getAllUserAdmins, getUserAdminById, deleteUserAdmin } from './userAdmin.controller';
+import { createUserAdmin, loginUser, getAllUserAdmins, getUserAdminById } from './userAdmin.controller';
+import { verifyJWT } from '../middlewares/verifyJWT';
+import { asyncHandler } from '../utils/asyncHandler';
 
 const router = Router();
 
-// Ruta para crear un nuevo usuario
-router.post('/', (req, res, next) => {
-    createUserAdmin(req, res).catch(next);
-});
+// Rutas públicas
+router.post('/register', asyncHandler(createUserAdmin));
+router.post('/login', asyncHandler(loginUser));
 
-// Ruta para obtener todos los usuarios
-router.get('/', (req, res, next) => {
-    getAllUserAdmins(req, res).catch(next);
-});
+// Rutas protegidas
+router.use(verifyJWT);
 
-// Ruta para obtener un usuario por ID
-router.get('/:id', (req, res, next) => {
-    getUserAdminById(req, res).catch(next);
-});
-
-// Ruta para actualizar un usuario por ID
-router.put('/:id', (req, res, next) => {
-    updateUserAdmin(req, res).catch(next);
-});
-
-// Ruta para iniciar sesión
-router.post('/login', (req, res, next) => {
-    loginUser(req, res).catch(next);
-});
-
-// Ruta para eliminar un usuario por ID
-router.delete('/:id', (req, res, next) => {
-    deleteUserAdmin(req, res).catch(next);
-});
+router.get('/get_allusers', asyncHandler(getAllUserAdmins));
+router.get('/get_user/:id', asyncHandler(getUserAdminById));
 
 export default router;
-

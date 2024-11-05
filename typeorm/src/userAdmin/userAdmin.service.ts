@@ -51,7 +51,9 @@ export class UserAdminService {
     }
 
 
-
+    async getUserByEmail(email: string): Promise<UserAdmin | null> {
+        return await this.userRepository.findOne({ where: { email } });
+    }
 
     async deleteUser(id: string): Promise<void> {
         await this.userRepository.delete(id);
