@@ -5,6 +5,7 @@ import { UserEnterprise } from '../models_prisma/userEnterprise.model';
 import { environments_Enterprise } from '../../../environments_Enterprise/environment_Enterprise';
 import { JwtEnterpriseService } from './jwt_Enterprise.service';
 import { tap, catchError } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +21,19 @@ export class UserEnterpriseService {
   
   attemptAuth(authType: string, credentials: { email: string; password: string }): Observable<{ access_token: string, usertype: string }> {
     const endpoint = authType === 'register' ? '/register' : '/login';
-    return this.http.post<{ access_token: string, usertype: string, username: string, email: string }>(`${this.baseUrl}${endpoint}`, credentials).pipe(
+    return this.http.post<{ access_token: string, usertype: string, username: string, email: string, isActive: boolean }>(`${this.baseUrl}${endpoint}`, credentials).pipe(
       tap(response => {
+
+        // console.log('Authentication response:', response);
+        // return
+        if (!response.isActive) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Account Inactive',
+            text: 'Your account is inactive. Please contact support.',
+          });
+          throw new Error('Account is inactive');
+        }
         this.jwtService.saveToken(response.access_token);
         const userEnterprise: UserEnterprise = {
           usertype: 'enterprise',

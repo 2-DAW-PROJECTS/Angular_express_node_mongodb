@@ -76,3 +76,26 @@ export const getUserAdminById = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error al obtener el usuario', error });
     }
 };
+
+
+
+
+// export const getUserEnterprisesByIds = async (req: Request, res: Response) => {
+//     try {
+//         const { userEnterpriseIds } = req.body;
+        
+//         if (!Array.isArray(userEnterpriseIds)) {
+//             return res.status(400).json({ message: 'userEnterpriseIds must be an array' });
+//         }
+
+//         const enterprises = await userAdminService.getUserEnterprisesByIds(userEnterpriseIds);
+        
+//         if (!enterprises || enterprises.length === 0) {
+//             return res.status(404).json({ message: 'No UserEnterprise records found' });
+//         }
+
+//         res.status(200).json(enterprises);
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error fetching UserEnterprise records', error });
+//     }
+// };

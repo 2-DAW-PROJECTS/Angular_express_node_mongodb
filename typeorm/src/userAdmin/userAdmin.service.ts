@@ -58,5 +58,14 @@ export class UserAdminService {
     async deleteUser(id: string): Promise<void> {
         await this.userRepository.delete(id);
     }//deleteUser
+
+
+
+    // async getUserEnterprisesByIds(userEnterpriseIds: string[]): Promise<UserAdmin | null> {
+    //     return await this.userRepository.find({
+    //         where: { _id: In(userEnterpriseIds) }
+    //     });
+    // }//getUserEnterprisesByIds
+
 }//class
 
