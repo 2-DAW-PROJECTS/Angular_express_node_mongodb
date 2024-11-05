@@ -100,4 +100,8 @@ export class EnterpriseDashboardComponent implements OnInit {
       );
     }
   }
+
+  toggleProfileEnterprise() {
+    this.router.navigate(['/enterprise-profile']); // Redirigir a la ruta del perfil
+  }
 }

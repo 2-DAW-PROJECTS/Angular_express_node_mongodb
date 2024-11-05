@@ -26,7 +26,7 @@ export class UserEnterpriseService {
 
         // console.log('Authentication response:', response);
         // return
-        if (!response.isActive) {
+        if (!response.isActive && authType === 'login' && response.usertype === 'enterprise' ) {
           Swal.fire({
             icon: 'error',
             title: 'Account Inactive',

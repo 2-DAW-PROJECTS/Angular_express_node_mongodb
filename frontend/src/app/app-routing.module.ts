@@ -7,11 +7,11 @@ import { DetailsComponent } from './details/details.component';
 import { DetailsResolver } from './core/service/details.service';
 import { AuthComponent } from './auth/auth.component';
 import { ProfileComponent } from './profile/profile.component';
-import { UserTypeGuard } from './guards/user-type.guard'; 
+import { UserTypeGuard } from './guards/user-type.guard';
 import { EnterpriseDashboardComponent } from './enterprise-dashboard/enterprise-dashboard.component';
 import { EnterpriseCreateOffertsComponent } from './enterprise-dashboard/enterprise-create-offerts/enterprise-create-offerts.component';
 import { EnterpriseEditOffertsComponent } from './enterprise-dashboard/enterprise-edit-offerts/enterprise-edit-offerts.component';
-
+import { ProfileEnterpriseComponent } from './enterprise-dashboard/profile-enterprise/profile-enterprise.component'; // Importamos el nuevo componente
 
 const routes: Routes = [
   {
@@ -57,13 +57,18 @@ const routes: Routes = [
   {
     path: 'enterprise-dashboard',
     component: EnterpriseDashboardComponent,
-    canActivate: [UserTypeGuard] 
+    canActivate: [UserTypeGuard]
   },
   {
     path: 'enterprise-edit-offerts/:id',
     component: EnterpriseEditOffertsComponent,
-    canActivate: [UserTypeGuard] 
-  }, 
+    canActivate: [UserTypeGuard]
+  },
+  {
+    path: 'enterprise-profile',
+    component: ProfileEnterpriseComponent, // Nueva ruta para el componente de perfil de empresa
+    canActivate: [UserTypeGuard]
+  },
   {
     path: '**',
     redirectTo: 'home'
