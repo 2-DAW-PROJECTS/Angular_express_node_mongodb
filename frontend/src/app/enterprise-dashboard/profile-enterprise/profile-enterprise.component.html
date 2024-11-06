@@ -21,7 +21,47 @@
       <div class="profile-details">
         <div class="detail-card">
           <h3>Account Information</h3>
-          <div class="detail-item">
+          <div *ngIf="userEnterprise">
+            <div class="detail-item">
+              <span class="label">Username:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.username }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.username" />
+            </div>
+            <div class="detail-item">
+              <span class="label">Email:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.email }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.email" />
+            </div>
+            <div class="detail-item">
+              <span class="label">Industry:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.industry || "Not Defined" }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.industry" />
+            </div>
+            <div class="detail-item">
+              <span class="label">Location:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.location || "Not Defined" }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.location" />
+            </div>
+            <div class="detail-item">
+              <span class="label">Website:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.website || "Not Defined" }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.website" />
+            </div>
+            <div class="detail-item">
+              <span class="label">Description:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.description || "Not Defined" }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.description" />
+            </div>
+          </div>
+          
+          <div class="profile-actions">
+            <button class="btn-edit" (click)="editProfile()">{{ isEditing ? 'Cancel' : 'Edit' }}</button>
+            <button class="btn-edit" *ngIf="isEditing" (click)="saveProfile()">Save</button>
+
+            <button class="btn-password" (click)="changePassword()">Change Password</button>
+          </div>
+
+          <!-- <div class="detail-item">
             <span class="label">Username:</span>
             <span class="value">{{ userEnterprise.username }}</span>
           </div>
@@ -55,6 +95,6 @@
         <button class="btn-password" (click)="changePassword()">
           <i class="fas fa-key"></i> Change Password
         </button>
-      </div>
+      </div> -->
     </div> <!--ngIF ending-->
   </div>

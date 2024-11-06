@@ -145,6 +145,24 @@
   .btn-password:hover {
     background: #e2e8f0;
   }
+
+
+  input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #2d3748;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  input:focus {
+    border-color: #4299e1;
+    box-shadow: 0 0 5px rgba(66, 153, 225, 0.5);
+    outline: none;
+  }
+
   
   @media (max-width: 768px) {
     .profile-container {
