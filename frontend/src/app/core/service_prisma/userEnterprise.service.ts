@@ -91,6 +91,10 @@ export class UserEnterpriseService {
     return this.currentUserSubject.value;
   }
 
+  getCurrentUserProfile(): Observable<UserEnterprise | null> {
+    return this.currentUserSubject.asObservable();
+}
+
   private setAuth(userEnterprise: UserEnterprise) {
     this.currentUserSubject.next(userEnterprise);
     this.isAuthenticatedSubject.next(true);
