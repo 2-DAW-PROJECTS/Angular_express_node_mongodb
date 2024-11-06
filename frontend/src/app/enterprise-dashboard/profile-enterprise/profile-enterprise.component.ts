@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { UserEnterpriseService } from '../../core/service_prisma/userEnterprise.service';
 import { UserEnterprise } from '../../core/models_prisma/userEnterprise.model';
 import { CommonModule } from '@angular/common';
-import { compileOpaqueAsyncClassMetadata } from '@angular/compiler';
 
 
 @Component({
@@ -22,11 +21,11 @@ export class ProfileEnterpriseComponent implements OnInit {
       next: (user: UserEnterprise | null) => {
         this.userEnterprise = user;
 
-        if (this.userEnterprise) {
-          console.log('User enterprise data:', this.userEnterprise);
-        } else {
-          console.log('User enterprise data is null');
-        }
+        // if (this.userEnterprise) {
+        //   console.log('User enterprise data:', this.userEnterprise);
+        // } else {
+        //   console.log('User enterprise data is null');
+        // }
 
       },
       error: (error) => {
