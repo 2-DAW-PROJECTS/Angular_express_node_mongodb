@@ -5,7 +5,8 @@
   border-radius: 12px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  margin-left: 25%;
+  margin-left: 22%;
+  flex: 1;
   width: calc(100% - 280px);
   padding: 2rem;
 }
@@ -164,7 +165,7 @@ input:focus {
   outline: none;
 }
   /* Sidebar */
-  .sidebar {
+  /* .sidebar {
     width: 250px;
     background: #2c3e50;
     color: white;
@@ -175,7 +176,6 @@ input:focus {
     top: 128px;
   }
 
-  /* Menú y navegación */
   .sidebar-header {
     padding: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -194,13 +194,52 @@ input:focus {
     align-items: center;
     gap: 0.5rem;
     transition: all 0.3s;
+    cursor: pointer;
   }
 
   .sidebar-nav a:hover,
   .sidebar-nav a.active {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 5px;
-  }
+    cursor: pointer;
+  } */
+
+  
+.sidebar {
+  width: 250px;
+  background: #2c3e50;
+  color: white;
+  padding: 1rem;
+  /* height: calc(100% - -25.5%); */
+  position: absolute;
+}
+
+.sidebar-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-nav a {
+  color: white;
+  text-decoration: none;
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.sidebar-nav a:hover, .sidebar-nav a.active {
+  background: rgba(255,255,255,0.1);
+  border-radius: 5px;
+  cursor: pointer;
+}
 
 /* Modo Móvil */
 @media screen and (max-width: 1072px) {

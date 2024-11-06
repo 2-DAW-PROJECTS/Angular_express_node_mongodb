@@ -40,11 +40,13 @@
     align-items: center;
     gap: 0.5rem;
     transition: all 0.3s;
+    cursor: pointer;
 }
 
 .sidebar-nav a:hover, .sidebar-nav a.active {
     background: rgba(255,255,255,0.1);
     border-radius: 5px;
+    cursor: pointer;
 }
 
 .main-content {

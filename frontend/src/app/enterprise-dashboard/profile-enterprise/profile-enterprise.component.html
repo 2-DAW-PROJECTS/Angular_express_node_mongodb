@@ -47,7 +47,7 @@
             <div class="detail-item">
               <span class="label">Email:</span>
               <span *ngIf="!isEditing">{{ userEnterprise.email }}</span>
-              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.email" />
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.email" readonly/>
             </div>
             <div class="detail-item">
               <span class="label">Industry:</span>
