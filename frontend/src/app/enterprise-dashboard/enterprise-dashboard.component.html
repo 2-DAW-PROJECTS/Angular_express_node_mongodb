@@ -51,7 +51,6 @@
         </div>
       </div>
     </div>
-
     <div class="content-section">
       <div class="section-header">
         <h2>Gestión de Ofertas</h2>
@@ -61,7 +60,7 @@
       </div>
 
       <div class="offers-table" id="offers-table">
-        <table>
+        <table *ngIf="offers && offers.length > 0; else noOffers">
           <thead>
             <tr>
               <th>Título</th>
@@ -91,6 +90,9 @@
             </tr>
           </tbody>
         </table>
+        <ng-template #noOffers>
+          <p class="no-offerts">Todavía no has creado ninguna oferta, ¿a qué esperas para encontrar al candidato ideal?</p>
+        </ng-template>
       </div>
     </div>
   </div>
