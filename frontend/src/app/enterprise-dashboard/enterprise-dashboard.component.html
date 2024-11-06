@@ -7,10 +7,10 @@
     <nav class="sidebar-nav">
       <ul>
         <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="#content-section"><i class="fas fa-briefcase"></i> Ofertas</a></li>
-        <li><a href="#"><i class="fas fa-users"></i> Profile </a></li>
-        <li><a href="#"><i class="fas fa-chart-bar"></i> Estadísticas</a></li>
-        <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
+        <li><a href="#offers-table"><i class="fas fa-briefcase"></i> Ofertas</a></li>
+        <li><a (click)="toggleProfileEnterprise()"><i class="fas fa-users"></i> Profile </a></li>
+        <!-- <li><a href="#"><i class="fas fa-chart-bar"></i> Estadísticas</a></li>
+        <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li> -->
       </ul>
     </nav>
   </div>
@@ -22,10 +22,10 @@
         <input type="search" placeholder="Buscar...">
         <i class="fas fa-search"></i>
       </div>
-      <div class="user-menu">
-        <span>Enterprise</span>
-        <!-- Avatar redirige a la página del perfil al hacer clic -->
-        <img src="avatar.jpg" alt="Enterprise" class="avatar" (click)="toggleProfileEnterprise()">
+      <div class="user-menu" *ngIf="['userEnterprise']">
+        <span>{{ userEnterprise?.username }}</span>
+        <img [src]="userEnterprise?.logo || 'assets/default_profile/logo.PNG'" alt="Enterprise" class="avatar" (click)="toggleProfileEnterprise()">
+
       </div>
     </div>
     <div class="dashboard-stats">
@@ -60,7 +60,7 @@
         </button>
       </div>
 
-      <div class="offers-table">
+      <div class="offers-table" id="offers-table">
         <table>
           <thead>
             <tr>

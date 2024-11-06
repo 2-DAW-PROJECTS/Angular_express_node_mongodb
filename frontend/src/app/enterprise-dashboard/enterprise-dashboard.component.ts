@@ -4,6 +4,7 @@ import { OfferService } from '../core/service_prisma/offerts.service';
 import { Router } from '@angular/router';
 import { UserEnterpriseService } from '../core/service_prisma/userEnterprise.service';
 import { Offert } from '../core/models_prisma/offertEnterprise.model';
+import { UserEnterprise } from '../core/models_prisma/userEnterprise.model';
 
 @Component({
   selector: 'app-enterprise-dashboard',
@@ -14,8 +15,11 @@ import { Offert } from '../core/models_prisma/offertEnterprise.model';
   providers: [OfferService]
 })
 export class EnterpriseDashboardComponent implements OnInit {
+[x: string]: any;
   offers: Offert[] = [];
   isAuthenticated: boolean = false;
+  userEnterprise: UserEnterprise | null = null;
+
 
   constructor(
     private offerService: OfferService,
@@ -23,13 +27,26 @@ export class EnterpriseDashboardComponent implements OnInit {
     private userEnterpriseService: UserEnterpriseService
   ) {}
 
+
   ngOnInit() {
     this.userEnterpriseService.isAuthenticated.subscribe((isAuthenticated: boolean) => {
       this.isAuthenticated = isAuthenticated;
       if (this.isAuthenticated) {
         this.loadOffers();
+        this.loadUserProfile();
       } else {
         this.router.navigate(['/login']);
+      }
+    });
+  }
+
+  loadUserProfile() {
+    this.userEnterpriseService.getCurrentUserProfile().subscribe({
+      next: (user: UserEnterprise | null) => {
+        this.userEnterprise = user;
+      },
+      error: (error) => {
+        console.error('Error fetching user enterprise data:', error);
       }
     });
   }
