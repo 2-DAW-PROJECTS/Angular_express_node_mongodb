@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { UserEnterprise } from '../models_prisma/userEnterprise.model';
 import { environments_Enterprise } from '../../../environments_Enterprise/environment_Enterprise';
 import { JwtEnterpriseService } from './jwt_Enterprise.service';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, map } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 @Injectable({
@@ -93,7 +93,28 @@ export class UserEnterpriseService {
 
   getCurrentUserProfile(): Observable<UserEnterprise | null> {
     return this.currentUserSubject.asObservable();
-}
+  }
+
+
+  updateUser(user: UserEnterprise): Observable<UserEnterprise> {
+    const token = this.getAccessToken();
+    if (token && !this.isTokenExpired(token)) { 
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      return this.http.put<{ userEnterprise: UserEnterprise }>(`${this.baseUrl}/current_user`, user, { headers }).pipe(
+        tap(data => {
+          if (data && data.userEnterprise) {
+            this.setAuth(data.userEnterprise);
+          }
+        }),
+        map((data: { userEnterprise: any; }) => data.userEnterprise)
+      );
+    }
+    throw new Error('Token is invalid or expired');
+  }
+  
+  
+
+
 
   private setAuth(userEnterprise: UserEnterprise) {
     this.currentUserSubject.next(userEnterprise);

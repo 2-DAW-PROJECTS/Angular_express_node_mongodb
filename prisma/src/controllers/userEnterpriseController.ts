@@ -126,7 +126,7 @@ export const getUserEnterprises = async (req: Request, res: Response) => {
 
 export const getCurrentUser = async (req: Request, res: Response) => {
   const user = req.user; 
-  console.log('User from token:', req.user);
+  // console.log('User from token:', req.user);
   
   if (!user || !user.userId) { 
     return res.status(400).json({ error: 'User information not provided' });
@@ -147,6 +147,75 @@ export const getCurrentUser = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error fetching current user enterprise:', error);
     return res.status(500).json({ error: 'Error fetching current user enterprise' });
+  }
+};
+
+
+
+
+export const updateCurrentUser = async (req: Request, res: Response) => {
+  const user = req.user;
+
+  // console.log('User from token update:', user);
+  // console.log('Body:', req.body);
+  
+  if (!user || !user.userId) {
+    return res.status(400).json({ error: 'User information not provided' });
+  }
+
+  const {
+    username,
+    email,
+    password,
+    usertype,
+    isActive,
+    permissions,
+    telephone,
+    followers,
+    description,
+    industry,
+    location,
+    logo,
+    website,
+    image,
+    slug,
+    category
+  } = req.body;
+
+  try {
+    const updatedData: any = {
+      username,
+      email,
+      usertype,
+      isActive,
+      permissions,
+      telephone,
+      followers,
+      description,
+      industry,
+      location,
+      logo,
+      website,
+      image,
+      slug,
+      category
+    };
+
+    if (password) {
+      updatedData.password = await argon2.hash(password);
+    }
+
+    const updatedUserEnterprise = await prisma.userEnterprise.update({
+      where: { id: user.userId },
+      data: updatedData,
+    });
+
+    return res.status(200).json({
+      userEnterprise: updatedUserEnterprise,
+    });
+  } catch (error) {
+    console.error('Error updating user enterprise:', error);
+    return res.status(500).json({ error: 'Error updating user enterprise' });
   }
 };
 

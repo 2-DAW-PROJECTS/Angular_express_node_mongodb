@@ -48,8 +48,18 @@ export class ProfileEnterpriseComponent implements OnInit {
         this.isEditing = !this.isEditing;
   }
   saveProfile() {
-    console.log('Save profile logic');
-    this.isEditing = false;
+    // console.log('Save profile logic');
+    if (this.userEnterprise) {
+      this.userEnterpriseService.updateUser(this.userEnterprise).subscribe({
+        next: (response) => {
+          // console.log('Profile updated successfully', response);
+          this.isEditing = false;
+        },
+        error: (error) => {
+          console.error('Error updating profile:', error.error);
+        }
+      });
+    }
   }
 
 
