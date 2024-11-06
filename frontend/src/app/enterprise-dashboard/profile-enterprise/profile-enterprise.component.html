@@ -1,4 +1,21 @@
-<!-- <link rel="stylesheet" href="./profile-enterprise.component.css"> -->
+<link rel="stylesheet" href="./profile-enterprise.component.css">
+
+<div class="sidebar">
+  <div class="sidebar-header">
+
+    <h3>Panel Enterprise</h3>
+  </div>
+  <nav class="sidebar-nav">
+    <ul>
+      <li><a (click)="toggleDashboardEnterprise()" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+      <li><a (click)="toggleDashboardEnterpriseOffers()"><i class="fas fa-briefcase"></i> Ofertas</a></li>
+      <li><a><i class="fas fa-users"></i> Profile </a></li>
+      <!-- <li><a href="#"><i class="fas fa-chart-bar"></i> Estadísticas</a></li>
+      <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li> -->
+    </ul>
+  </nav>
+</div>
+
 
 <div class="profile-container" *ngIf="userEnterprise">
     <div class="profile-header">
@@ -98,3 +115,8 @@
       </div> -->
     </div> <!--ngIF ending-->
   </div>
+  <script>
+    document.getElementById("hamburger").addEventListener("click", function() {
+      document.querySelector(".sidebar").classList.toggle("active");
+    });
+  </script>

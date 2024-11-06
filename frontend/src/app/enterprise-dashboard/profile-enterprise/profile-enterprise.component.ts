@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserEnterpriseService } from '../../core/service_prisma/userEnterprise.service';
 import { UserEnterprise } from '../../core/models_prisma/userEnterprise.model';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 
@@ -17,7 +18,7 @@ export class ProfileEnterpriseComponent implements OnInit {
   userEnterprise: UserEnterprise | null = null;
   isEditing: boolean = false;
 
-  constructor(private userEnterpriseService: UserEnterpriseService) {}
+  constructor(private userEnterpriseService: UserEnterpriseService, private router: Router) {}
 
   ngOnInit(): void {
     this.userEnterpriseService.getCurrentUserProfile().subscribe({
@@ -29,6 +30,12 @@ export class ProfileEnterpriseComponent implements OnInit {
         // } else {
         //   console.log('User enterprise data is null');
         // }
+        const links = document.querySelectorAll('a');
+        links.forEach(link => link.classList.remove('active'));
+        const currentLink = document.querySelector('a[href="/enterprise-profile"]');
+        if (currentLink) {
+          currentLink.classList.add('active');
+        }
 
       },
       error: (error) => {
@@ -50,6 +57,28 @@ export class ProfileEnterpriseComponent implements OnInit {
   changePassword() {
     console.log('Change password logic');
   }
+
+
+  toggleDashboardEnterprise() {
+    this.router.navigate(['/enterprise-dashboard']); 
+    const links = document.querySelectorAll('a');
+    links.forEach(link => link.classList.remove('active'));
+    const currentLink = document.querySelector('a[href="/enterprise-dashboard"]');
+    if (currentLink) {
+      currentLink.classList.add('active');
+    }
+  }
+
+  toggleDashboardEnterpriseOffers() {
+    this.router.navigate(['/enterprise-dashboard']); 
+    const links = document.querySelectorAll('a');
+    links.forEach(link => link.classList.remove('active'));
+    const currentLink = document.querySelector('a[href="/enterprise-dashboard"]');
+    if (currentLink) {
+      currentLink.classList.add('active');
+    }
+  }
+
 }
 
 

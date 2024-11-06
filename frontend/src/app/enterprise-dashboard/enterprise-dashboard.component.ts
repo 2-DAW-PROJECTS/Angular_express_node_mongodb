@@ -119,6 +119,23 @@ export class EnterpriseDashboardComponent implements OnInit {
   }
 
   toggleProfileEnterprise() {
-    this.router.navigate(['/enterprise-profile']); // Redirigir a la ruta del perfil
+    this.router.navigate(['/enterprise-profile']).then(() => {
+      const links = document.querySelectorAll('a');
+      links.forEach(link => link.classList.remove('active'));
+      const currentLink = document.querySelector('a[href="/enterprise-profile"]');
+      if (currentLink) {
+        currentLink.classList.add('active');
+      }
+    });
+  }
+
+  toggleDashboardEnterpriseOffers() {
+    this.router.navigate(['/enterprise-dashboard']); 
+    const links = document.querySelectorAll('a');
+    links.forEach(link => link.classList.remove('active'));
+    const currentLink = document.querySelector('a[href="/enterprise-dashboard"]');
+    if (currentLink) {
+      currentLink.classList.add('active');
+    }
   }
 }
