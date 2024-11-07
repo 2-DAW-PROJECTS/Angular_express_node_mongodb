@@ -59,59 +59,82 @@ export class AuthComponent implements OnInit {
   
     const credentials = this.authForm.value;
   
-    // Intentar autenticación de Admin
-    this.userAdminService.attemptAuth(this.authType, credentials).subscribe({
-      next: () => {
-        // Mantener la sesión activa del admin
-        this.userAdminService.populate();  
-  
-        // Redirigir al Dashboard de Admin
-        this.router.navigateByUrl('/admin-dashboard');
-      },
-      error: (adminErr: HttpErrorResponse) => {
-        console.error('Admin login failed:', adminErr);
-  
-        // Si el login de Admin falla (401 o 404), intentamos con "Enterprise"
-        if (adminErr.status === 401 || adminErr.status === 404) {
-          this.userEnterpriseService.login(this.authType, credentials).subscribe({
-            next: () => {
-              // Redirigir al Dashboard de Enterprise
-              this.router.navigateByUrl('/enterprise-dashboard');
-            },
-            error: (enterpriseErr) => {
-              console.error('Enterprise login failed:', enterpriseErr);
-  
-              // Si tampoco es enterprise, intentar con usuario regular
-              if (enterpriseErr.status === 404) {
-                this.userService.attemptAuth(this.authType, credentials).subscribe({
-                  next: () => {
-                    // Redirigir al Dashboard de Usuario
-                    this.router.navigateByUrl('/user-dashboard');
-                  },
-                  error: (userErr) => {
-                    console.error('User login failed:', userErr);
-                    this.errors = userErr;
-                    this.isSubmitting = false;
-                    this.cd.markForCheck();
-                  }
-                });
-              } else {
-                // Error en login de Enterprise
-                this.errors = enterpriseErr;
-                this.isSubmitting = false;
-                this.cd.markForCheck();
-              }
-            }
-          });
-        } else {
-          // Si no es un error 401 o 404, se maneja el error de admin de forma general
-          this.errors = adminErr;
+    if (this.authType === 'register' && credentials.isEnterprise) {
+      this.userEnterpriseService.registerEnterprise(credentials).subscribe({
+        next: () => {
+          // Redirigir a dashboard de empresa
+          this.router.navigateByUrl('/enterprise-dashboard');
+        },
+        error: (enterpriseErr: HttpErrorResponse) => {
+          console.error('Enterprise registration failed:', enterpriseErr);
+          this.errors = enterpriseErr;
           this.isSubmitting = false;
           this.cd.markForCheck();
         }
-      }
-    });
+      });
+    } else if (this.authType === 'register') {
+      this.userService.attemptAuth(this.authType, credentials).subscribe({
+        next: () => {
+          // Redirigir al Dashboard de Usuario
+          this.router.navigateByUrl('/user-dashboard');
+        },
+        error: (userErr: HttpErrorResponse) => {
+          console.error('User registration failed:', userErr);
+          this.errors = userErr;
+          this.isSubmitting = false;
+          this.cd.markForCheck();
+        }
+      });
+    } else if (this.authType === 'login') {
+      // autenticación de Admin
+      this.userAdminService.login(this.authType, credentials).subscribe({
+        next: () => {
+          this.router.navigateByUrl('/admin-dashboard');
+        },
+        error: (adminErr: HttpErrorResponse) => {
+          console.error('Admin login failed:', adminErr);
+  
+          if (adminErr.status === 401 || adminErr.status === 404) {
+            this.userEnterpriseService.login(this.authType, credentials).subscribe({
+              next: () => {
+                // Dashboard de Enterprise
+                this.router.navigateByUrl('/enterprise-dashboard');
+              },
+              error: (enterpriseErr) => {
+                console.error('Enterprise login failed:', enterpriseErr);
+  
+                // Si tampoco es enterprise, intentar con usuario regular
+                if (enterpriseErr.status === 404) {
+                  this.userService.attemptAuth(this.authType, credentials).subscribe({
+                    next: () => {
+                      this.router.navigateByUrl('/user-dashboard');
+                    },
+                    error: (userErr) => {
+                      console.error('User login failed:', userErr);
+                      this.errors = userErr;
+                      this.isSubmitting = false;
+                      this.cd.markForCheck();
+                    }
+                  });
+                } else {
+                  // Error en login de Enterprise
+                  this.errors = enterpriseErr;
+                  this.isSubmitting = false;
+                  this.cd.markForCheck();
+                }
+              }
+            });
+          } else {
+            // Si no es un error 401 o 404, se maneja el error de admin de forma general
+            this.errors = adminErr;
+            this.isSubmitting = false;
+            this.cd.markForCheck();
+          }
+        }
+      });
+    }
   }
+  
   
 
   logout() {

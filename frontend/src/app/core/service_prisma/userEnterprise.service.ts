@@ -18,7 +18,7 @@ export class UserEnterpriseService {
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
   constructor(private http: HttpClient, private jwtService: JwtEnterpriseService) {}
-  
+
   attemptAuth(authType: string, credentials: { email: string; password: string }): Observable<{ access_token: string, usertype: string }> {
     const endpoint = authType === 'register' ? '/register' : '/login';
     return this.http.post<{ access_token: string, usertype: string, username: string, email: string, isActive: boolean }>(`${this.baseUrl}${endpoint}`, credentials).pipe(
@@ -48,6 +48,11 @@ export class UserEnterpriseService {
         throw error;
       })
     );
+  }
+
+  // Método para registrar empresa (Ya existe este método)
+  registerEnterprise(userData: any): Observable<UserEnterprise> {
+    return this.http.post<UserEnterprise>(`${this.baseUrl}/register`, userData);
   }
 
   populate() {
@@ -112,10 +117,6 @@ export class UserEnterpriseService {
     throw new Error('Token is invalid or expired');
   }
   
-  
-
-
-
   private setAuth(userEnterprise: UserEnterprise) {
     this.currentUserSubject.next(userEnterprise);
     this.isAuthenticatedSubject.next(true);
@@ -130,11 +131,6 @@ export class UserEnterpriseService {
   logout() {
     this.purgeAuth();
   }
-
-  registerEnterprise(userData: any): Observable<UserEnterprise> {
-    return this.http.post<UserEnterprise>(`${this.baseUrl}/register`, userData);
-  }
-
   
 
   login(authType: string, credentials: { email: string, password: string }): Observable<void> {

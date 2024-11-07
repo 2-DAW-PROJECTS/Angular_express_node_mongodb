@@ -289,4 +289,10 @@ th {
   
   .action-btn.toggle i {
     margin-right: 5px;
-  }
+}
+
+.status.inactive {
+    color: #e06673;
+    font-weight: bold;
+    background: #ffc7c7;
+}
