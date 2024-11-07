@@ -34,18 +34,22 @@
 
       <ng-template #authenticated>
 
-        <ng-container *ngIf="currentUser?.usertype === 'enterprise'; else notEnterprise">
+        <ng-container *ngIf="currentUser?.usertype === 'enterprise'">
           <a class="nav-link" routerLink="/enterprise-dashboard" routerLinkActive="active">Dashboard</a>
         </ng-container>      
-        <ng-template #notEnterprise>
+        
+        <ng-container *ngIf="currentUser?.usertype === 'admin'">
+          <a class="nav-link" routerLink="/admin-dashboard" routerLinkActive="active">Adm-Dashboard</a>
+        </ng-container>
+        
+        <ng-container *ngIf="currentUser?.usertype !== 'enterprise' && currentUser?.usertype !== 'admin'">
           <a class="nav-link" routerLink="/profile" routerLinkActive="active">Profile</a>
-        </ng-template>
+        </ng-container>
 
 
         <a class="nav-link logout" (click)="logout()">
           Log out
         </a>
       </ng-template>
-    </div>
-  </div>
+    </div>  </div>
 </header>
