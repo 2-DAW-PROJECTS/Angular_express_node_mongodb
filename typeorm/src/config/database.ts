@@ -1,7 +1,9 @@
 // src/config/database.ts
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
+import { UserEnterprise } from '../userEnterprise/userEnterprise.entity';
+import { UserAdmin } from '../userAdmin/userAdmin.entity';
 
 dotenv.config();
 
@@ -10,12 +12,9 @@ export const AppDataSource = new DataSource({
     url: process.env.DATABASE_URL,
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    entities: [
-        __dirname + '/../Post/Post.entity{.ts,.js}',
-        __dirname + '/../userAdmin/userAdmin.entity{.ts,.js}'
-    ],
-    synchronize: true, // solo para desarrollo, no usar en producción
-});//AppDataSource
+    entities: [UserEnterprise, UserAdmin],
+    synchronize: true,
+});
 
 export const connectDatabase = async () => {
     try {
@@ -25,4 +24,4 @@ export const connectDatabase = async () => {
         console.error('Database connection error:', error);
         process.exit(1);
     }
-};//connectDatabase
+};

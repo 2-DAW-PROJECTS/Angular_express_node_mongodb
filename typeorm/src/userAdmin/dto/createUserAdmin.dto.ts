@@ -1,9 +1,9 @@
 import { IsEmail, IsNotEmpty, IsString, IsBoolean, IsArray, IsIn, MinLength, IsOptional } from 'class-validator';
 
 export class CreateUserAdminDto {
-    @IsIn(['Admin', 'SuperAdmin'])
+    @IsIn(['admin', 'superAdmin'])  // Asegúrate de que esté en minúsculas
     @IsNotEmpty()
-    userType!: 'Admin' | 'SuperAdmin';
+    usertype!: 'admin' | 'superAdmin';
 
     @IsBoolean()
     @IsNotEmpty()
@@ -16,7 +16,7 @@ export class CreateUserAdminDto {
     @IsArray()
     @IsString({ each: true })
     @IsOptional()
-    permissions?: string[]; 
+    permissions?: string[];
 
     @IsArray()
     @IsString({ each: true })
@@ -25,10 +25,11 @@ export class CreateUserAdminDto {
 
     @IsString()
     @IsNotEmpty()
-    username!: string; 
+    username!: string;
 
     @IsString()
     @MinLength(6)
     @IsNotEmpty()
     password!: string;
 }
+

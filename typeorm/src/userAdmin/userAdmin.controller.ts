@@ -10,8 +10,6 @@ const userAdminService = new UserAdminService();
 export const createUserAdmin = async (req: Request, res: Response) => {
     const createUserDto = new CreateUserAdminDto();
     Object.assign(createUserDto, req.body);
-    
-    // console.log('Received body:', req.body);
 
     // Validamos los datos en el DTO
     const errors = await validate(createUserDto);
@@ -45,7 +43,7 @@ export const loginUser = async (req: Request, res: Response) => {
     const user = await userAdminService.getUserByEmail(loginUserDto.email);
     if (user && await argon2.verify(user.password, loginUserDto.password)) {
         const token = jwt.sign(
-            { userId: user._id, email: user.email, userType: user.userType },
+            { userId: user._id, email: user.email, usertype: user.usertype.toLowerCase() },
             process.env.ACCESS_TOKEN_SECRET as string,
             { expiresIn: '1h' }
         );
@@ -54,6 +52,7 @@ export const loginUser = async (req: Request, res: Response) => {
         res.status(401).json({ message: 'Credenciales inválidas' });
     }
 };
+
 
 export const getAllUserAdmins = async (req: Request, res: Response) => {
     try {
@@ -74,5 +73,23 @@ export const getUserAdminById = async (req: Request, res: Response) => {
         res.json(user);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener el usuario', error });
+    }
+};
+// Método para obtener el usuario actual
+export const getCurrentUser = async (req: Request, res: Response) => {
+    try {
+        const token = req.headers['authorization']?.split(' ')[1];
+            if (!token) {
+                return res.status(401).json({ message: 'No se proporcionó token' });
+            }
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as { userId: string, email: string, usertype: string };
+        const user = await userAdminService.getUserById(decoded.userId);
+            if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+        res.json({ userAdmin: user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener los datos del usuario' });
     }
 };

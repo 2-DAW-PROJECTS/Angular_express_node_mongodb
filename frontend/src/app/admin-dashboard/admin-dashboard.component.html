@@ -1,0 +1,196 @@
+<link rel="stylesheet" href="admin-dashboard.component.css">
+<div class="enterprise-dashboard">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Panel Admin</h3>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="#"><i class="fas fa-users"></i> Usuarios</a></li>
+        <li><a href="#"><i class="fas fa-cogs"></i> Configuración</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="search-bar">
+        <input type="search" placeholder="Buscar...">
+        <i class="fas fa-search"></i>
+      </div>
+      <div class="user-menu">
+        <span>Admin</span>
+        <img src="avatar.jpg" alt="Admin" class="avatar">
+      </div>
+    </div>
+
+    <div class="dashboard-stats">
+      <!-- Tarjeta Total de Usuarios -->
+      <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <div class="stat-info">
+          <h4>Total Usuarios</h4>
+          <p>{{ totalUsuarios }}</p>
+        </div>
+      </div>
+    
+      <!-- Tarjeta Usuarios Activos -->
+      <div class="stat-card">
+        <i class="fas fa-user-check"></i>
+        <div class="stat-info">
+          <h4>Usuarios Activos</h4>
+          <p>{{ totalUsuariosActivos }}</p>
+        </div>
+      </div>
+    
+      <!-- Tarjeta Usuarios Inactivos -->
+      <div class="stat-card">
+        <i class="fas fa-user-times"></i>
+        <div class="stat-info">
+          <h4>Usuarios Inactivos</h4>
+          <p>{{ totalUsuariosInactivos }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <div class="section-header">
+        <h2>Gestión de Usuarios</h2>
+      </div>
+
+      <div class="offers-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="users && users.length > 0; else noUsers">
+            <tr *ngFor="let user of users">
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span class="status" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+                  {{ user.isActive ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <button class="action-btn toggle" [ngClass]="{'enable': !user.isActive, 'disable': user.isActive}" (click)="toggleUserStatus(user)">
+                  <i class="fas fa-toggle-off">{{ user.isActive ? 'Deshabilitar' : 'Habilitar' }}</i>
+                </button>
+                <button class="action-btn delete" (click)="deleteUser(user._id)">
+                  <i class="fas fa-trash"></i> X
+                </button>
+              </td>
+            </tr>
+          </tbody>          
+          <ng-template #noUsers>
+            <tr>
+              <td colspan="4">No hay usuarios de empresa disponibles.</td>
+            </tr>
+          </ng-template>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+
+</style>
+<!-- 
+<div class="enterprise-dashboard">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Panel Admin</h3>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="#"><i class="fas fa-users"></i> Usuarios</a></li>
+        <li><a href="#"><i class="fas fa-cogs"></i> Configuración</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="search-bar">
+        <input type="search" placeholder="Buscar...">
+        <i class="fas fa-search"></i>
+      </div>
+      <div class="user-menu">
+        <span>Admin</span>
+        <img src="avatar.jpg" alt="Admin" class="avatar">
+      </div>
+    </div>
+
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <div class="stat-info">
+          <h4>Total Usuarios</h4>
+          <p>{{ users.length }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <div class="section-header">
+        <h2>Gestión de Usuarios</h2>
+        <button class="add-offer-btn" (click)="redirectToCreateUser()">
+          <i class="fas fa-plus"></i> Nuevo Usuario
+        </button>
+      </div>
+
+      <div class="offers-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Permisos</th>
+              <th>Acciones</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="users && users.length > 0; else noUsers">
+            <tr *ngFor="let user of users">
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.permissions.join(', ') }}</td>
+              <td>
+                <button class="action-btn edit" (click)="editUser(user)">
+                  <i class="fas fa-edit"></i> Editar
+                </button>
+                <button class="action-btn toggle" (click)="toggleUserStatus(user)" [class.enabled]="user.isActive" [class.disabled]="!user.isActive">
+                  <i class="fas fa-toggle-off">{{ user.isActive ? 'Deshabilitar' : 'Habilitar' }}</i>
+                </button>
+                <button class="action-btn delete" (click)="deleteUser(user._id)">
+                  <i class="fas fa-trash"></i> X
+                </button>                
+              </td>
+              <td>
+                <span class="status" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+                  {{ user.isActive ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>          
+          <ng-template #noUsers>
+            <tr>
+              <td colspan="5">No hay usuarios de empresa disponibles.</td>
+            </tr>
+          </ng-template>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+-->

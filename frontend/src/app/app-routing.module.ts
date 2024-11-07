@@ -12,6 +12,8 @@ import { EnterpriseDashboardComponent } from './enterprise-dashboard/enterprise-
 import { EnterpriseCreateOffertsComponent } from './enterprise-dashboard/enterprise-create-offerts/enterprise-create-offerts.component';
 import { EnterpriseEditOffertsComponent } from './enterprise-dashboard/enterprise-edit-offerts/enterprise-edit-offerts.component';
 
+// Importa tu componente de administración
+import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 
 const routes: Routes = [
   {
@@ -57,13 +59,18 @@ const routes: Routes = [
   {
     path: 'enterprise-dashboard',
     component: EnterpriseDashboardComponent,
-    canActivate: [UserTypeGuard] 
+    canActivate: [UserTypeGuard]
   },
   {
     path: 'enterprise-edit-offerts/:id',
     component: EnterpriseEditOffertsComponent,
+    canActivate: [UserTypeGuard]
+  },
+  {
+    path: 'admin-dashboard',
+    component: AdminDashboardComponent,
     canActivate: [UserTypeGuard] 
-  }, 
+  },
   {
     path: '**',
     redirectTo: 'home'

@@ -8,10 +8,10 @@ export class UserAdmin {
 
     @Column({
         type: 'enum',
-        enum: ['Admin', 'SuperAdmin'],
-        default: 'Admin'
+        enum: ['admin', 'superAdmin'],
+        default: 'admin'
     })
-    userType!: 'Admin' | 'SuperAdmin';
+    usertype!: 'admin' | 'superAdmin';  
 
     @Column({ default: true })
     isActive!: boolean;
@@ -36,4 +36,4 @@ export class UserAdmin {
 
     @Column()
     password!: string;
-}//@entity
+}

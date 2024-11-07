@@ -13,12 +13,16 @@
       <a routerLink="/shop" routerLinkActive="active">Jobs</a>
       <a href="#">About</a>
       <a href="#">Contact</a>
-      <ng-container *ngIf="currentUser?.usertype === 'enterprise'; else notEnterprise">
+
+      <!-- Verificación de tipo de usuario para Enterprise -->
+      <ng-container *ngIf="currentUser && currentUser.usertype === 'enterprise'">
         <a routerLink="/enterprise-dashboard" routerLinkActive="active">Dashboard</a>
-      </ng-container>      
-      <ng-template #notEnterprise>
-        <p>User type: {{ currentUser?.usertype }}</p> <!-- Para depurar -->
-      </ng-template>
+      </ng-container>  
+
+      <!-- Verificación de tipo de usuario para Admin -->
+      <ng-container *ngIf="currentUser && currentUser.usertype === 'admin'">
+        <a routerLink="/admin-dashboard" routerLinkActive="active">Admin Dashboard</a>
+      </ng-container>
     </nav>
 
     <div class="header-icons">

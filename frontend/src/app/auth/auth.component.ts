@@ -3,9 +3,11 @@ import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule } 
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../app/core/service/user.service';
 import { UserEnterpriseService } from '../../app/core/service_prisma/userEnterprise.service';
+import { UserAdminService } from '../core/service_TypeORM/userAdmin.service';
 import { ListErrorsComponent } from '../shared/list-errors/list-errors.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'; 
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-auth',
@@ -28,6 +30,7 @@ export class AuthComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private userEnterpriseService: UserEnterpriseService,
+    private userAdminService: UserAdminService,
     private fb: FormBuilder,
     private cd: ChangeDetectorRef
   ) {
@@ -40,7 +43,7 @@ export class AuthComponent implements OnInit {
 
   ngOnInit() {
     this.route.url.subscribe(data => {
-      this.authType = data[data.length - 1].path;
+      this.authType = data[data.length - 1].path.toLowerCase();
       this.title = (this.authType === 'login') ? 'Iniciar sesión' : 'Registrarse';
 
       if (this.authType === 'register') {
@@ -56,26 +59,53 @@ export class AuthComponent implements OnInit {
   
     const credentials = this.authForm.value;
   
-    this.userEnterpriseService.login(this.authType, credentials).subscribe({
+    // Intentar autenticación de Admin
+    this.userAdminService.attemptAuth(this.authType, credentials).subscribe({
       next: () => {
-        this.router.navigateByUrl('/enterprise-dashboard');
+        // Mantener la sesión activa del admin
+        this.userAdminService.populate();  
+  
+        // Redirigir al Dashboard de Admin
+        this.router.navigateByUrl('/admin-dashboard');
       },
-      error: (err) => {
-        console.error('Enterprise login failed:', err); 
-        if (err.status === 404) { 
-          this.userService.attemptAuth(this.authType, credentials).subscribe({
+      error: (adminErr: HttpErrorResponse) => {
+        console.error('Admin login failed:', adminErr);
+  
+        // Si el login de Admin falla (401 o 404), intentamos con "Enterprise"
+        if (adminErr.status === 401 || adminErr.status === 404) {
+          this.userEnterpriseService.login(this.authType, credentials).subscribe({
             next: () => {
-              this.router.navigateByUrl('/user-dashboard');
+              // Redirigir al Dashboard de Enterprise
+              this.router.navigateByUrl('/enterprise-dashboard');
             },
-            error: (userErr) => {
-              console.error('User login failed:', userErr);
-              this.errors = userErr;
-              this.isSubmitting = false;
-              this.cd.markForCheck();
+            error: (enterpriseErr) => {
+              console.error('Enterprise login failed:', enterpriseErr);
+  
+              // Si tampoco es enterprise, intentar con usuario regular
+              if (enterpriseErr.status === 404) {
+                this.userService.attemptAuth(this.authType, credentials).subscribe({
+                  next: () => {
+                    // Redirigir al Dashboard de Usuario
+                    this.router.navigateByUrl('/user-dashboard');
+                  },
+                  error: (userErr) => {
+                    console.error('User login failed:', userErr);
+                    this.errors = userErr;
+                    this.isSubmitting = false;
+                    this.cd.markForCheck();
+                  }
+                });
+              } else {
+                // Error en login de Enterprise
+                this.errors = enterpriseErr;
+                this.isSubmitting = false;
+                this.cd.markForCheck();
+              }
             }
           });
         } else {
-          this.errors = err;
+          // Si no es un error 401 o 404, se maneja el error de admin de forma general
+          this.errors = adminErr;
           this.isSubmitting = false;
           this.cd.markForCheck();
         }
