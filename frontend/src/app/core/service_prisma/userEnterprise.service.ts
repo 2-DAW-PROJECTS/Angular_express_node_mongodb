@@ -135,6 +135,8 @@ export class UserEnterpriseService {
     return this.http.post<UserEnterprise>(`${this.baseUrl}/register`, userData);
   }
 
+  
+
   login(authType: string, credentials: { email: string, password: string }): Observable<void> {
     return new Observable<void>(observer => {
       this.attemptAuth(authType, credentials).subscribe(

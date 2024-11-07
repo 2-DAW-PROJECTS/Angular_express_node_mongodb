@@ -78,7 +78,7 @@ export class EnterpriseCreateOffertsComponent implements OnInit {
 
     this.offerService.createOffer(this.offer).subscribe(
       (response) => {
-        console.log('Oferta creada:', response);
+        // console.log('Oferta creada:', response);
         this.router.navigate(['/enterprise-dashboard']);
       },
       (error) => {

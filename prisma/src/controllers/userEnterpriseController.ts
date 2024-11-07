@@ -81,10 +81,12 @@ export const loginUserEnterprise = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const validPassword = await argon2.verify(user.password, password);
+    const hashedPassword = await argon2.hash(password);
+
+    const validPassword = await argon2.verify(hashedPassword, password);
 
     if (!validPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Invalid credentials'});
     }
 
     const access_token = generateAccessToken(user.id);  
@@ -112,6 +114,8 @@ export const loginUserEnterprise = async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'Error logging in' });
   }
 };
+
+
 
 
 export const getUserEnterprises = async (req: Request, res: Response) => {
@@ -151,8 +155,6 @@ export const getCurrentUser = async (req: Request, res: Response) => {
 };
 
 
-
-
 export const updateCurrentUser = async (req: Request, res: Response) => {
   const user = req.user;
 
@@ -165,8 +167,6 @@ export const updateCurrentUser = async (req: Request, res: Response) => {
 
   const {
     username,
-    email,
-    password,
     usertype,
     isActive,
     permissions,
@@ -185,7 +185,6 @@ export const updateCurrentUser = async (req: Request, res: Response) => {
   try {
     const updatedData: any = {
       username,
-      email,
       usertype,
       isActive,
       permissions,
@@ -200,10 +199,6 @@ export const updateCurrentUser = async (req: Request, res: Response) => {
       slug,
       category
     };
-
-    if (password) {
-      updatedData.password = await argon2.hash(password);
-    }
 
     const updatedUserEnterprise = await prisma.userEnterprise.update({
       where: { id: user.userId },
