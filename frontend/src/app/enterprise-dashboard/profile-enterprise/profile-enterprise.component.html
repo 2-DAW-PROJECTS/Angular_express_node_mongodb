@@ -69,6 +69,11 @@
               <span *ngIf="!isEditing">{{ userEnterprise.description || "Not Defined" }}</span>
               <input *ngIf="isEditing" [(ngModel)]="userEnterprise.description" />
             </div>
+            <div class="detail-item">
+              <span class="label">Logo:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.logo || "Not Defined" }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.logo" />
+            </div>
           </div>
           
           <div class="profile-actions">
