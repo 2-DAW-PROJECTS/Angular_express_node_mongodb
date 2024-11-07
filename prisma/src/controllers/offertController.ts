@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import prisma from '../services/prismaService';
-import slugify from 'slugify'; // Importa slugify
+import slugify from 'slugify';
 
 export const createOffer = async (req: Request, res: Response) => {
   const userId = req.user?.userId;
-  const { title, location, description, requirements, salary, slug, category, categorySlug, postedDate, image, images, contractType, experience, isActive } = req.body;
+  const { title, location, description, requirements, salary, slug, category, categorySlug, postedDate, images, contractType, experience, isActive } = req.body;
 
   if (!userId) {
     return res.status(400).json({ error: 'User ID is required' });
@@ -41,7 +41,7 @@ export const createOffer = async (req: Request, res: Response) => {
         company: user.username,
         company_slug: slugify(user.username, { lower: true }),
         postedDate: postedDate ? new Date(postedDate) : null,
-        image,
+        image: user.logo,
         images: images && images.length > 0 ? images : defaultImages,
         contractType,
         experience,

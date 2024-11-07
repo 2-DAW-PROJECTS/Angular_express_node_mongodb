@@ -36,10 +36,10 @@
         </select>
     </div>
     
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="image">Logo</label>
         <input type="text" id="image" [(ngModel)]="offer.image" name="image" placeholder="URL de la imagen">
-      </div>
+      </div> -->
 
       <div class="form-group">
         <label for="contractType">Tipo de Contrato</label>
@@ -49,6 +49,11 @@
       <div class="form-group">
         <label for="experience">Experiencia</label>
         <input type="text" id="experience" [(ngModel)]="offer.experience" name="experience" required placeholder="Ej: 2 años">
+      </div>
+      <div class="form-group">
+        <label for="postedDate">Posted</label>
+        <!-- Muestra el campo de solo lectura con formato de fecha -->
+        <input type="text" id="postedDate" value="Not posted yet" readonly>
       </div>
     </div>
 
