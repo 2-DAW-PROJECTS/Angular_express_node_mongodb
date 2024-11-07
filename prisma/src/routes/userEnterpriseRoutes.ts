@@ -1,6 +1,6 @@
 // C:\Users\3eias\Documents\2ºDAW\SERVER\INFOJOBS_Angular_Express_Node_MongoDB\prisma\src\routes\userEnterpriseRoutes.ts
 import { Router, Request, Response, NextFunction } from 'express';
-import { createUserEnterprise, getUserEnterprises, loginUserEnterprise, getCurrentUser } from '../controllers/userEnterpriseController';
+import { createUserEnterprise, getUserEnterprises, loginUserEnterprise, getCurrentUser, updateCurrentUser } from '../controllers/userEnterpriseController';
 import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
@@ -24,5 +24,12 @@ router.get('/get_allusers', authenticateToken, async (req: Request, res: Respons
 router.get('/current_user', authenticateToken, async (req: Request, res: Response, next: NextFunction) => {
   getCurrentUser(req, res).catch(next);
 });
+
+// Update route should use current_user like the get route
+router.put('/current_user', authenticateToken, async (req: Request, res: Response, next: NextFunction) => {
+  updateCurrentUser(req, res).catch(next);
+});
+
+
 
 export default router;

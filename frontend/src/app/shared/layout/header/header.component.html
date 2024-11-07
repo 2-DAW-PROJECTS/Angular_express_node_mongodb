@@ -15,9 +15,9 @@
       <a href="#">Contact</a>
 
       <!-- Verificación de tipo de usuario para Enterprise -->
-      <ng-container *ngIf="currentUser && currentUser.usertype === 'enterprise'">
+      <!-- <ng-container *ngIf="currentUser && currentUser.usertype === 'enterprise'">
         <a routerLink="/enterprise-dashboard" routerLinkActive="active">Dashboard</a>
-      </ng-container>  
+      </ng-container>   -->
 
       <!-- Verificación de tipo de usuario para Admin -->
       <ng-container *ngIf="currentUser && currentUser.usertype === 'admin'">
@@ -33,9 +33,15 @@
       </ng-container>
 
       <ng-template #authenticated>
-        <a class="nav-link" routerLink="/profile" routerLinkActive="active">
-          Profile
-        </a>
+
+        <ng-container *ngIf="currentUser?.usertype === 'enterprise'; else notEnterprise">
+          <a class="nav-link" routerLink="/enterprise-dashboard" routerLinkActive="active">Dashboard</a>
+        </ng-container>      
+        <ng-template #notEnterprise>
+          <a class="nav-link" routerLink="/profile" routerLinkActive="active">Profile</a>
+        </ng-template>
+
+
         <a class="nav-link logout" (click)="logout()">
           Log out
         </a>

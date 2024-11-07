@@ -1,0 +1,122 @@
+<link rel="stylesheet" href="./profile-enterprise.component.css">
+
+<div class="sidebar">
+  <div class="sidebar-header">
+
+    <h3>Panel Enterprise</h3>
+  </div>
+  <nav class="sidebar-nav">
+    <ul>
+      <li><a (click)="toggleDashboardEnterprise()" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+      <li><a (click)="toggleDashboardEnterpriseOffers()"><i class="fas fa-briefcase"></i> Ofertas</a></li>
+      <li><a><i class="fas fa-users"></i> Profile </a></li>
+      <!-- <li><a href="#"><i class="fas fa-chart-bar"></i> Estadísticas</a></li>
+      <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li> -->
+    </ul>
+  </nav>
+</div>
+
+
+<div class="profile-container" *ngIf="userEnterprise">
+    <div class="profile-header">
+      <div class="profile-cover"></div>
+      <div class="profile-avatar">
+        <img [src]="userEnterprise.logo || 'assets/default_profile/logo.PNG'" alt="Profile Picture" />
+      </div>
+    </div>
+  
+    <div class="profile-content">
+      <div class="profile-info">
+        <h1 class="profile-name">{{ userEnterprise.username }}</h1>
+        <span class="profile-type">{{ "Enterprise" }}</span>
+        <div class="profile-email">
+          <i class="fas fa-envelope"></i>
+          {{ userEnterprise.email }}
+        </div>
+      </div>
+  
+      <div class="profile-details">
+        <div class="detail-card">
+          <h3>Account Information</h3>
+          <div *ngIf="userEnterprise">
+            <div class="detail-item">
+              <span class="label">Username:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.username }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.username" />
+            </div>
+            <div class="detail-item">
+              <span class="label">Email:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.email }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.email" readonly/>
+            </div>
+            <div class="detail-item">
+              <span class="label">Industry:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.industry || "Not Defined" }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.industry" />
+            </div>
+            <div class="detail-item">
+              <span class="label">Location:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.location || "Not Defined" }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.location" />
+            </div>
+            <div class="detail-item">
+              <span class="label">Website:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.website || "Not Defined" }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.website" />
+            </div>
+            <div class="detail-item">
+              <span class="label">Description:</span>
+              <span *ngIf="!isEditing">{{ userEnterprise.description || "Not Defined" }}</span>
+              <input *ngIf="isEditing" [(ngModel)]="userEnterprise.description" />
+            </div>
+          </div>
+          
+          <div class="profile-actions">
+            <button class="btn-edit" (click)="editProfile()">{{ isEditing ? 'Cancel' : 'Edit' }}</button>
+            <button class="btn-edit" *ngIf="isEditing" (click)="saveProfile()">Save</button>
+
+            <button class="btn-password" (click)="changePassword()">Change Password</button>
+          </div>
+
+          <!-- <div class="detail-item">
+            <span class="label">Username:</span>
+            <span class="value">{{ userEnterprise.username }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Email:</span>
+            <span class="value">{{ userEnterprise.email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Industry:</span>
+            <span class="value">{{ userEnterprise.industry || "Not Defined" }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Location:</span>
+            <span class="value">{{ userEnterprise.location || "Not Defined" }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Website:</span>
+            <span class="value">{{ userEnterprise.website || "Not Defined" }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Description:</span>
+            <span class="value">{{ userEnterprise.description || "Not Defined" }}</span>
+          </div>
+        </div>
+      </div>
+  
+      <div class="profile-actions">
+        <button class="btn-edit" (click)="editProfile()">
+          <i class="fas fa-edit"></i> Edit Profile
+        </button>
+        <button class="btn-password" (click)="changePassword()">
+          <i class="fas fa-key"></i> Change Password
+        </button>
+      </div> -->
+    </div> <!--ngIF ending-->
+  </div>
+  <script>
+    document.getElementById("hamburger").addEventListener("click", function() {
+      document.querySelector(".sidebar").classList.toggle("active");
+    });
+  </script>

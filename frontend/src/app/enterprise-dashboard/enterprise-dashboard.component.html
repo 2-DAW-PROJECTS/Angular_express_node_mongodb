@@ -1,113 +1,97 @@
-<link rel="stylesheet" href="enterprise-dashboard.component.css">
 <div class="enterprise-dashboard">
   <!-- Sidebar -->
-  <!-- <div class="sidebar">
-  </div> -->
-      <div class="sidebar">
-        <div class="sidebar-header">
-            <h3>Panel Enterprise</h3>
-        </div>
-        <nav class="sidebar-nav">
-            <ul>
-                <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-                <li><a href="#"><i class="fas fa-briefcase"></i> Ofertas</a></li>
-                <li><a href="#"><i class="fas fa-users"></i> Candidatos</a></li>
-                <li><a href="#"><i class="fas fa-chart-bar"></i> Estadísticas</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
-            </ul>
-        </nav>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Panel Enterprise</h3>
     </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li><a class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a (click)="toggleDashboardEnterpriseOffers()"><i class="fas fa-briefcase"></i> Ofertas</a></li>
+        <li><a (click)="toggleProfileEnterprise()"><i class="fas fa-users"></i> Profile </a></li>
+        <!-- <li><a href="#"><i class="fas fa-chart-bar"></i> Estadísticas</a></li>
+        <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li> -->
+      </ul>
+    </nav>
+  </div>
+
   <!-- Main Content -->
-  <!-- <div class="main-content">
+  <div class="main-content">
     <div class="top-bar">
+      <div class="search-bar">
+        <input type="search" placeholder="Buscar...">
+        <i class="fas fa-search"></i>
+      </div>
+      <div class="user-menu"*ngIf="['userEnterprise']">
+        <span>{{ userEnterprise?.username }}</span>
+        <img [src]="userEnterprise?.logo || 'assets/default_profile/logo.PNG'" alt="Enterprise" class="avatar" (click)="toggleProfileEnterprise()">
+      </div>
     </div>
-
-    <div class="dashboard-stats">
-    </div> -->
-    <div class="main-content">
-      <div class="top-bar">
-          <div class="search-bar">
-              <input type="search" placeholder="Buscar...">
-              <i class="fas fa-search"></i>
-          </div>
-          <div class="user-menu">
-              <span>Enterprise</span>
-              <img src="avatar.jpg" alt="Enterprise" class="avatar">
-          </div>
+    <div class="dashboard-stats" *ngIf="['userEnterprise']">
+      <div class="stat-card">
+        <i class="fas fa-briefcase"></i>
+        <div class="stat-info">
+          <h4>Total Ofertas</h4>
+          <p>{{ offers.length || 0 }}</p>
+        </div>      </div>
+      <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <div class="stat-info">
+          <h4>Last Update</h4>
+          <p>{{ userEnterprise?.updatedAt | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
       </div>
-
-      <div class="dashboard-stats">
-          <div class="stat-card">
-              <i class="fas fa-briefcase"></i>
-              <div class="stat-info">
-                  <h4>Total Ofertas</h4>
-                  <p>125</p>
-              </div>
-          </div>
-          <div class="stat-card">
-              <i class="fas fa-users"></i>
-              <div class="stat-info">
-                  <h4>Candidatos</h4>
-                  <p>1,234</p>
-              </div>
-          </div>
-          <div class="stat-card">
-              <i class="fas fa-check-circle"></i>
-              <div class="stat-info">
-                  <h4>Contrataciones</h4>
-                  <p>45</p>
-              </div>
-          </div>
+      <div class="stat-card">
+        <i class="fas fa-check-circle"></i>
+        <div class="stat-info">
+          <h4>Followers</h4>
+          <p>{{ userEnterprise?.followers }}</p>
+        </div>
       </div>
-
-
+    </div>
     <div class="content-section">
       <div class="section-header">
         <h2>Gestión de Ofertas</h2>
-        <!-- Botón redirige a la creación de ofertas -->
         <button class="add-offer-btn" (click)="redirectToCreateOffer()">
           <i class="fas fa-plus"></i> Nueva Oferta
         </button>
       </div>
 
-<div class="offers-table">
-  <table>
-    <thead>
-      <tr>
-        <th>Título</th>
-        <th>Ubicación</th>
-        <th>Categoría</th>
-        <th>Acciones</th>
-        <th>Estado</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let offer of offers">
-        <td>{{ offer.title }}</td>
-        <td>{{ offer.location }}</td>
-        <td>{{ offer.category }}</td>
-        <td>
-          <span class="status" [class.active]="offer.isActive" [class.inactive]="!offer.isActive">
-            {{ offer.isActive ? 'Activo' : 'Inactivo' }}
-          </span>
-        </td>
-        
-        <td>
-          <button class="action-btn edit" (click)="editOffer(offer)"><i class="fas fa-edit"></i> Editar</button>
-          <button class="action-btn toggle" 
-                  (click)="toggleOfferStatus(offer)"
-                  [class.enabled]="offer.isActive"
-                  [class.disabled]="!offer.isActive">
-            <i class="fas fa-toggle-off">{{ offer.isActive ? 'Deshabilitar' : 'Habilitar' }}</i>
-          </button>
-          <button class="action-btn delete" (click)="deleteOffer(offer.id)"><i class="fas fa-trash"></i>X</button>
-        </td>
-        
-      </tr>
-    </tbody>
-  </table>
-</div>
-
+      <div class="offers-table" id="offers-table">
+        <table *ngIf="offers && offers.length > 0; else noOffers">
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Ubicación</th>
+              <th>Categoría</th>
+              <th>Acciones</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let offer of offers">
+              <td>{{ offer.title }}</td>
+              <td>{{ offer.location }}</td>
+              <td>{{ offer.category }}</td>
+              <td>
+                <span class="status" [class.active]="offer.isActive" [class.inactive]="!offer.isActive">
+                  {{ offer.isActive ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <button class="action-btn edit" (click)="editOffer(offer)"><i class="fas fa-edit"></i> Editar</button>
+                <button class="action-btn toggle" (click)="toggleOfferStatus(offer)" [class.enabled]="offer.isActive" [class.disabled]="!offer.isActive">
+                  <i class="fas fa-toggle-off">{{ offer.isActive ? 'Deshabilitar' : 'Habilitar' }}</i>
+                </button>
+                <button class="action-btn delete" (click)="deleteOffer(offer.id)"><i class="fas fa-trash"></i> X</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <ng-template #noOffers>
+          <p class="no-offerts">Todavía no has creado ninguna oferta, ¿a qué esperas para encontrar al candidato ideal?</p>
+        </ng-template>
+      </div>
     </div>
   </div>
 </div>

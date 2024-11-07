@@ -4,7 +4,8 @@ import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { UserEnterprise } from '../models_prisma/userEnterprise.model';
 import { environments_Enterprise } from '../../../environments_Enterprise/environment_Enterprise';
 import { JwtEnterpriseService } from './jwt_Enterprise.service';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, map } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +21,19 @@ export class UserEnterpriseService {
   
   attemptAuth(authType: string, credentials: { email: string; password: string }): Observable<{ access_token: string, usertype: string }> {
     const endpoint = authType === 'register' ? '/register' : '/login';
-    return this.http.post<{ access_token: string, usertype: string, username: string, email: string }>(`${this.baseUrl}${endpoint}`, credentials).pipe(
+    return this.http.post<{ access_token: string, usertype: string, username: string, email: string, isActive: boolean }>(`${this.baseUrl}${endpoint}`, credentials).pipe(
       tap(response => {
+
+        // console.log('Authentication response:', response);
+        // return
+        if (!response.isActive && authType === 'login' && response.usertype === 'enterprise' ) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Account Inactive',
+            text: 'Your account is inactive. Please contact support.',
+          });
+          throw new Error('Account is inactive');
+        }
         this.jwtService.saveToken(response.access_token);
         const userEnterprise: UserEnterprise = {
           usertype: 'enterprise',
@@ -79,6 +91,31 @@ export class UserEnterpriseService {
     return this.currentUserSubject.value;
   }
 
+  getCurrentUserProfile(): Observable<UserEnterprise | null> {
+    return this.currentUserSubject.asObservable();
+  }
+
+
+  updateUser(user: UserEnterprise): Observable<UserEnterprise> {
+    const token = this.getAccessToken();
+    if (token && !this.isTokenExpired(token)) { 
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      return this.http.put<{ userEnterprise: UserEnterprise }>(`${this.baseUrl}/current_user`, user, { headers }).pipe(
+        tap(data => {
+          if (data && data.userEnterprise) {
+            this.setAuth(data.userEnterprise);
+          }
+        }),
+        map((data: { userEnterprise: any; }) => data.userEnterprise)
+      );
+    }
+    throw new Error('Token is invalid or expired');
+  }
+  
+  
+
+
+
   private setAuth(userEnterprise: UserEnterprise) {
     this.currentUserSubject.next(userEnterprise);
     this.isAuthenticatedSubject.next(true);
@@ -97,6 +134,8 @@ export class UserEnterpriseService {
   registerEnterprise(userData: any): Observable<UserEnterprise> {
     return this.http.post<UserEnterprise>(`${this.baseUrl}/register`, userData);
   }
+
+  
 
   login(authType: string, credentials: { email: string, password: string }): Observable<void> {
     return new Observable<void>(observer => {
