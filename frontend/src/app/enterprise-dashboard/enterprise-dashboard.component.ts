@@ -44,6 +44,7 @@ export class EnterpriseDashboardComponent implements OnInit {
     this.userEnterpriseService.getCurrentUserProfile().subscribe({
       next: (user: UserEnterprise | null) => {
         this.userEnterprise = user;
+        // console.log('User enterprise data:', user);
       },
       error: (error) => {
         console.error('Error fetching user enterprise data:', error);

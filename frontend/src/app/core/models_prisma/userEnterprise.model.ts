@@ -1,3 +1,6 @@
+import { of } from "rxjs";
+import { Offert } from "./offertEnterprise.model";
+
 export interface UserEnterprise {
     id?: string;
     username: string;
@@ -16,4 +19,6 @@ export interface UserEnterprise {
     image?: string; 
     slug?: string; 
     category?: string; 
+    createdAt?: Date;
+    updatedAt?: Date;
 }

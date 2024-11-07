@@ -22,32 +22,30 @@
         <input type="search" placeholder="Buscar...">
         <i class="fas fa-search"></i>
       </div>
-      <div class="user-menu" *ngIf="['userEnterprise']">
+      <div class="user-menu"*ngIf="['userEnterprise']">
         <span>{{ userEnterprise?.username }}</span>
         <img [src]="userEnterprise?.logo || 'assets/default_profile/logo.PNG'" alt="Enterprise" class="avatar" (click)="toggleProfileEnterprise()">
-
       </div>
     </div>
-    <div class="dashboard-stats">
+    <div class="dashboard-stats" *ngIf="['userEnterprise']">
       <div class="stat-card">
         <i class="fas fa-briefcase"></i>
         <div class="stat-info">
           <h4>Total Ofertas</h4>
-          <p>125</p>
-        </div>
-      </div>
+          <p>{{ offers.length || 0 }}</p>
+        </div>      </div>
       <div class="stat-card">
         <i class="fas fa-users"></i>
         <div class="stat-info">
-          <h4>Candidatos</h4>
-          <p>1,234</p>
+          <h4>Last Update</h4>
+          <p>{{ userEnterprise?.updatedAt | date:'dd/MM/yyyy HH:mm' }}</p>
         </div>
       </div>
       <div class="stat-card">
         <i class="fas fa-check-circle"></i>
         <div class="stat-info">
-          <h4>Contrataciones</h4>
-          <p>45</p>
+          <h4>Followers</h4>
+          <p>{{ userEnterprise?.followers }}</p>
         </div>
       </div>
     </div>
