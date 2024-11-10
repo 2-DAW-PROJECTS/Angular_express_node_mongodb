@@ -1,6 +1,10 @@
 # 🚀 Proyecto JobHunter 
-## ¡El InfoJobs que siempre quisiste! - ¡El InfoJobs que sí funciona!
 
+## 📸 IMAGENES DEL PROYECTO
+Para ver capturas detalladas de la aplicación y su funcionamiento, visita el siguiente enlace:
+[IMAGENES DEL PROYECTO](https://github.com/2-DAW-PROJECTS/images_proyects/blob/master/JOBHUNTER/README.md)
+
+## ¡El InfoJobs que siempre quisiste! - ¡El InfoJobs que sí funciona!
 ¡Bienvenido a **JobHunter**! 🎯 Este es un proyecto súper emocionante para crear una plataforma de búsqueda de empleo usando tecnología full-stack. Si te encanta el desarrollo web moderno y quieres ayudar a los usuarios a encontrar el trabajo de sus sueños (o simplemente ganar un poco de dinerillo), ¡este proyecto es para ti!
 
 
