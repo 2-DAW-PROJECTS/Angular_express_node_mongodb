@@ -10,10 +10,7 @@ dist/
 build/
 *.tsbuildinfo
 
-# Environment
-.env
-.env.local
-.env.*.local
+
 
 # IDE
 .idea/
@@ -66,7 +63,3 @@ web_modules/
 !.yarn/versions
 node_modules/
 
-
-# JSON Packages
-
-*.json
